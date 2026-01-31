@@ -57,19 +57,6 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "3",
-    name: "CAVA Gulf Coast",
-    category: "restaurant",
-    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
-    distance: "5.1 mi",
-    rating: 4.6,
-    studentDiscount: "10% off with student ID",
-    address: "16441 Corporate Commerce Way, Ste 100, Fort Myers, FL",
-    hours: "10:45am - 10pm",
-    description: "Mediterranean fast-casual with house-made dips, grains, and greens. Perfect for meal prep.",
-    priceLevel: 2,
-  },
-  {
-    id: "4",
     name: "Ada's Natural Market",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400",
@@ -82,7 +69,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "5",
+    id: "4",
     name: "Chicken Salad Chick",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400",
@@ -95,20 +82,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 1,
   },
   {
-    id: "6",
-    name: "SoVi Dining Hall",
-    category: "restaurant",
-    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400",
-    distance: "0.1 mi",
-    rating: 4.3,
-    studentDiscount: "Meal plan accepted",
-    address: "FGCU Campus, Fort Myers, FL",
-    hours: "7am - 9pm",
-    description: "On-campus dining with nutritional info online. Fresh salad bar, grilled options, and smoothie station.",
-    priceLevel: 1,
-  },
-  {
-    id: "7",
+    id: "5",
     name: "Chipotle",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=400",
@@ -121,7 +95,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "8",
+    id: "6",
     name: "Crisp & Green",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
@@ -134,7 +108,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "9",
+    id: "7",
     name: "Poke Fusion",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400",
@@ -147,7 +121,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "10",
+    id: "8",
     name: "FGCU Recreation Center",
     category: "gym",
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400",
@@ -160,7 +134,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 0,
   },
   {
-    id: "11",
+    id: "9",
     name: "Planet Fitness",
     category: "gym",
     image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400",
@@ -173,7 +147,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 1,
   },
   {
-    id: "12",
+    id: "10",
     name: "Orangetheory Fitness",
     category: "gym",
     image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=400",
@@ -186,7 +160,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 3,
   },
   {
-    id: "13",
+    id: "11",
     name: "Publix Super Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
@@ -198,7 +172,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "14",
+    id: "12",
     name: "Trader Joe's",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400",
@@ -210,7 +184,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "15",
+    id: "13",
     name: "Whole Foods Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400",
