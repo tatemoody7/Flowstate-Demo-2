@@ -117,6 +117,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           <Button
             onPress={() => navigation.navigate("SignUp")}
             style={styles.getStartedButton}
+            textColor={FlowstateColors.primary}
           >
             Get Started
           </Button>

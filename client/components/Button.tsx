@@ -16,6 +16,7 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
   variant?: "primary" | "secondary" | "outline";
+  textColor?: string;
 }
 
 const springConfig: WithSpringConfig = {
@@ -34,6 +35,7 @@ export function Button({
   style,
   disabled = false,
   variant = "primary",
+  textColor,
 }: ButtonProps) {
   const scale = useSharedValue(1);
 
@@ -60,6 +62,7 @@ export function Button({
   };
 
   const getTextColor = () => {
+    if (textColor) return textColor;
     if (variant === "outline") return FlowstateColors.primary;
     return "#FFFFFF";
   };
