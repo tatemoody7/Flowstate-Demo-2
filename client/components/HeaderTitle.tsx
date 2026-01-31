@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
-import { Spacing } from "@/constants/theme";
+import { Spacing, FlowstateColors } from "@/constants/theme";
 
 interface HeaderTitleProps {
   title: string;
@@ -33,7 +33,9 @@ const styles = StyleSheet.create({
     marginRight: Spacing.sm,
   },
   title: {
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
+    fontFamily: "Poppins_700Bold",
+    color: FlowstateColors.primary,
   },
 });
