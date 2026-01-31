@@ -45,7 +45,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
             Flowstate
           </ThemedText>
           <ThemedText type="body" style={styles.tagline}>
-            Your Campus Health Companion
+            Find your flow!
           </ThemedText>
         </Animated.View>
 
