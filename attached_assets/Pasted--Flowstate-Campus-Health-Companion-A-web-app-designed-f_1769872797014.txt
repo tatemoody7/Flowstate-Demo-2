@@ -1,0 +1,119 @@
+# Flowstate - Campus Health Companion 🦅
+
+A web app designed for college students to build healthy habits and find trustworthy health information. Starting at Florida Gulf Coast University (FGCU).
+
+## Features
+
+### 🎓 School Branding
+- Automatically matches your university's colors when you sign up
+- Currently supporting FGCU (expandable to other colleges)
+
+### 📍 Location-Based Discovery
+- Find healthy restaurants nearby with student discounts
+- Discover gyms and fitness studios
+- Locate grocery stores with price comparisons
+
+### 🔍 Food Scanner
+- Scan food items to get instant nutritional information
+- Compare prices at nearby grocery stores
+- Get health scores for informed decisions
+
+### 💰 Student Discounts
+- See exclusive student deals at every location
+- Save money while staying healthy
+
+## Getting Started on Replit
+
+1. **Create a new Repl** and select "Import from GitHub" or create a blank React Repl
+
+2. **Upload these files:**
+   - `package.json`
+   - `vite.config.js`
+   - `index.html`
+   - `.replit`
+   - `src/main.jsx`
+   - `src/flowstate-app.jsx`
+
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open the app** in your browser at the Replit URL
+
+## File Structure
+
+```
+flowstate-app/
+├── index.html
+├── package.json
+├── vite.config.js
+├── .replit
+└── src/
+    ├── main.jsx
+    └── flowstate-app.jsx
+```
+
+## How to Use
+
+1. **Sign Up:** Enter your student email (must be @eagle.fgcu.edu)
+2. **Select School:** Choose FGCU from the dropdown
+3. **Set Location:** Enter your current location or use device location
+4. **Explore:** Browse healthy eating spots, gyms, and grocery stores
+5. **Scan Food:** Use the food scanner to check nutrition and prices
+
+## Tech Stack
+
+- **React** - UI framework
+- **Lucide React** - Icon library
+- **Vite** - Build tool
+- **Custom CSS** - Styling with FGCU brand colors
+
+## Customization
+
+To add more schools, update the `SCHOOL_COLORS` object in `flowstate-app.jsx`:
+
+```javascript
+const SCHOOL_COLORS = {
+  fgcu: {
+    primary: '#0A3D62',
+    secondary: '#00A651',
+    accent: '#FFB81C',
+    name: 'Florida Gulf Coast University',
+    shortName: 'FGCU'
+  },
+  // Add more schools here
+};
+```
+
+## Future Enhancements
+
+- [ ] Integration with real APIs for live data
+- [ ] User profiles and saved preferences
+- [ ] Social features to connect with other students
+- [ ] Meal planning and nutrition tracking
+- [ ] Campus event integration
+- [ ] More university support
+
+## Design Philosophy
+
+Flowstate uses a vibrant, energetic design that appeals to college students while maintaining credibility and trustworthiness. The app features:
+
+- **Bold typography** with Poppins for headlines and Inter for body text
+- **Dynamic gradients** using school colors
+- **Smooth animations** for a modern feel
+- **Card-based layouts** for easy scanning
+- **Mobile-first design** for on-the-go students
+
+## Support
+
+For questions or issues, please contact the development team or submit feedback through the app.
+
+---
+
+**Go Eagles!** 🦅 Stay healthy with Flowstate!
