@@ -44,32 +44,6 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "2",
-    name: "PokéBowl Cafe",
-    category: "restaurant",
-    image: "https://images.unsplash.com/photo-1546069901-5ec87c0f1949?w=400",
-    distance: "4.2 mi",
-    rating: 4.9,
-    studentDiscount: "Free miso soup with bowl",
-    address: "12001 S Cleveland Ave, Fort Myers, FL",
-    hours: "11am - 9pm",
-    description: "Fresh Hawaiian-style poke bowls with sushi-grade fish delivered daily. Build your own with healthy toppings.",
-    priceLevel: 2,
-  },
-  {
-    id: "3",
-    name: "Ada's Natural Market",
-    category: "restaurant",
-    image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400",
-    distance: "6.3 mi",
-    rating: 4.5,
-    studentDiscount: "15% off smoothies",
-    address: "15271 McGregor Blvd, Fort Myers, FL",
-    hours: "9am - 8pm",
-    description: "100% organic cafe with fresh juices, smoothies, and prepared meals. Vegan and vegetarian friendly.",
-    priceLevel: 2,
-  },
-  {
-    id: "4",
     name: "Chicken Salad Chick",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400",
@@ -82,7 +56,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 1,
   },
   {
-    id: "5",
+    id: "3",
     name: "Chipotle",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=400",
@@ -95,7 +69,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "6",
+    id: "4",
     name: "Crisp & Green",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
@@ -108,7 +82,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "7",
+    id: "5",
     name: "Poke Fusion",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400",
@@ -121,7 +95,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "8",
+    id: "6",
     name: "FGCU Recreation Center",
     category: "gym",
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400",
@@ -134,7 +108,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 0,
   },
   {
-    id: "9",
+    id: "7",
     name: "Planet Fitness",
     category: "gym",
     image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400",
@@ -147,7 +121,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 1,
   },
   {
-    id: "10",
+    id: "8",
     name: "Orangetheory Fitness",
     category: "gym",
     image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=400",
@@ -160,7 +134,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 3,
   },
   {
-    id: "11",
+    id: "9",
     name: "Publix Super Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
@@ -172,7 +146,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "12",
+    id: "10",
     name: "Trader Joe's",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400",
@@ -184,7 +158,7 @@ export const mockPlaces: Place[] = [
     priceLevel: 2,
   },
   {
-    id: "13",
+    id: "11",
     name: "Whole Foods Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400",
