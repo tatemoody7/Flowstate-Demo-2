@@ -54,6 +54,12 @@ export default function ScannerScreen() {
     return FlowstateColors.error;
   };
 
+  const getHealthVerdict = (score: number) => {
+    if (score >= 80) return { label: "Healthy Choice", description: "Great pick! This food is nutritious and fits a healthy diet." };
+    if (score >= 60) return { label: "Moderate", description: "This food is okay in moderation. Watch portion sizes." };
+    return { label: "Not Healthy", description: "Consider healthier alternatives. High in sugar, sodium, or processed ingredients." };
+  };
+
   if (!permission) {
     return <View style={styles.container} />;
   }
@@ -170,6 +176,30 @@ export default function ScannerScreen() {
               </View>
             </View>
 
+            <View
+              style={[
+                styles.healthVerdict,
+                { backgroundColor: `${getHealthScoreColor(scannedFood.healthScore)}15` },
+              ]}
+            >
+              <View style={styles.verdictHeader}>
+                <Feather
+                  name={scannedFood.healthScore >= 80 ? "check-circle" : scannedFood.healthScore >= 60 ? "alert-circle" : "x-circle"}
+                  size={20}
+                  color={getHealthScoreColor(scannedFood.healthScore)}
+                />
+                <ThemedText
+                  type="h4"
+                  style={[styles.verdictLabel, { color: getHealthScoreColor(scannedFood.healthScore) }]}
+                >
+                  {getHealthVerdict(scannedFood.healthScore).label}
+                </ThemedText>
+              </View>
+              <ThemedText type="small" style={styles.verdictDescription}>
+                {getHealthVerdict(scannedFood.healthScore).description}
+              </ThemedText>
+            </View>
+
             <View style={styles.nutritionGrid}>
               <View style={styles.nutritionItem}>
                 <ThemedText type="h4" style={styles.nutritionValue}>
@@ -207,7 +237,7 @@ export default function ScannerScreen() {
 
             <View style={styles.priceComparison}>
               <ThemedText type="h4" style={styles.priceTitle}>
-                Price Comparison
+                Prices at Nearby Stores
               </ThemedText>
               {scannedFood.prices.map((price, index) => {
                 const isLowest =
@@ -424,6 +454,24 @@ const styles = StyleSheet.create({
   },
   healthLabel: {
     color: FlowstateColors.textSecondary,
+  },
+  healthVerdict: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.lg,
+  },
+  verdictHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
+  verdictLabel: {
+    fontWeight: "600",
+  },
+  verdictDescription: {
+    color: FlowstateColors.textSecondary,
+    marginLeft: 28,
   },
   nutritionGrid: {
     flexDirection: "row",
