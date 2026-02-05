@@ -3,17 +3,25 @@ import { StyleSheet, Pressable, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import { Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 
 import DiscoverStackNavigator from "@/navigation/DiscoverStackNavigator";
 import SavedStackNavigator from "@/navigation/SavedStackNavigator";
 import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
-import { FlowstateColors, Shadows, Spacing } from "@/constants/theme";
+import { FlowstateColors, Shadows, Spacing, BorderRadius } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export type MainTabParamList = {
   DiscoverTab: undefined;
@@ -25,6 +33,19 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 function ScannerFAB() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.9);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -32,11 +53,21 @@ function ScannerFAB() {
   };
 
   return (
-    <Pressable onPress={handlePress} style={styles.fabContainer}>
-      <View style={styles.fab}>
-        <Feather name="camera" size={24} color="#FFFFFF" />
-      </View>
-    </Pressable>
+    <AnimatedPressable 
+      onPress={handlePress} 
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={[styles.fabContainer, animatedStyle]}
+    >
+      <LinearGradient
+        colors={[FlowstateColors.secondary, "#00C865"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fab}
+      >
+        <Feather name="camera" size={26} color="#FFFFFF" />
+      </LinearGradient>
+    </AnimatedPressable>
   );
 }
 
@@ -112,17 +143,22 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: "absolute",
-    bottom: 30,
+    bottom: 32,
     alignSelf: "center",
     zIndex: 100,
+    shadowColor: FlowstateColors.secondary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   },
   fab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: FlowstateColors.secondary,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: "center",
     justifyContent: "center",
-    ...Shadows.fab,
+    borderWidth: 4,
+    borderColor: "rgba(255,255,255,0.9)",
   },
 });

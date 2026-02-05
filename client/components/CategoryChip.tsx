@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet, Pressable } from "react-native";
+import { StyleSheet, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -40,30 +41,43 @@ export function CategoryChip({ label, icon, isSelected, onPress }: CategoryChipP
     onPress();
   };
 
+  if (isSelected) {
+    return (
+      <AnimatedPressable
+        onPress={handlePress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={[styles.chipWrapper, animatedStyle]}
+      >
+        <LinearGradient
+          colors={[FlowstateColors.primary, FlowstateColors.secondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.chipSelected}
+        >
+          <Feather name={icon} size={16} color="#FFFFFF" style={styles.icon} />
+          <ThemedText type="small" style={styles.labelSelected}>
+            {label}
+          </ThemedText>
+        </LinearGradient>
+      </AnimatedPressable>
+    );
+  }
+
   return (
     <AnimatedPressable
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={[
-        styles.chip,
-        isSelected && styles.chipSelected,
-        animatedStyle,
-      ]}
+      style={[styles.chip, animatedStyle]}
     >
       <Feather
         name={icon}
         size={16}
-        color={isSelected ? "#FFFFFF" : FlowstateColors.textSecondary}
+        color={FlowstateColors.textSecondary}
         style={styles.icon}
       />
-      <ThemedText
-        type="small"
-        style={[
-          styles.label,
-          isSelected && styles.labelSelected,
-        ]}
-      >
+      <ThemedText type="small" style={styles.label}>
         {label}
       </ThemedText>
     </AnimatedPressable>
@@ -71,29 +85,46 @@ export function CategoryChip({ label, icon, isSelected, onPress }: CategoryChipP
 }
 
 const styles = StyleSheet.create({
+  chipWrapper: {
+    marginRight: Spacing.sm,
+  },
   chip: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
     borderRadius: BorderRadius.full,
     backgroundColor: FlowstateColors.surface,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: FlowstateColors.border,
     marginRight: Spacing.sm,
+    shadowColor: FlowstateColors.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   chipSelected: {
-    backgroundColor: FlowstateColors.primary,
-    borderColor: FlowstateColors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.full,
+    shadowColor: FlowstateColors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   icon: {
     marginRight: Spacing.xs,
   },
   label: {
     color: FlowstateColors.textSecondary,
+    fontWeight: "500",
   },
   labelSelected: {
     color: "#FFFFFF",
-    fontWeight: "600",
+    fontWeight: "700",
   },
 });
