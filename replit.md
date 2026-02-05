@@ -57,6 +57,16 @@ RootStackNavigator
 3. **School Branding System**: Theme colors dynamically change based on selected university
 4. **Expo Managed Workflow**: Leverages Expo's managed workflow for simplified native development
 
+### Design System (Gen-Z Aesthetic)
+- **Gradients**: Primary-to-secondary gradient (blue-to-green) used on selected chips, FAB, and Welcome screen
+- **Glassmorphism**: BlurView with subtle borders on Welcome screen feature cards
+- **Elevated Cards**: Modern shadow styling with `cardShadow` color for depth
+- **Floating FAB**: Gradient scanner button with spring animation and border accent
+- **Category Chips**: Pill-shaped with gradient background when selected
+- **Search Bar**: Rounded corners with soft shadow, no borders
+- **Animations**: Spring-based micro-interactions on all interactive elements
+- **Typography**: Poppins for headings, Inter for body text
+
 ## External Dependencies
 
 ### Core Services
