@@ -227,6 +227,7 @@ export function CoachPanel({ visible, onClose }: CoachPanelProps) {
 
   return (
     <Animated.View style={[styles.container, containerStyle]}>
+      <Pressable style={styles.backdrop} onPress={onClose} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -264,6 +265,7 @@ export function CoachPanel({ visible, onClose }: CoachPanelProps) {
             data={messages}
             keyExtractor={(item) => item.id}
             renderItem={renderMessage}
+            style={styles.messagesContainer}
             contentContainerStyle={styles.messagesList}
             showsVerticalScrollIndicator={false}
             onContentSizeChange={() => {
@@ -306,6 +308,10 @@ const styles = StyleSheet.create({
     zIndex: 100,
     justifyContent: "flex-end",
   },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
   keyboardView: {
     flex: 1,
     justifyContent: "flex-end",
@@ -314,7 +320,7 @@ const styles = StyleSheet.create({
     backgroundColor: FlowstateColors.surface,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
-    maxHeight: SCREEN_HEIGHT * 0.7,
+    height: SCREEN_HEIGHT * 0.85,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15,
@@ -368,10 +374,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  messagesContainer: {
+    flex: 1,
+  },
   messagesList: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     gap: Spacing.md,
+    flexGrow: 1,
   },
   messageRow: {
     flexDirection: "row",
