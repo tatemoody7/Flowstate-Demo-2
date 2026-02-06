@@ -4,15 +4,11 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  withSpring,
   Easing,
   interpolate,
 } from "react-native-reanimated";
-import { BlurView } from "expo-blur";
 
 import { useApp } from "@/context/AppContext";
-
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 export function FlowBlurOverlay() {
   const { flowToday, isInFlow } = useApp();
@@ -39,52 +35,32 @@ export function FlowBlurOverlay() {
   }, [pillarsComplete, isInFlow]);
 
   const overlayStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(progress.value, [0, 0.33, 0.66, 1], [0.6, 0.35, 0.15, 0]);
+    const opacity = interpolate(progress.value, [0, 0.33, 0.66, 1], [0.45, 0.25, 0.1, 0]);
     return {
       opacity,
-      pointerEvents: progress.value >= 1 ? "none" : "none",
-    } as any;
+    };
   });
 
   const flashStyle = useAnimatedStyle(() => ({
     opacity: flashOpacity.value,
   }));
 
-  if (Platform.OS === "web") {
-    return (
-      <>
-        <Animated.View
-          style={[styles.webOverlay, overlayStyle]}
-          pointerEvents="none"
-        />
-        <Animated.View
-          style={[styles.flashOverlay, flashStyle]}
-          pointerEvents="none"
-        />
-      </>
-    );
-  }
-
   return (
     <>
-      <AnimatedBlurView
-        intensity={interpolate(pillarsComplete, [0, 1, 2, 3], [8, 4, 1, 0])}
-        tint="light"
-        style={[StyleSheet.absoluteFill, overlayStyle]}
-        pointerEvents="none"
+      <Animated.View
+        style={[styles.overlay, overlayStyle, { pointerEvents: "none" }]}
       />
       <Animated.View
-        style={[styles.flashOverlay, flashStyle]}
-        pointerEvents="none"
+        style={[styles.flashOverlay, flashStyle, { pointerEvents: "none" }]}
       />
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  webOverlay: {
+  overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(248, 250, 252, 0.5)",
+    backgroundColor: "rgba(248, 250, 252, 0.7)",
     zIndex: 0,
   },
   flashOverlay: {

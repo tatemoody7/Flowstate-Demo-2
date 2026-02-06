@@ -13,6 +13,7 @@ import { Button } from "@/components/Button";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { mockScannedFoods } from "@/data/mockData";
+import { getScanReaction } from "@/data/coachLines";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type ScannerScreenNavigationProp = NativeStackNavigationProp<
@@ -55,9 +56,10 @@ export default function ScannerScreen() {
   };
 
   const getHealthVerdict = (score: number) => {
-    if (score >= 80) return { label: "Healthy Choice", description: "Great pick! This food is nutritious and fits a healthy diet." };
-    if (score >= 60) return { label: "Moderate", description: "This food is okay in moderation. Watch portion sizes." };
-    return { label: "Not Healthy", description: "Consider healthier alternatives. High in sugar, sodium, or processed ingredients." };
+    const coachLine = getScanReaction(score);
+    if (score >= 80) return { label: "Solid Choice", description: coachLine };
+    if (score >= 60) return { label: "It's Aight", description: coachLine };
+    return { label: "Be Honest", description: coachLine };
   };
 
   if (!permission) {

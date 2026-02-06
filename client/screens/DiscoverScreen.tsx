@@ -24,6 +24,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { FlowTracker } from "@/components/FlowTracker";
 import { FlowStats } from "@/components/FlowStats";
 import { CoachPanel } from "@/components/CoachPanel";
+import { FlowBlurOverlay } from "@/components/FlowBlurOverlay";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
@@ -160,6 +161,7 @@ export default function DiscoverScreen() {
     <View style={styles.root}>
       <FlatList
         style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
+        testID="discover-list"
         contentContainerStyle={[
           styles.content,
           {
@@ -182,6 +184,8 @@ export default function DiscoverScreen() {
           />
         }
       />
+
+      <FlowBlurOverlay />
 
       <AnimatedPressable
         onPress={() => {
