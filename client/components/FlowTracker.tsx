@@ -58,6 +58,9 @@ function PillarButton({ icon, label, isChecked, onPress, delay }: PillarButtonPr
         onPress={handlePress}
         style={[styles.pillarButton, animatedStyle]}
         testID={`flow-pillar-${label.toLowerCase()}`}
+        accessibilityRole="button"
+        accessibilityLabel={`${label}: ${isChecked ? "completed" : "not completed"}`}
+        accessibilityHint={`Tap to ${isChecked ? "uncheck" : "check off"} ${label.toLowerCase()}`}
       >
         <View style={styles.pillarCircleOuter}>
           {isChecked ? (

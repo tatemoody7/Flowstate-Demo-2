@@ -71,7 +71,11 @@ export function FlowStats() {
             const complete = isFlowComplete(day);
             const isToday = index === 6;
             return (
-              <View key={day.date} style={styles.dayColumn}>
+              <View
+                key={day.date}
+                style={styles.dayColumn}
+                accessibilityLabel={`${weekDayLabels[index]}${isToday ? " (today)" : ""}: ${complete ? "in flow" : "not in flow"}`}
+              >
                 <View
                   style={[
                     styles.dayDot,

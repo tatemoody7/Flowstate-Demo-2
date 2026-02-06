@@ -110,7 +110,13 @@ export default function ScannerScreen() {
       <View style={styles.overlay}>
         {/* Top controls */}
         <View style={[styles.topControls, { paddingTop: insets.top + Spacing.lg }]}>
-          <Pressable onPress={handleClose} style={styles.closeButton}>
+          <Pressable
+            onPress={handleClose}
+            style={styles.closeButton}
+            accessibilityRole="button"
+            accessibilityLabel="Close scanner"
+            testID="scanner-close"
+          >
             <Feather name="x" size={24} color="#FFFFFF" />
           </Pressable>
           <ThemedText type="h3" style={styles.title}>
