@@ -198,7 +198,7 @@ export default function DiscoverScreen() {
         onPressOut={() => {
           coachScale.value = withSpring(1);
         }}
-        style={[styles.coachFab, coachAnimStyle, { bottom: tabBarHeight + 80 }]}
+        style={[styles.coachFab, coachAnimStyle, { bottom: tabBarHeight + Spacing.lg }]}
         testID="coach-fab"
       >
         <LinearGradient
