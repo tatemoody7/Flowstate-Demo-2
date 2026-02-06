@@ -9,6 +9,7 @@ export const SchoolColors = {
     shortName: "FGCU",
     mascot: "Eagle",
     mascotGreeting: "Eagle",
+    mascotEmoji: "eagle",
     emailDomain: "@eagle.fgcu.edu",
   },
 };
