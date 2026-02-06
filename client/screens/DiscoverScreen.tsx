@@ -12,6 +12,8 @@ import { SearchBar } from "@/components/SearchBar";
 import { CategoryChip } from "@/components/CategoryChip";
 import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
+import { FlowTracker } from "@/components/FlowTracker";
+import { FlowStats } from "@/components/FlowStats";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing } from "@/constants/theme";
@@ -29,7 +31,7 @@ export default function DiscoverScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const { savedPlaces, toggleSavedPlace } = useApp();
+  const { savedPlaces, toggleSavedPlace, isInFlow, schoolColors } = useApp();
   const navigation = useNavigation<DiscoverScreenNavigationProp>();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,6 +60,8 @@ export default function DiscoverScreen() {
 
   const renderHeader = () => (
     <View style={styles.header}>
+      <FlowTracker />
+      <FlowStats />
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}

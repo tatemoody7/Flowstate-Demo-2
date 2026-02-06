@@ -7,6 +7,9 @@ export const SchoolColors = {
     accent: "#FFB81C",
     name: "Florida Gulf Coast University",
     shortName: "FGCU",
+    mascot: "Eagle",
+    mascotGreeting: "Eagle",
+    emailDomain: "@eagle.fgcu.edu",
   },
 };
 

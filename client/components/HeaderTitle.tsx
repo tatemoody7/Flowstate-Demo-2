@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
+import { FlowstateLogo } from "@/components/FlowstateLogo";
 import { Spacing, FlowstateColors } from "@/constants/theme";
 
 interface HeaderTitleProps {
@@ -11,11 +12,7 @@ interface HeaderTitleProps {
 export function HeaderTitle({ title }: HeaderTitleProps) {
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../../assets/images/icon.png")}
-        style={styles.icon}
-        resizeMode="contain"
-      />
+      <FlowstateLogo size={24} color={FlowstateColors.primary} variant="icon" />
       <ThemedText style={styles.title}>{title}</ThemedText>
     </View>
   );
@@ -26,11 +23,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-  },
-  icon: {
-    width: 28,
-    height: 28,
-    marginRight: Spacing.sm,
+    gap: Spacing.sm,
   },
   title: {
     fontSize: 18,

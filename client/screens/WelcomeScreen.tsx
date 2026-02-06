@@ -9,6 +9,7 @@ import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
+import { FlowstateLogo } from "@/components/FlowstateLogo";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { AuthStackParamList } from "@/navigation/AuthStackNavigator";
 
@@ -42,11 +43,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         <Animated.View entering={FadeInDown.delay(300).duration(700).springify()} style={styles.logoContainer}>
           <View style={styles.logoGlow}>
             <View style={styles.logoCircle}>
-              <Image
-                source={require("../../assets/images/icon.png")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
+              <FlowstateLogo size={52} color="#FFFFFF" variant="icon" />
             </View>
           </View>
         </Animated.View>
@@ -56,7 +53,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
             Flowstate
           </ThemedText>
           <ThemedText type="h3" style={styles.tagline}>
-            Find your flow!
+            Nail the essentials. Unlock your flow.
           </ThemedText>
         </Animated.View>
 
@@ -73,10 +70,10 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
-                  Discover Nearby
+                  Find Your Spots
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Restaurants, gyms & groceries near campus
+                  Healthy eats, gyms & groceries near campus
                 </ThemedText>
               </View>
             </View>
@@ -94,10 +91,10 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
-                  Scan & Compare
+                  Scan & Know
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Nutrition info & price comparisons instantly
+                  Instant nutrition facts & price drops
                 </ThemedText>
               </View>
             </View>
@@ -110,15 +107,15 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
                   colors={["rgba(255,255,255,0.3)", "rgba(255,255,255,0.1)"]}
                   style={styles.iconCircle}
                 >
-                  <Feather name="percent" size={22} color="#FFFFFF" />
+                  <Feather name="zap" size={22} color="#FFFFFF" />
                 </LinearGradient>
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
-                  Student Deals
+                  Lock In Daily
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Exclusive discounts with your student ID
+                  Track your essentials. Build your streak.
                 </ThemedText>
               </View>
             </View>
