@@ -63,6 +63,12 @@ export const COACH_LINES = {
       "Clean pick. This is how you fuel up.",
       "Good fuel. You're thinking long-term.",
     ],
+    okay: [
+      "Not bad, not great. Check the label.",
+      "It's mid. You can do better.",
+      "Could be worse, but could be way better.",
+      "It'll do in a pinch. Don't make it a habit.",
+    ],
     unhealthy: [
       "You already know this isn't it.",
       "Be honest with yourself on this one.",
@@ -70,6 +76,16 @@ export const COACH_LINES = {
       "Your future self would pick something else.",
     ],
     alternative: "Try {alternative} instead. Same vibe, better fuel.",
+    goodIngredients: [
+      "Clean ingredients. This is how you fuel.",
+      "Nothing sketchy in here. Solid.",
+      "Good stuff on the label. Keep it up.",
+    ],
+    badIngredients: [
+      "Check those ingredients. Some red flags in there.",
+      "A few questionable ingredients. Read the label.",
+      "Your body deserves better than those additives.",
+    ],
   },
 };
 
@@ -101,8 +117,11 @@ export function getPillarReaction(pillar: "nourish" | "move" | "rest"): string {
 }
 
 export function getScanReaction(healthScore: number, alternative?: string): string {
-  if (healthScore >= 60) {
+  if (healthScore >= 80) {
     return getRandomLine(COACH_LINES.scanReactions.healthy);
+  }
+  if (healthScore >= 60) {
+    return getRandomLine(COACH_LINES.scanReactions.okay);
   }
   const lines = [...COACH_LINES.scanReactions.unhealthy];
   if (alternative) {

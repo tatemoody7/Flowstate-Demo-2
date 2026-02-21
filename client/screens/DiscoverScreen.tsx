@@ -8,29 +8,19 @@ import { CompositeNavigationProp, useNavigation } from "@react-navigation/native
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Haptics from "expo-haptics";
 import Animated, {
   FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  interpolate,
 } from "react-native-reanimated";
 
 import { SearchBar } from "@/components/SearchBar";
 import { CategoryChip } from "@/components/CategoryChip";
 import { PlaceCard } from "@/components/PlaceCard";
 import { EmptyState } from "@/components/EmptyState";
-import { FlowTracker } from "@/components/FlowTracker";
-import { FlowStats } from "@/components/FlowStats";
-import { CoachPanel } from "@/components/CoachPanel";
-import { FlowBlurOverlay } from "@/components/FlowBlurOverlay";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { mockPlaces, categories, Place } from "@/data/mockData";
-import { getCoachGreeting } from "@/data/coachLines";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -39,25 +29,17 @@ type DiscoverScreenNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 export default function DiscoverScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const { savedPlaces, toggleSavedPlace, isInFlow, schoolColors, flowToday, currentStreak } = useApp();
+  const { savedPlaces, toggleSavedPlace, schoolColors } = useApp();
   const navigation = useNavigation<DiscoverScreenNavigationProp>();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
-  const [coachVisible, setCoachVisible] = useState(false);
-
-  const pillarsComplete =
-    (flowToday.nourish ? 1 : 0) +
-    (flowToday.move ? 1 : 0) +
-    (flowToday.rest ? 1 : 0);
 
   const filteredPlaces = mockPlaces.filter((place) => {
     const matchesSearch =
@@ -80,14 +62,10 @@ export default function DiscoverScreen() {
   };
 
   const getDynamicGreeting = () => {
-    if (isInFlow) return `You're in flow.`;
-    if (pillarsComplete === 0) return `Lock in today, ${schoolColors.mascotGreeting}.`;
-    if (pillarsComplete === 1) return "One down. Keep it moving.";
-    return "Almost there. Finish strong.";
+    return `Lock in today, ${schoolColors.mascotGreeting}.`;
   };
 
   const getSubGreeting = () => {
-    if (isInFlow) return "Everything's sharper now";
     return `${filteredPlaces.length} healthy spots near campus`;
   };
 
@@ -102,8 +80,31 @@ export default function DiscoverScreen() {
         </ThemedText>
       </View>
 
-      <FlowTracker />
-      <FlowStats />
+      {/* High Protein Picks Banner */}
+      <Pressable
+        onPress={() => navigation.navigate("HighProtein")}
+        style={styles.highProteinBanner}
+      >
+        <LinearGradient
+          colors={[FlowstateColors.secondary, "#059669"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.highProteinGradient}
+        >
+          <View style={styles.highProteinContent}>
+            <Feather name="zap" size={20} color="#FFFFFF" />
+            <View style={styles.highProteinText}>
+              <ThemedText type="h4" style={{ color: "#FFFFFF" }}>
+                High Protein Picks
+              </ThemedText>
+              <ThemedText type="caption" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Curated lists from 9 stores near campus
+              </ThemedText>
+            </View>
+          </View>
+          <Feather name="chevron-right" size={20} color="#FFFFFF" />
+        </LinearGradient>
+      </Pressable>
 
       <SearchBar
         value={searchQuery}
@@ -152,11 +153,6 @@ export default function DiscoverScreen() {
     </Animated.View>
   );
 
-  const coachScale = useSharedValue(1);
-  const coachAnimStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: coachScale.value }],
-  }));
-
   return (
     <View style={styles.root}>
       <FlatList
@@ -185,31 +181,6 @@ export default function DiscoverScreen() {
         }
       />
 
-      <FlowBlurOverlay />
-
-      <AnimatedPressable
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          setCoachVisible(true);
-        }}
-        onPressIn={() => {
-          coachScale.value = withSpring(0.9);
-        }}
-        onPressOut={() => {
-          coachScale.value = withSpring(1);
-        }}
-        style={[styles.coachFab, coachAnimStyle, { bottom: tabBarHeight + Spacing.lg }]}
-        testID="coach-fab"
-      >
-        <LinearGradient
-          colors={[FlowstateColors.primary, "#1A5276"]}
-          style={styles.coachFabInner}
-        >
-          <Feather name="zap" size={22} color="#FFFFFF" />
-        </LinearGradient>
-      </AnimatedPressable>
-
-      <CoachPanel visible={coachVisible} onClose={() => setCoachVisible(false)} />
     </View>
   );
 }
@@ -240,29 +211,31 @@ const styles = StyleSheet.create({
     color: FlowstateColors.textSecondary,
     marginTop: Spacing.xs,
   },
+  highProteinBanner: {
+    marginTop: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    overflow: "hidden",
+  },
+  highProteinGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  highProteinContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+    flex: 1,
+  },
+  highProteinText: {
+    flex: 1,
+  },
   categories: {
     marginTop: Spacing.lg,
   },
   categoriesList: {
     paddingRight: Spacing.lg,
-  },
-  coachFab: {
-    position: "absolute",
-    right: Spacing.xl,
-    zIndex: 50,
-    shadowColor: FlowstateColors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  coachFabInner: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 3,
-    borderColor: "rgba(255,255,255,0.9)",
   },
 });

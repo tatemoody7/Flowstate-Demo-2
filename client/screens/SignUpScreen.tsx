@@ -28,8 +28,8 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const isValidFGCUEmail = (email: string) => {
-    return email.toLowerCase().endsWith("@eagle.fgcu.edu");
+  const isValidEduEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.edu$/i.test(email.trim());
   };
 
   const handleSignUp = async () => {
@@ -38,10 +38,10 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
       return;
     }
 
-    if (!isValidFGCUEmail(email)) {
+    if (!isValidEduEmail(email)) {
       Alert.alert(
         "Invalid Email",
-        "Please use your FGCU student email (@eagle.fgcu.edu)"
+        "Please use a valid student email ending in .edu"
       );
       return;
     }
@@ -101,7 +101,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
             <TextInput
               value={email}
               onChangeText={setEmail}
-              placeholder="yourname@eagle.fgcu.edu"
+              placeholder="yourname@university.edu"
               placeholderTextColor={FlowstateColors.textTertiary}
               style={styles.input}
               keyboardType="email-address"
@@ -111,7 +111,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
             />
           </View>
           <ThemedText type="caption" style={styles.hint}>
-            Use your @eagle.fgcu.edu email
+            Use your student .edu email
           </ThemedText>
         </View>
 

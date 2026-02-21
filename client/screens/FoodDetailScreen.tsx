@@ -36,18 +36,16 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
   };
 
   const getHealthScoreColor = (score: number) => {
-    if (score >= 80) return FlowstateColors.success;
-    if (score >= 60) return FlowstateColors.warning;
-    return FlowstateColors.error;
+    if (score >= 80) return FlowstateColors.healthGreen;
+    if (score >= 60) return FlowstateColors.healthYellow;
+    return FlowstateColors.healthRed;
   };
 
   const getHealthLabel = (score: number) => {
-    if (score >= 80) return "Excellent";
-    if (score >= 60) return "Good";
-    return "Fair";
+    if (score >= 80) return "Solid Choice";
+    if (score >= 60) return "It's Aight";
+    return "Not Great";
   };
-
-  const lowestPrice = Math.min(...food.prices.map((p) => p.price));
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
@@ -198,43 +196,61 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
           </View>
         </Animated.View>
 
-        {/* Price Comparison */}
-        <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.priceSection}>
-          <ThemedText type="h3" style={styles.sectionTitle}>
-            Price Comparison
-          </ThemedText>
-          <View style={styles.priceList}>
-            {food.prices.map((priceItem, index) => {
-              const isLowest = priceItem.price === lowestPrice;
-              return (
+        {/* Ingredients */}
+        {food.ingredients && food.ingredients.length > 0 ? (
+          <Animated.View entering={FadeInDown.delay(350).duration(400)} style={styles.ingredientsSection}>
+            <ThemedText type="h3" style={styles.sectionTitle}>
+              Ingredients
+            </ThemedText>
+            <View style={styles.ingredientsList}>
+              {food.ingredients.map((ing, idx) => (
                 <View
-                  key={index}
-                  style={[styles.priceCard, isLowest && styles.priceCardBest]}
+                  key={idx}
+                  style={[
+                    styles.ingredientChip,
+                    ing.flag === "good" && styles.ingredientGood,
+                    ing.flag === "bad" && styles.ingredientBad,
+                    ing.flag === "caution" && styles.ingredientCaution,
+                  ]}
                 >
-                  <View style={styles.priceInfo}>
-                    <ThemedText type="h4" style={styles.storeName}>
-                      {priceItem.store}
+                  <View
+                    style={[
+                      styles.ingredientDot,
+                      {
+                        backgroundColor:
+                          ing.flag === "good"
+                            ? FlowstateColors.healthGreen
+                            : ing.flag === "bad"
+                            ? FlowstateColors.healthRed
+                            : ing.flag === "caution"
+                            ? FlowstateColors.warning
+                            : FlowstateColors.textTertiary,
+                      },
+                    ]}
+                  />
+                  <View style={styles.ingredientInfo}>
+                    <ThemedText
+                      type="small"
+                      style={[
+                        styles.ingredientName,
+                        ing.flag === "good" && { color: FlowstateColors.healthGreen },
+                        ing.flag === "bad" && { color: FlowstateColors.healthRed },
+                        ing.flag === "caution" && { color: FlowstateColors.warning },
+                      ]}
+                    >
+                      {ing.name}
                     </ThemedText>
-                    {isLowest ? (
-                      <View style={styles.bestPriceBadge}>
-                        <Feather name="check" size={12} color={FlowstateColors.secondary} />
-                        <ThemedText type="caption" style={styles.bestPriceText}>
-                          Best Price
-                        </ThemedText>
-                      </View>
+                    {ing.reason ? (
+                      <ThemedText type="caption" style={styles.ingredientReason}>
+                        {ing.reason}
+                      </ThemedText>
                     ) : null}
                   </View>
-                  <ThemedText
-                    type="h3"
-                    style={[styles.priceValue, isLowest && styles.priceValueBest]}
-                  >
-                    ${priceItem.price.toFixed(2)}
-                  </ThemedText>
                 </View>
-              );
-            })}
-          </View>
-        </Animated.View>
+              ))}
+            </View>
+          </Animated.View>
+        ) : null}
 
         {/* Save Button */}
         <Animated.View entering={FadeInDown.delay(500).duration(400)} style={styles.actionSection}>
@@ -401,47 +417,50 @@ const styles = StyleSheet.create({
     color: FlowstateColors.textPrimary,
     fontWeight: "500",
   },
-  priceSection: {
+  ingredientsSection: {
     marginBottom: Spacing.xl,
   },
-  priceList: {
-    gap: Spacing.md,
+  ingredientsList: {
+    gap: Spacing.sm,
   },
-  priceCard: {
+  ingredientChip: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: FlowstateColors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
+    alignItems: "flex-start",
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
     borderWidth: 1,
     borderColor: FlowstateColors.border,
+    backgroundColor: FlowstateColors.surface,
   },
-  priceCardBest: {
-    borderColor: FlowstateColors.secondary,
-    backgroundColor: `${FlowstateColors.secondary}08`,
+  ingredientGood: {
+    borderColor: `${FlowstateColors.healthGreen}40`,
+    backgroundColor: `${FlowstateColors.healthGreen}08`,
   },
-  priceInfo: {
+  ingredientBad: {
+    borderColor: `${FlowstateColors.healthRed}40`,
+    backgroundColor: `${FlowstateColors.healthRed}08`,
+  },
+  ingredientCaution: {
+    borderColor: `${FlowstateColors.warning}40`,
+    backgroundColor: `${FlowstateColors.warning}08`,
+  },
+  ingredientDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginTop: 5,
+  },
+  ingredientInfo: {
     flex: 1,
   },
-  storeName: {
-    color: FlowstateColors.textPrimary,
-    marginBottom: 2,
-  },
-  bestPriceBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  bestPriceText: {
-    color: FlowstateColors.secondary,
-    fontWeight: "600",
-  },
-  priceValue: {
+  ingredientName: {
     color: FlowstateColors.textPrimary,
   },
-  priceValueBest: {
-    color: FlowstateColors.secondary,
+  ingredientReason: {
+    color: FlowstateColors.textSecondary,
+    marginTop: 2,
   },
   actionSection: {
     marginTop: Spacing.lg,

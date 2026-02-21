@@ -43,13 +43,10 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
   };
 
   const getHealthScoreColor = () => {
-    if (food.healthScore >= 80) return FlowstateColors.success;
-    if (food.healthScore >= 60) return FlowstateColors.warning;
-    return FlowstateColors.error;
+    if (food.healthScore >= 80) return FlowstateColors.healthGreen;
+    if (food.healthScore >= 60) return FlowstateColors.healthYellow;
+    return FlowstateColors.healthRed;
   };
-
-  const lowestPrice = Math.min(...food.prices.map((p) => p.price));
-  const lowestPriceStore = food.prices.find((p) => p.price === lowestPrice)?.store;
 
   return (
     <AnimatedPressable
@@ -119,12 +116,6 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
           </View>
         </View>
 
-        <View style={styles.priceRow}>
-          <Feather name="tag" size={12} color={FlowstateColors.secondary} />
-          <ThemedText type="small" style={styles.priceText}>
-            Best: ${lowestPrice.toFixed(2)} at {lowestPriceStore}
-          </ThemedText>
-        </View>
       </View>
     </AnimatedPressable>
   );
@@ -203,14 +194,5 @@ const styles = StyleSheet.create({
   },
   nutritionLabel: {
     color: FlowstateColors.textTertiary,
-  },
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.xs,
-  },
-  priceText: {
-    color: FlowstateColors.secondary,
-    fontWeight: "500",
   },
 });

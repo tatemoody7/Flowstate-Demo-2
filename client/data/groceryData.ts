@@ -6,6 +6,10 @@ export interface GroceryItem {
     target: number | null;
     walmart: number | null;
     traderJoes: number | null;
+    sprouts: number | null;
+    aldi: number | null;
+    freshMarket: number | null;
+    costco: number | null;
   };
   healthy: boolean;
   alternative?: string;
@@ -13,174 +17,178 @@ export interface GroceryItem {
 }
 
 export const GROCERY_STORES = [
-  { key: "publix" as const, name: "Publix", distance: "0.9 mi" },
-  { key: "wholeFoods" as const, name: "Whole Foods", distance: "1.8 mi" },
-  { key: "target" as const, name: "Target", distance: "2.3 mi" },
-  { key: "walmart" as const, name: "Walmart", distance: "3.1 mi" },
-  { key: "traderJoes" as const, name: "Trader Joe's", distance: "5.5 mi" },
+  { key: "publix" as const, name: "Publix", distance: "3.0 mi" },
+  { key: "wholeFoods" as const, name: "Whole Foods", distance: "7.0 mi" },
+  { key: "target" as const, name: "Target", distance: "3.0 mi" },
+  { key: "walmart" as const, name: "Walmart", distance: "5.0 mi" },
+  { key: "traderJoes" as const, name: "Trader Joe's", distance: "10.0 mi" },
+  { key: "sprouts" as const, name: "Sprouts", distance: "8.0 mi" },
+  { key: "aldi" as const, name: "ALDI", distance: "4.0 mi" },
+  { key: "freshMarket" as const, name: "The Fresh Market", distance: "9.0 mi" },
+  { key: "costco" as const, name: "Costco", distance: "12.0 mi" },
 ];
 
 export const GROCERY_DATA: Record<string, GroceryItem> = {
   "chicken breast": {
     name: "Chicken Breast",
-    prices: { publix: 3.99, wholeFoods: 6.99, target: 4.49, walmart: 3.29, traderJoes: 4.29 },
+    prices: { publix: 3.99, wholeFoods: 6.99, target: 4.49, walmart: 3.29, traderJoes: 4.29, sprouts: 4.99, aldi: 2.99, freshMarket: 5.99, costco: 2.99 },
     healthy: true,
     category: "protein",
   },
   "ground turkey": {
     name: "Ground Turkey",
-    prices: { publix: 4.49, wholeFoods: 6.49, target: 4.99, walmart: 3.79, traderJoes: 4.99 },
+    prices: { publix: 4.49, wholeFoods: 6.49, target: 4.99, walmart: 3.79, traderJoes: 4.99, sprouts: 5.49, aldi: 3.49, freshMarket: 5.99, costco: 3.49 },
     healthy: true,
     category: "protein",
   },
   "salmon fillet": {
     name: "Salmon Fillet",
-    prices: { publix: 9.99, wholeFoods: 12.99, target: 8.99, walmart: 7.99, traderJoes: 8.49 },
+    prices: { publix: 9.99, wholeFoods: 12.99, target: 8.99, walmart: 7.99, traderJoes: 8.49, sprouts: 9.99, aldi: 7.49, freshMarket: 11.99, costco: 8.99 },
     healthy: true,
     category: "protein",
   },
   "eggs": {
     name: "Eggs (dozen)",
-    prices: { publix: 3.49, wholeFoods: 4.99, target: 3.29, walmart: 2.98, traderJoes: 3.49 },
+    prices: { publix: 3.49, wholeFoods: 4.99, target: 3.29, walmart: 2.98, traderJoes: 3.49, sprouts: 3.79, aldi: 2.49, freshMarket: 4.49, costco: 3.99 },
     healthy: true,
     category: "protein",
   },
   "greek yogurt": {
     name: "Greek Yogurt",
-    prices: { publix: 5.49, wholeFoods: 6.99, target: 4.99, walmart: 4.49, traderJoes: 4.79 },
+    prices: { publix: 5.49, wholeFoods: 6.99, target: 4.99, walmart: 4.49, traderJoes: 4.79, sprouts: 5.29, aldi: 3.99, freshMarket: 5.99, costco: 6.49 },
     healthy: true,
     category: "dairy",
   },
   "brown rice": {
     name: "Brown Rice",
-    prices: { publix: 2.49, wholeFoods: 3.99, target: 2.29, walmart: 1.98, traderJoes: 2.49 },
+    prices: { publix: 2.49, wholeFoods: 3.99, target: 2.29, walmart: 1.98, traderJoes: 2.49, sprouts: 2.79, aldi: 1.79, freshMarket: 3.49, costco: 4.99 },
     healthy: true,
     category: "grain",
   },
   "quinoa": {
     name: "Quinoa",
-    prices: { publix: 4.99, wholeFoods: 5.99, target: 4.49, walmart: 3.98, traderJoes: 3.99 },
+    prices: { publix: 4.99, wholeFoods: 5.99, target: 4.49, walmart: 3.98, traderJoes: 3.99, sprouts: 4.49, aldi: 3.49, freshMarket: 5.49, costco: 7.99 },
     healthy: true,
     category: "grain",
   },
   "oats": {
     name: "Rolled Oats",
-    prices: { publix: 3.29, wholeFoods: 4.49, target: 2.99, walmart: 2.48, traderJoes: 2.99 },
+    prices: { publix: 3.29, wholeFoods: 4.49, target: 2.99, walmart: 2.48, traderJoes: 2.99, sprouts: 3.29, aldi: 1.99, freshMarket: 3.99, costco: 5.99 },
     healthy: true,
     category: "grain",
   },
   "sweet potato": {
     name: "Sweet Potatoes",
-    prices: { publix: 1.49, wholeFoods: 1.99, target: 1.29, walmart: 0.98, traderJoes: 1.49 },
+    prices: { publix: 1.49, wholeFoods: 1.99, target: 1.29, walmart: 0.98, traderJoes: 1.49, sprouts: 1.29, aldi: 0.89, freshMarket: 1.79, costco: null },
     healthy: true,
     category: "produce",
   },
   "broccoli": {
     name: "Broccoli",
-    prices: { publix: 1.99, wholeFoods: 2.99, target: 1.79, walmart: 1.49, traderJoes: 1.99 },
+    prices: { publix: 1.99, wholeFoods: 2.99, target: 1.79, walmart: 1.49, traderJoes: 1.99, sprouts: 1.69, aldi: 1.29, freshMarket: 2.49, costco: null },
     healthy: true,
     category: "produce",
   },
   "spinach": {
     name: "Baby Spinach",
-    prices: { publix: 3.99, wholeFoods: 4.99, target: 3.49, walmart: 2.98, traderJoes: 2.99 },
+    prices: { publix: 3.99, wholeFoods: 4.99, target: 3.49, walmart: 2.98, traderJoes: 2.99, sprouts: 3.49, aldi: 2.49, freshMarket: 4.49, costco: 4.49 },
     healthy: true,
     category: "produce",
   },
   "avocado": {
     name: "Avocados",
-    prices: { publix: 1.49, wholeFoods: 1.99, target: 1.29, walmart: 0.98, traderJoes: 0.99 },
+    prices: { publix: 1.49, wholeFoods: 1.99, target: 1.29, walmart: 0.98, traderJoes: 0.99, sprouts: 1.25, aldi: 0.89, freshMarket: 1.79, costco: null },
     healthy: true,
     category: "produce",
   },
   "banana": {
     name: "Bananas (bunch)",
-    prices: { publix: 0.69, wholeFoods: 0.79, target: 0.59, walmart: 0.49, traderJoes: 0.19 },
+    prices: { publix: 0.69, wholeFoods: 0.79, target: 0.59, walmart: 0.49, traderJoes: 0.19, sprouts: 0.59, aldi: 0.45, freshMarket: 0.69, costco: null },
     healthy: true,
     category: "produce",
   },
   "blueberries": {
     name: "Blueberries",
-    prices: { publix: 4.99, wholeFoods: 5.99, target: 3.99, walmart: 3.49, traderJoes: 3.49 },
+    prices: { publix: 4.99, wholeFoods: 5.99, target: 3.99, walmart: 3.49, traderJoes: 3.49, sprouts: 3.99, aldi: 2.99, freshMarket: 5.49, costco: 7.99 },
     healthy: true,
     category: "produce",
   },
   "almond butter": {
     name: "Almond Butter",
-    prices: { publix: 8.99, wholeFoods: 9.99, target: 7.49, walmart: 6.98, traderJoes: 5.99 },
+    prices: { publix: 8.99, wholeFoods: 9.99, target: 7.49, walmart: 6.98, traderJoes: 5.99, sprouts: 7.49, aldi: 5.49, freshMarket: 8.99, costco: 9.99 },
     healthy: true,
     category: "other",
   },
   "protein powder": {
     name: "Protein Powder",
-    prices: { publix: 24.99, wholeFoods: 29.99, target: 21.99, walmart: 19.98, traderJoes: null },
+    prices: { publix: 24.99, wholeFoods: 29.99, target: 21.99, walmart: 19.98, traderJoes: null, sprouts: 24.99, aldi: null, freshMarket: null, costco: 29.99 },
     healthy: true,
     category: "protein",
   },
   "ice cream": {
     name: "Ice Cream (pint)",
-    prices: { publix: 4.99, wholeFoods: 6.49, target: 3.99, walmart: 3.49, traderJoes: 3.99 },
+    prices: { publix: 4.99, wholeFoods: 6.49, target: 3.99, walmart: 3.49, traderJoes: 3.99, sprouts: 5.49, aldi: 2.99, freshMarket: 5.99, costco: null },
     healthy: false,
     alternative: "Protein ice cream or frozen yogurt",
     category: "snack",
   },
   "hot cheetos": {
     name: "Hot Cheetos",
-    prices: { publix: 3.49, wholeFoods: null, target: 3.29, walmart: 2.98, traderJoes: null },
+    prices: { publix: 3.49, wholeFoods: null, target: 3.29, walmart: 2.98, traderJoes: null, sprouts: null, aldi: 2.49, freshMarket: null, costco: null },
     healthy: false,
     alternative: "Baked veggie chips",
     category: "snack",
   },
   "soda": {
     name: "Soda (12-pack)",
-    prices: { publix: 5.99, wholeFoods: null, target: 4.99, walmart: 4.48, traderJoes: null },
+    prices: { publix: 5.99, wholeFoods: null, target: 4.99, walmart: 4.48, traderJoes: null, sprouts: null, aldi: 3.49, freshMarket: null, costco: 9.99 },
     healthy: false,
     alternative: "Sparkling water or kombucha",
     category: "drink",
   },
   "energy drink": {
     name: "Energy Drink",
-    prices: { publix: 2.99, wholeFoods: 3.49, target: 2.79, walmart: 2.48, traderJoes: 2.79 },
+    prices: { publix: 2.99, wholeFoods: 3.49, target: 2.79, walmart: 2.48, traderJoes: 2.79, sprouts: 2.99, aldi: 1.99, freshMarket: 3.29, costco: null },
     healthy: false,
     alternative: "Black coffee or matcha",
     category: "drink",
   },
   "ramen noodles": {
     name: "Instant Ramen",
-    prices: { publix: 0.49, wholeFoods: null, target: 0.39, walmart: 0.25, traderJoes: null },
+    prices: { publix: 0.49, wholeFoods: null, target: 0.39, walmart: 0.25, traderJoes: null, sprouts: null, aldi: 0.29, freshMarket: null, costco: null },
     healthy: false,
     alternative: "Whole grain pasta or rice noodles",
     category: "grain",
   },
   "frozen pizza": {
     name: "Frozen Pizza",
-    prices: { publix: 6.99, wholeFoods: 8.99, target: 5.99, walmart: 4.98, traderJoes: 4.49 },
+    prices: { publix: 6.99, wholeFoods: 8.99, target: 5.99, walmart: 4.98, traderJoes: 4.49, sprouts: 6.99, aldi: 3.99, freshMarket: 7.99, costco: null },
     healthy: false,
     alternative: "Cauliflower crust pizza or homemade flatbread",
     category: "other",
   },
   "white bread": {
     name: "White Bread",
-    prices: { publix: 2.99, wholeFoods: 4.49, target: 2.49, walmart: 1.48, traderJoes: 2.49 },
+    prices: { publix: 2.99, wholeFoods: 4.49, target: 2.49, walmart: 1.48, traderJoes: 2.49, sprouts: 3.29, aldi: 1.29, freshMarket: 3.99, costco: null },
     healthy: false,
     alternative: "Whole grain or sourdough bread",
     category: "grain",
   },
   "olive oil": {
     name: "Extra Virgin Olive Oil",
-    prices: { publix: 7.99, wholeFoods: 9.99, target: 6.99, walmart: 5.98, traderJoes: 5.99 },
+    prices: { publix: 7.99, wholeFoods: 9.99, target: 6.99, walmart: 5.98, traderJoes: 5.99, sprouts: 7.49, aldi: 4.99, freshMarket: 8.99, costco: 12.99 },
     healthy: true,
     category: "other",
   },
   "almonds": {
     name: "Raw Almonds",
-    prices: { publix: 8.49, wholeFoods: 9.99, target: 7.49, walmart: 6.48, traderJoes: 5.99 },
+    prices: { publix: 8.49, wholeFoods: 9.99, target: 7.49, walmart: 6.48, traderJoes: 5.99, sprouts: 6.99, aldi: 4.99, freshMarket: 8.99, costco: 11.99 },
     healthy: true,
     category: "snack",
   },
   "cottage cheese": {
     name: "Cottage Cheese",
-    prices: { publix: 3.99, wholeFoods: 4.99, target: 3.49, walmart: 2.98, traderJoes: 3.49 },
+    prices: { publix: 3.99, wholeFoods: 4.99, target: 3.49, walmart: 2.98, traderJoes: 3.49, sprouts: 3.79, aldi: 2.49, freshMarket: 4.49, costco: 5.99 },
     healthy: true,
     category: "dairy",
   },

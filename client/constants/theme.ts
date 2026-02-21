@@ -35,6 +35,10 @@ export const FlowstateColors = {
   gradientAccent: "#34D399",
   cardShadow: "rgba(15, 23, 42, 0.08)",
   overlay: "rgba(15, 23, 42, 0.4)",
+  backgroundSecondary: "#F3F4F6",
+  healthGreen: "#10bb82",
+  healthYellow: "#ffde59",
+  healthRed: "#ff5757",
 };
 
 const tintColorLight = "#0A3D62";

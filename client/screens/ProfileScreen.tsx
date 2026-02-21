@@ -1,23 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Pressable, Image, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
+import { PlaceCard } from "@/components/PlaceCard";
+import { FoodCard } from "@/components/FoodCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius, SchoolColors } from "@/constants/theme";
+import { mockPlaces, mockScannedFoods, Place, ScannedFood } from "@/data/mockData";
+import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const { user, schoolColors, logout, savedPlaces, savedFoods } = useApp();
+  const { user, schoolColors, logout, savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [savedTab, setSavedTab] = useState<"foods" | "places">("foods");
+
+  const savedPlacesList = mockPlaces.filter((place) => savedPlaces.includes(place.id));
+  const savedFoodsList = mockScannedFoods.filter((food) => savedFoods.includes(food.id));
 
   const handleLogout = () => {
     Alert.alert(
@@ -111,7 +123,7 @@ export default function ProfileScreen() {
           FGCU Eagle
         </ThemedText>
         <ThemedText type="small" style={styles.userEmail}>
-          {user?.email || "student@eagle.fgcu.edu"}
+          {user?.email || "student@university.edu"}
         </ThemedText>
 
         <View style={styles.statsRow}>
@@ -133,6 +145,89 @@ export default function ProfileScreen() {
             </ThemedText>
           </View>
         </View>
+      </View>
+
+      {/* Saved Items Section */}
+      <View style={styles.section}>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Saved
+        </ThemedText>
+        <View style={styles.savedSegmentedControl}>
+          <Pressable
+            onPress={() => setSavedTab("foods")}
+            style={[
+              styles.savedSegment,
+              savedTab === "foods" && styles.savedSegmentActive,
+            ]}
+          >
+            <ThemedText
+              type="small"
+              style={[
+                styles.savedSegmentText,
+                savedTab === "foods" && styles.savedSegmentTextActive,
+              ]}
+            >
+              Foods ({savedFoodsList.length})
+            </ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => setSavedTab("places")}
+            style={[
+              styles.savedSegment,
+              savedTab === "places" && styles.savedSegmentActive,
+            ]}
+          >
+            <ThemedText
+              type="small"
+              style={[
+                styles.savedSegmentText,
+                savedTab === "places" && styles.savedSegmentTextActive,
+              ]}
+            >
+              Places ({savedPlacesList.length})
+            </ThemedText>
+          </Pressable>
+        </View>
+
+        {savedTab === "foods" ? (
+          savedFoodsList.length > 0 ? (
+            savedFoodsList.map((food, index) => (
+              <Animated.View key={food.id} entering={FadeInDown.delay(index * 80).duration(300)}>
+                <FoodCard
+                  food={food}
+                  isSaved={true}
+                  onPress={() => navigation.navigate("FoodDetail", { food })}
+                  onSavePress={() => toggleSavedFood(food.id)}
+                />
+              </Animated.View>
+            ))
+          ) : (
+            <View style={styles.savedEmpty}>
+              <Feather name="package" size={32} color={FlowstateColors.textTertiary} />
+              <ThemedText type="small" style={styles.savedEmptyText}>
+                No saved foods yet. Scan items to save them!
+              </ThemedText>
+            </View>
+          )
+        ) : savedPlacesList.length > 0 ? (
+          savedPlacesList.map((place, index) => (
+            <Animated.View key={place.id} entering={FadeInDown.delay(index * 80).duration(300)}>
+              <PlaceCard
+                place={place}
+                isSaved={true}
+                onPress={() => navigation.navigate("PlaceDetail", { place })}
+                onSavePress={() => toggleSavedPlace(place.id)}
+              />
+            </Animated.View>
+          ))
+        ) : (
+          <View style={styles.savedEmpty}>
+            <Feather name="map-pin" size={32} color={FlowstateColors.textTertiary} />
+            <ThemedText type="small" style={styles.savedEmptyText}>
+              No saved places yet. Explore and save your favorites!
+            </ThemedText>
+          </View>
+        )}
       </View>
 
       {/* School Section */}
@@ -425,5 +520,37 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: FlowstateColors.textTertiary,
     marginBottom: Spacing.lg,
+  },
+  savedSegmentedControl: {
+    flexDirection: "row",
+    backgroundColor: FlowstateColors.backgroundSecondary,
+    borderRadius: BorderRadius.sm,
+    padding: 4,
+    marginBottom: Spacing.lg,
+  },
+  savedSegment: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    alignItems: "center",
+    borderRadius: BorderRadius.xs,
+  },
+  savedSegmentActive: {
+    backgroundColor: FlowstateColors.surface,
+  },
+  savedSegmentText: {
+    color: FlowstateColors.textSecondary,
+  },
+  savedSegmentTextActive: {
+    color: FlowstateColors.textPrimary,
+    fontWeight: "600",
+  },
+  savedEmpty: {
+    alignItems: "center",
+    paddingVertical: Spacing["3xl"],
+    gap: Spacing.md,
+  },
+  savedEmptyText: {
+    color: FlowstateColors.textTertiary,
+    textAlign: "center",
   },
 });
