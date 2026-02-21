@@ -12,6 +12,7 @@ import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { ScannedFood } from "@/data/mockData";
+import { getHealthTierColor } from "@/utils/healthTier";
 
 interface FoodCardProps {
   food: ScannedFood;
@@ -42,11 +43,7 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
     onSavePress();
   };
 
-  const getHealthScoreColor = () => {
-    if (food.healthScore >= 80) return FlowstateColors.healthGreen;
-    if (food.healthScore >= 60) return FlowstateColors.healthYellow;
-    return FlowstateColors.healthRed;
-  };
+  const healthColor = getHealthTierColor(food.ingredients, food.healthScore);
 
   return (
     <AnimatedPressable
@@ -81,12 +78,12 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
             <View
               style={[
                 styles.healthScoreBadge,
-                { backgroundColor: `${getHealthScoreColor()}20` },
+                { backgroundColor: `${healthColor}20` },
               ]}
             >
               <ThemedText
                 type="caption"
-                style={[styles.healthScoreText, { color: getHealthScoreColor() }]}
+                style={[styles.healthScoreText, { color: healthColor }]}
               >
                 {food.healthScore}
               </ThemedText>

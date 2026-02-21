@@ -116,11 +116,11 @@ export function getPillarReaction(pillar: "nourish" | "move" | "rest"): string {
   return getRandomLine(COACH_LINES.pillarReactions[pillar]);
 }
 
-export function getScanReaction(healthScore: number, alternative?: string): string {
-  if (healthScore >= 80) {
+export function getScanReaction(tier: "green" | "yellow" | "red", alternative?: string): string {
+  if (tier === "green") {
     return getRandomLine(COACH_LINES.scanReactions.healthy);
   }
-  if (healthScore >= 60) {
+  if (tier === "yellow") {
     return getRandomLine(COACH_LINES.scanReactions.okay);
   }
   const lines = [...COACH_LINES.scanReactions.unhealthy];

@@ -14,6 +14,7 @@ import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
+import { getHealthTier } from "@/utils/healthTier";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type FoodDetailScreenProps = {
@@ -29,22 +30,11 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
   const { food } = route.params;
 
   const isSaved = savedFoods.includes(food.id);
+  const healthTier = getHealthTier(food.ingredients, food.healthScore);
 
   const handleSavePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     toggleSavedFood(food.id);
-  };
-
-  const getHealthScoreColor = (score: number) => {
-    if (score >= 80) return FlowstateColors.healthGreen;
-    if (score >= 60) return FlowstateColors.healthYellow;
-    return FlowstateColors.healthRed;
-  };
-
-  const getHealthLabel = (score: number) => {
-    if (score >= 80) return "Solid Choice";
-    if (score >= 60) return "It's Aight";
-    return "Not Great";
   };
 
   return (
@@ -94,16 +84,16 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
           <View
             style={[
               styles.healthScoreCard,
-              { backgroundColor: `${getHealthScoreColor(food.healthScore)}15` },
+              { backgroundColor: `${healthTier.color}15` },
             ]}
           >
             <View
               style={[
                 styles.healthScoreBadge,
-                { backgroundColor: getHealthScoreColor(food.healthScore) },
+                { backgroundColor: healthTier.color },
               ]}
             >
-              <ThemedText type="h1" style={styles.healthScoreValue}>
+              <ThemedText type="h1" style={[styles.healthScoreValue, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
                 {food.healthScore}
               </ThemedText>
             </View>
@@ -115,10 +105,10 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
                 type="body"
                 style={[
                   styles.healthScoreRating,
-                  { color: getHealthScoreColor(food.healthScore) },
+                  { color: healthTier.color },
                 ]}
               >
-                {getHealthLabel(food.healthScore)}
+                {healthTier.label}
               </ThemedText>
             </View>
           </View>

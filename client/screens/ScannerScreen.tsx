@@ -14,6 +14,7 @@ import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { ScannedFood } from "@/data/mockData";
 import { getScanReaction } from "@/data/coachLines";
+import { getHealthTier } from "@/utils/healthTier";
 import { useProductLookup } from "@/hooks/useProductLookup";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -82,23 +83,11 @@ export default function ScannerScreen() {
     navigation.goBack();
   }, [navigation]);
 
-  const getHealthColor = (score: number) => {
-    if (score >= 80) return FlowstateColors.healthGreen;
-    if (score >= 60) return FlowstateColors.healthYellow;
-    return FlowstateColors.healthRed;
-  };
-
-  const getHealthLabel = (score: number) => {
-    if (score >= 80) return "Solid Choice";
-    if (score >= 60) return "It's Aight";
-    return "Be Honest";
-  };
-
-  const getHealthIcon = (score: number): "check-circle" | "alert-circle" | "x-circle" => {
-    if (score >= 80) return "check-circle";
-    if (score >= 60) return "alert-circle";
-    return "x-circle";
-  };
+  // Health tier is determined by ingredient flags, not score
+  const healthTier = useMemo(
+    () => scannedFood ? getHealthTier(scannedFood.ingredients, scannedFood.healthScore) : null,
+    [scannedFood]
+  );
 
   // Memoized ingredient summary — single-pass count instead of 3 filter passes
   const ingredientSummary = useMemo(() => {
@@ -269,7 +258,7 @@ export default function ScannerScreen() {
             entering={FadeInUp.duration(400)}
             style={[
               styles.resultCard,
-              { paddingBottom: insets.bottom + Spacing.lg, backgroundColor: `${getHealthColor(scannedFood.healthScore)}10` },
+              { paddingBottom: insets.bottom + Spacing.lg, backgroundColor: `${healthTier?.color ?? FlowstateColors.healthGreen}10` },
             ]}
           >
             <ScrollView
@@ -278,24 +267,26 @@ export default function ScannerScreen() {
               bounces={true}
             >
               {/* ─── Health Color Banner ─── */}
-              <View
-                style={[
-                  styles.healthBanner,
-                  { backgroundColor: getHealthColor(scannedFood.healthScore) },
-                ]}
-              >
-                <Feather
-                  name={getHealthIcon(scannedFood.healthScore)}
-                  size={32}
-                  color="#FFFFFF"
-                />
-                <ThemedText type="h2" style={styles.healthBannerLabel}>
-                  {getHealthLabel(scannedFood.healthScore)}
-                </ThemedText>
-                <ThemedText type="small" style={styles.healthBannerDescription}>
-                  {getScanReaction(scannedFood.healthScore)}
-                </ThemedText>
-              </View>
+              {healthTier && (
+                <View
+                  style={[
+                    styles.healthBanner,
+                    { backgroundColor: healthTier.color },
+                  ]}
+                >
+                  <Feather
+                    name={healthTier.icon}
+                    size={32}
+                    color={healthTier.tier === "yellow" ? FlowstateColors.textPrimary : "#FFFFFF"}
+                  />
+                  <ThemedText type="h2" style={[styles.healthBannerLabel, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
+                    {healthTier.label}
+                  </ThemedText>
+                  <ThemedText type="small" style={[styles.healthBannerDescription, healthTier.tier === "yellow" && { color: FlowstateColors.textSecondary }]}>
+                    {getScanReaction(healthTier.tier)}
+                  </ThemedText>
+                </View>
+              )}
 
               {/* ─── Product Header ─── */}
               <View style={styles.resultHeader}>

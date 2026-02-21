@@ -463,9 +463,9 @@ export function calculateIngredientScoreModifier(flagged: FlaggedIngredient[]): 
   for (const ing of flagged) {
     if (ing.flag === "bad") modifier -= 3;
     if (ing.flag === "good") modifier += 2;
-    // caution: 0 (neutral impact on health score)
+    if (ing.flag === "caution") modifier -= 0.5; // very minor penalty
   }
 
   // Expanded caps for larger ingredient database
-  return Math.max(-25, Math.min(15, modifier));
+  return Math.max(-25, Math.min(15, Math.round(modifier)));
 }
