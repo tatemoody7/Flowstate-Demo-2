@@ -12,18 +12,21 @@ import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { FlowstateColors, Spacing, BorderRadius, Shadows } from "@/constants/theme";
 import { Place } from "@/data/mockData";
+import { Coordinates, getNearestLocation, formatDistance } from "@/utils/distance";
 
 interface PlaceCardProps {
   place: Place;
   isSaved: boolean;
   onPress: () => void;
   onSavePress: () => void;
+  userCoords: Coordinates;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function PlaceCard({ place, isSaved, onPress, onSavePress }: PlaceCardProps) {
+export function PlaceCard({ place, isSaved, onPress, onSavePress, userCoords }: PlaceCardProps) {
   const scale = useSharedValue(1);
+  const nearest = getNearestLocation(place, userCoords);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -138,8 +141,13 @@ export function PlaceCard({ place, isSaved, onPress, onSavePress }: PlaceCardPro
           <View style={styles.infoRow}>
             <Feather name="map-pin" size={12} color={FlowstateColors.textSecondary} />
             <ThemedText type="small" style={styles.distance}>
-              {place.distance}
+              {formatDistance(nearest.distance)}
             </ThemedText>
+            {nearest.locationCount > 1 && (
+              <ThemedText type="small" style={styles.locationCount}>
+                · {nearest.locationCount} locations
+              </ThemedText>
+            )}
           </View>
           <View style={styles.infoRow}>
             <Feather name="star" size={12} color={FlowstateColors.accent} />
@@ -234,7 +242,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: `${FlowstateColors.primary}12`,
+    backgroundColor: FlowstateColors.primaryLighter,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.sm,
@@ -274,6 +282,11 @@ const styles = StyleSheet.create({
   distance: {
     color: FlowstateColors.textSecondary,
     fontWeight: "500",
+  },
+  locationCount: {
+    color: FlowstateColors.textTertiary,
+    fontWeight: "500",
+    fontSize: 11,
   },
   rating: {
     color: FlowstateColors.textSecondary,

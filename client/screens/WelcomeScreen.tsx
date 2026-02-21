@@ -25,7 +25,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["#0A3D62", "#0E4D76", "#00A651"]}
+        colors={[FlowstateColors.primary, FlowstateColors.accent, FlowstateColors.secondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoGlow: {
-    shadowColor: "#00A651",
+    shadowColor: FlowstateColors.secondary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 30,

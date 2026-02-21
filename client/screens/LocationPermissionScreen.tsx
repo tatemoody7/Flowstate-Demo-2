@@ -102,7 +102,7 @@ export default function LocationPermissionScreen({
             <View
               style={[
                 styles.iconCircle,
-                { backgroundColor: `${FlowstateColors.primary}15` },
+                { backgroundColor: FlowstateColors.primaryLighter },
               ]}
             >
               <Image

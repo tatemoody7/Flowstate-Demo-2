@@ -17,6 +17,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius, SchoolColors } from "@/constants/theme";
 import { mockPlaces, mockScannedFoods, Place, ScannedFood } from "@/data/mockData";
+import { useUserLocation } from "@/hooks/useUserLocation";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export default function ProfileScreen() {
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
   const { theme } = useTheme();
   const { user, schoolColors, logout, savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { coords: userCoords } = useUserLocation();
   const [savedTab, setSavedTab] = useState<"foods" | "places">("foods");
 
   const savedPlacesList = mockPlaces.filter((place) => savedPlaces.includes(place.id));
@@ -217,6 +219,7 @@ export default function ProfileScreen() {
                 isSaved={true}
                 onPress={() => navigation.navigate("PlaceDetail", { place })}
                 onSavePress={() => toggleSavedPlace(place.id)}
+                userCoords={userCoords}
               />
             </Animated.View>
           ))
@@ -486,7 +489,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: `${FlowstateColors.primary}10`,
+    backgroundColor: FlowstateColors.primaryLighter,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,

@@ -21,6 +21,8 @@ import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { mockPlaces, categories, Place } from "@/data/mockData";
+import { useUserLocation } from "@/hooks/useUserLocation";
+import { getNearestLocation, sortPlacesByDistance } from "@/utils/distance";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -36,6 +38,7 @@ export default function DiscoverScreen() {
   const { theme } = useTheme();
   const { savedPlaces, toggleSavedPlace, schoolColors } = useApp();
   const navigation = useNavigation<DiscoverScreenNavigationProp>();
+  const { coords: userCoords } = useUserLocation();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -54,7 +57,7 @@ export default function DiscoverScreen() {
     });
 
     if (sortBy === "distance") {
-      places = [...places].sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+      places = sortPlacesByDistance(places, userCoords);
     } else if (sortBy === "rating") {
       places = [...places].sort((a, b) => b.rating - a.rating);
     } else if (sortBy === "price") {
@@ -62,7 +65,7 @@ export default function DiscoverScreen() {
     }
 
     return places;
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [searchQuery, selectedCategory, sortBy, userCoords]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -108,7 +111,7 @@ export default function DiscoverScreen() {
         style={styles.highProteinBanner}
       >
         <LinearGradient
-          colors={[FlowstateColors.secondary, "#059669"]}
+          colors={[FlowstateColors.secondary, FlowstateColors.gradientAccent]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.highProteinGradient}
@@ -182,6 +185,7 @@ export default function DiscoverScreen() {
         isSaved={savedPlaces.includes(item.id)}
         onPress={() => handlePlacePress(item)}
         onSavePress={() => toggleSavedPlace(item.id)}
+        userCoords={userCoords}
       />
     </Animated.View>
   );
@@ -309,7 +313,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    backgroundColor: `${FlowstateColors.primary}10`,
+    backgroundColor: FlowstateColors.primaryLighter,
     borderRadius: BorderRadius.full,
     alignSelf: "flex-start",
   },
@@ -343,7 +347,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   sortOptionActive: {
-    backgroundColor: `${FlowstateColors.primary}10`,
+    backgroundColor: FlowstateColors.primaryLighter,
   },
   sortOptionText: {
     flex: 1,

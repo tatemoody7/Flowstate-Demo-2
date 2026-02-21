@@ -16,6 +16,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { mockPlaces, mockScannedFoods, Place, ScannedFood } from "@/data/mockData";
+import { useUserLocation } from "@/hooks/useUserLocation";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -31,6 +32,7 @@ export default function SavedScreen() {
   const { theme } = useTheme();
   const { savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
   const navigation = useNavigation<SavedScreenNavigationProp>();
+  const { coords: userCoords } = useUserLocation();
 
   const [activeTab, setActiveTab] = useState<"places" | "foods">("places");
   const [refreshing, setRefreshing] = useState(false);
@@ -121,6 +123,7 @@ export default function SavedScreen() {
         isSaved={true}
         onPress={() => handlePlacePress(item)}
         onSavePress={() => toggleSavedPlace(item.id)}
+        userCoords={userCoords}
       />
     </Animated.View>
   );

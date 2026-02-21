@@ -13,6 +13,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
+import { useUserLocation } from "@/hooks/useUserLocation";
+import { getNearestLocation, formatDistance } from "@/utils/distance";
 import { FlowstateColors, Spacing, BorderRadius, Shadows } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -26,8 +28,10 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
   const { savedPlaces, toggleSavedPlace } = useApp();
+  const { coords: userCoords } = useUserLocation();
   const { place } = route.params;
 
+  const nearest = getNearestLocation(place, userCoords);
   const isSaved = savedPlaces.includes(place.id);
 
   const handleSavePress = () => {
@@ -36,10 +40,12 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
   };
 
   const handleGetDirections = () => {
+    const { latitude, longitude } = nearest.location.coords;
+    const label = encodeURIComponent(place.name);
     const url = Platform.select({
-      ios: `maps:0,0?q=${encodeURIComponent(place.address)}`,
-      android: `geo:0,0?q=${encodeURIComponent(place.address)}`,
-      default: `https://maps.google.com/?q=${encodeURIComponent(place.address)}`,
+      ios: `maps:0,0?q=${label}&ll=${latitude},${longitude}`,
+      android: `geo:${latitude},${longitude}?q=${label}`,
+      default: `https://maps.google.com/?q=${latitude},${longitude}`,
     });
     Linking.openURL(url);
   };
@@ -181,11 +187,16 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
               </View>
               <View style={styles.infoContent}>
                 <ThemedText type="small" style={styles.infoLabel}>
-                  Address
+                  {nearest.locationCount > 1 ? "Nearest Location" : "Address"}
                 </ThemedText>
                 <ThemedText type="body" style={styles.infoValue}>
-                  {place.address}
+                  {nearest.location.address}
                 </ThemedText>
+                {nearest.locationCount > 1 && (
+                  <ThemedText type="caption" style={styles.locationCountLabel}>
+                    {nearest.locationCount} locations nearby
+                  </ThemedText>
+                )}
               </View>
             </View>
 
@@ -212,7 +223,7 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
                   Distance
                 </ThemedText>
                 <ThemedText type="body" style={styles.infoValue}>
-                  {place.distance} away
+                  {formatDistance(nearest.distance)} away
                 </ThemedText>
               </View>
             </View>
@@ -326,7 +337,7 @@ const styles = StyleSheet.create({
   categoryBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: `${FlowstateColors.primary}15`,
+    backgroundColor: FlowstateColors.primaryLight,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
@@ -367,18 +378,18 @@ const styles = StyleSheet.create({
   discountCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: `${FlowstateColors.secondary}10`,
+    backgroundColor: FlowstateColors.cream,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     marginBottom: Spacing.xl,
     borderWidth: 1,
-    borderColor: `${FlowstateColors.secondary}30`,
+    borderColor: `${FlowstateColors.secondary}25`,
   },
   discountIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: `${FlowstateColors.secondary}20`,
+    backgroundColor: FlowstateColors.primaryLightest,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,
@@ -405,7 +416,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: `${FlowstateColors.primary}10`,
+    backgroundColor: FlowstateColors.primaryLighter,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,
@@ -419,6 +430,11 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     color: FlowstateColors.textPrimary,
+  },
+  locationCountLabel: {
+    color: FlowstateColors.primary,
+    marginTop: 4,
+    fontWeight: "500",
   },
   descriptionSection: {
     marginBottom: Spacing.xl,
@@ -452,11 +468,11 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: BorderRadius.lg,
-    backgroundColor: `${FlowstateColors.primary}10`,
+    backgroundColor: FlowstateColors.primaryLighter,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: `${FlowstateColors.primary}30`,
+    borderColor: FlowstateColors.primaryLight,
   },
   ctaButton: {
     backgroundColor: FlowstateColors.primary,

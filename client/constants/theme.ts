@@ -2,9 +2,9 @@ import { Platform } from "react-native";
 
 export const SchoolColors = {
   fgcu: {
-    primary: "#0A3D62",
-    secondary: "#00A651",
-    accent: "#FFB81C",
+    primary: "#00357a",
+    secondary: "#0a714e",
+    accent: "#1f80ff",
     name: "Florida Gulf Coast University",
     shortName: "FGCU",
     mascot: "Eagle",
@@ -15,34 +15,51 @@ export const SchoolColors = {
 };
 
 export const FlowstateColors = {
-  primary: "#0A3D62",
-  secondary: "#00A651",
-  accent: "#FFB81C",
+  // ─── Core Brand (Primary Palette) ─────────────────────────────
+  primary: "#00357a",
+  secondary: "#0a714e",
+  accent: "#1f80ff",
+
+  // ─── Extended Brand (Primary Palette - lighter tones) ─────────
+  primaryLight: "#99daff",
+  primaryLighter: "#c2eff0",
+  primaryLightest: "#e4ffc2",
+  cream: "#fff3c2",
+
+  // ─── Surfaces & Backgrounds ───────────────────────────────────
   background: "#F8FAFC",
+  backgroundSecondary: "#F3F4F6",
   surface: "#FFFFFF",
   surfaceElevated: "#FFFFFF",
   border: "#E2E8F0",
   borderLight: "#F1F5F9",
+
+  // ─── Text ─────────────────────────────────────────────────────
   textPrimary: "#0F172A",
   textSecondary: "#64748B",
   textTertiary: "#94A3B8",
-  success: "#10B981",
-  warning: "#F59E0B",
-  error: "#EF4444",
-  info: "#3B82F6",
-  gradientStart: "#0A3D62",
-  gradientEnd: "#00A651",
-  gradientAccent: "#34D399",
-  cardShadow: "rgba(15, 23, 42, 0.08)",
-  overlay: "rgba(15, 23, 42, 0.4)",
-  backgroundSecondary: "#F3F4F6",
+
+  // ─── Status / Scan Colors ─────────────────────────────────────
+  success: "#10bb82",
+  warning: "#f9f19c",
+  error: "#f07269",
+  info: "#1f80ff",
   healthGreen: "#10bb82",
-  healthYellow: "#ffde59",
-  healthRed: "#ff5757",
+  healthYellow: "#f9f19c",
+  healthRed: "#f07269",
+
+  // ─── Gradients ────────────────────────────────────────────────
+  gradientStart: "#00357a",
+  gradientEnd: "#0a714e",
+  gradientAccent: "#10bb82",
+
+  // ─── Shadows & Overlays ───────────────────────────────────────
+  cardShadow: "rgba(0, 53, 122, 0.06)",
+  overlay: "rgba(0, 53, 122, 0.4)",
 };
 
-const tintColorLight = "#0A3D62";
-const tintColorDark = "#00A651";
+const tintColorLight = "#00357a";
+const tintColorDark = "#0a714e";
 
 export const Colors = {
   light: {
@@ -50,7 +67,7 @@ export const Colors = {
     buttonText: "#FFFFFF",
     tabIconDefault: "#6B7280",
     tabIconSelected: tintColorLight,
-    link: "#0A3D62",
+    link: "#00357a",
     backgroundRoot: "#FAFBFC",
     backgroundDefault: "#FFFFFF",
     backgroundSecondary: "#F3F4F6",
@@ -61,7 +78,7 @@ export const Colors = {
     buttonText: "#FFFFFF",
     tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
-    link: "#00A651",
+    link: "#0a714e",
     backgroundRoot: "#1F2123",
     backgroundDefault: "#2A2C2E",
     backgroundSecondary: "#353739",
