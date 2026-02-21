@@ -13,6 +13,7 @@ export interface Place {
   priceLevel: number;
   phone?: string;
   website?: string;
+  logo?: any;
 }
 
 export interface FlaggedIngredient {
@@ -105,6 +106,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r5",
+    logo: require("../../assets/logos/tropical-smoothie.png"),
     name: "Tropical Smoothie Cafe",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=400",
@@ -121,6 +123,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r6",
+    logo: require("../../assets/logos/smoothie-king.png"),
     name: "Smoothie King",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400",
@@ -223,6 +226,7 @@ export const mockPlaces: Place[] = [
   // Mediterranean
   {
     id: "r13",
+    logo: require("../../assets/logos/cava.png"),
     name: "CAVA",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=400",
@@ -238,6 +242,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r14",
+    logo: require("../../assets/logos/cava.png"),
     name: "CAVA",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1547592180-85f173990554?w=400",
@@ -296,6 +301,7 @@ export const mockPlaces: Place[] = [
   // Fast-Casual Healthy
   {
     id: "r18",
+    logo: require("../../assets/logos/chipotle.png"),
     name: "Chipotle",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=400",
@@ -311,6 +317,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r19",
+    logo: require("../../assets/logos/chipotle.png"),
     name: "Chipotle",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=400",
@@ -324,6 +331,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r20",
+    logo: require("../../assets/logos/panera.png"),
     name: "Panera Bread",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=400",
@@ -338,6 +346,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r21",
+    logo: require("../../assets/logos/clean-eatz.png"),
     name: "Clean Eatz",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400",
@@ -397,6 +406,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "r25",
+    logo: require("../../assets/logos/chicken-salad-chick.png"),
     name: "Chicken Salad Chick",
     category: "restaurant",
     image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400",
@@ -446,6 +456,7 @@ export const mockPlaces: Place[] = [
   // Traditional Gyms
   {
     id: "g2",
+    logo: require("../../assets/logos/la-fitness.png"),
     name: "LA Fitness",
     category: "gym",
     image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400",
@@ -461,6 +472,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g3",
+    logo: require("../../assets/logos/planet-fitness.png"),
     name: "Planet Fitness (S. Tamiami)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1570829460005-c840387bb1ca?w=400",
@@ -476,6 +488,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g4",
+    logo: require("../../assets/logos/planet-fitness.png"),
     name: "Planet Fitness (McGregor)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400",
@@ -490,6 +503,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g5",
+    logo: require("../../assets/logos/planet-fitness.png"),
     name: "Planet Fitness (Cleveland Ave)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=400",
@@ -504,6 +518,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g6",
+    logo: require("../../assets/logos/anytime-fitness.png"),
     name: "Anytime Fitness (Bernwood)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=400",
@@ -517,6 +532,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g7",
+    logo: require("../../assets/logos/anytime-fitness.png"),
     name: "Anytime Fitness (College Pkwy)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=400",
@@ -545,6 +561,7 @@ export const mockPlaces: Place[] = [
   // Boutique / HIIT
   {
     id: "g9",
+    logo: require("../../assets/logos/orangetheory.png"),
     name: "Orangetheory Fitness",
     category: "gym",
     image: "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=400",
@@ -560,6 +577,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g10",
+    logo: require("../../assets/logos/orangetheory.png"),
     name: "Orangetheory Fitness (Gladiolus)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400",
@@ -574,6 +592,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g11",
+    logo: require("../../assets/logos/f45.png"),
     name: "F45 Training (Corkscrew)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400",
@@ -589,6 +608,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g12",
+    logo: require("../../assets/logos/f45.png"),
     name: "F45 Training (College Pkwy)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?w=400",
@@ -603,6 +623,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g13",
+    logo: require("../../assets/logos/hotworx.png"),
     name: "HOTWORX (Estero)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400",
@@ -617,6 +638,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g14",
+    logo: require("../../assets/logos/hotworx.png"),
     name: "HOTWORX (Six Mile Cypress)",
     category: "gym",
     image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
@@ -649,6 +671,7 @@ export const mockPlaces: Place[] = [
   // Cycling
   {
     id: "g16",
+    logo: require("../../assets/logos/cyclebar.png"),
     name: "CycleBar South Fort Myers",
     category: "gym",
     image: "https://images.unsplash.com/photo-1534787238916-9ba6764efd4f?w=400",
@@ -665,6 +688,7 @@ export const mockPlaces: Place[] = [
   // Boxing / Kickboxing
   {
     id: "g17",
+    logo: require("../../assets/logos/9round.png"),
     name: "9Round Kickboxing",
     category: "gym",
     image: "https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=400",
@@ -694,6 +718,7 @@ export const mockPlaces: Place[] = [
   // Yoga / Pilates / Barre
   {
     id: "g19",
+    logo: require("../../assets/logos/soulbody.png"),
     name: "SoulBody Studios",
     category: "gym",
     image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=400",
@@ -708,6 +733,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g20",
+    logo: require("../../assets/logos/club-pilates.png"),
     name: "Club Pilates Estero",
     category: "gym",
     image: "https://images.unsplash.com/photo-1518310952931-b1de897abd40?w=400",
@@ -722,6 +748,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "g21",
+    logo: require("../../assets/logos/pure-barre.png"),
     name: "Pure Barre Fort Myers",
     category: "gym",
     image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400",
@@ -768,6 +795,7 @@ export const mockPlaces: Place[] = [
   // Martial Arts
   {
     id: "g24",
+    logo: require("../../assets/logos/gracie-barra.png"),
     name: "Gracie Barra Fort Myers",
     category: "gym",
     image: "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400",
@@ -786,6 +814,7 @@ export const mockPlaces: Place[] = [
   // Premium / Organic
   {
     id: "gr1",
+    logo: require("../../assets/logos/whole-foods.png"),
     name: "Whole Foods Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400",
@@ -802,6 +831,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr2",
+    logo: require("../../assets/logos/trader-joes.png"),
     name: "Trader Joe's",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400",
@@ -816,6 +846,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr3",
+    logo: require("../../assets/logos/sprouts.png"),
     name: "Sprouts Farmers Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
@@ -830,6 +861,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr4",
+    logo: require("../../assets/logos/fresh-market.png"),
     name: "The Fresh Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=400",
@@ -845,6 +877,7 @@ export const mockPlaces: Place[] = [
   // Natural / Health Food Stores
   {
     id: "gr5",
+    logo: require("../../assets/logos/adas-natural.png"),
     name: "Ada's Natural Market",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1607349913338-fca6f7fc608a?w=400",
@@ -873,6 +906,7 @@ export const mockPlaces: Place[] = [
   // Major Chains
   {
     id: "gr7",
+    logo: require("../../assets/logos/publix.png"),
     name: "Publix (University Crossing)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=400",
@@ -887,6 +921,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr8",
+    logo: require("../../assets/logos/publix.png"),
     name: "Publix (Alico Mission Way)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1534723452862-4c874018d66d?w=400",
@@ -901,6 +936,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr9",
+    logo: require("../../assets/logos/publix.png"),
     name: "Publix (Village Walk)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?w=400",
@@ -914,6 +950,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr10",
+    logo: require("../../assets/logos/aldi.png"),
     name: "ALDI (Estero)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1604077350837-c3fb65a8fda2?w=400",
@@ -928,6 +965,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr11",
+    logo: require("../../assets/logos/aldi.png"),
     name: "ALDI (S. Cleveland Ave)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=400",
@@ -941,6 +979,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr12",
+    logo: require("../../assets/logos/target.png"),
     name: "Target (Gulf Center)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400",
@@ -955,6 +994,7 @@ export const mockPlaces: Place[] = [
   },
   {
     id: "gr13",
+    logo: require("../../assets/logos/target.png"),
     name: "Target (Tamiami)",
     category: "grocery",
     image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400",

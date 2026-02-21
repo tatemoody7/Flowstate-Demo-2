@@ -112,13 +112,23 @@ export function PlaceCard({ place, isSaved, onPress, onSavePress }: PlaceCardPro
 
       <View style={styles.content}>
         <View style={styles.header}>
-          <View style={styles.categoryBadge}>
-            <Feather
-              name={getCategoryIcon()}
-              size={12}
-              color={FlowstateColors.primary}
-            />
-          </View>
+          {place.logo ? (
+            <View style={styles.logoBadge}>
+              <Image
+                source={place.logo}
+                style={styles.logoImage}
+                contentFit="contain"
+              />
+            </View>
+          ) : (
+            <View style={styles.categoryBadge}>
+              <Feather
+                name={getCategoryIcon()}
+                size={12}
+                color={FlowstateColors.primary}
+              />
+            </View>
+          )}
           <ThemedText type="h4" style={styles.name} numberOfLines={1}>
             {place.name}
           </ThemedText>
@@ -228,6 +238,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.sm,
+  },
+  logoBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: Spacing.sm,
+    borderWidth: 1,
+    borderColor: FlowstateColors.border,
+    overflow: "hidden",
+  },
+  logoImage: {
+    width: 20,
+    height: 20,
   },
   name: {
     flex: 1,
