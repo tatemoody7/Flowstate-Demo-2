@@ -94,7 +94,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
                   Scan & Know
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Instant nutrition facts & price drops
+                  Instant nutrition facts & ingredient analysis
                 </ThemedText>
               </View>
             </View>

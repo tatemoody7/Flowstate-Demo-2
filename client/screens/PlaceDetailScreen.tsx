@@ -148,7 +148,7 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
                 {place.rating}
               </ThemedText>
               <ThemedText type="small" style={styles.reviewCount}>
-                (124 reviews)
+                ({place.reviewCount} reviews)
               </ThemedText>
             </View>
           </Animated.View>
@@ -237,14 +237,32 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
           { paddingBottom: insets.bottom + Spacing.lg },
         ]}
       >
-        <Button onPress={handleGetDirections} style={styles.ctaButton}>
-          <View style={styles.ctaContent}>
-            <Feather name="navigation" size={18} color="#FFFFFF" />
-            <ThemedText type="button" style={styles.ctaText}>
-              Get Directions
-            </ThemedText>
-          </View>
-        </Button>
+        <View style={styles.ctaRow}>
+          {place.phone ? (
+            <Pressable
+              onPress={() => Linking.openURL(`tel:${place.phone}`)}
+              style={styles.ctaSecondary}
+            >
+              <Feather name="phone" size={20} color={FlowstateColors.primary} />
+            </Pressable>
+          ) : null}
+          {place.website ? (
+            <Pressable
+              onPress={() => Linking.openURL(place.website!)}
+              style={styles.ctaSecondary}
+            >
+              <Feather name="globe" size={20} color={FlowstateColors.primary} />
+            </Pressable>
+          ) : null}
+          <Button onPress={handleGetDirections} style={[styles.ctaButton, { flex: 1 }]}>
+            <View style={styles.ctaContent}>
+              <Feather name="navigation" size={18} color="#FFFFFF" />
+              <ThemedText type="button" style={styles.ctaText}>
+                Get Directions
+              </ThemedText>
+            </View>
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -424,6 +442,21 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: FlowstateColors.border,
     ...Shadows.medium,
+  },
+  ctaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+  },
+  ctaSecondary: {
+    width: 52,
+    height: 52,
+    borderRadius: BorderRadius.lg,
+    backgroundColor: `${FlowstateColors.primary}10`,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: `${FlowstateColors.primary}30`,
   },
   ctaButton: {
     backgroundColor: FlowstateColors.primary,

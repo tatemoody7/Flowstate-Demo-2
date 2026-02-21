@@ -108,7 +108,7 @@ export default function SavedScreen() {
     <EmptyState
       image={require("../../assets/images/empty-saved.png")}
       title="No saved foods yet"
-      description="Scan food items and save them to track nutrition and prices"
+      description="Scan food items and save them to track nutrition and ingredients"
       actionLabel="Start Scanning"
       onAction={() => navigation.navigate("Scanner")}
     />

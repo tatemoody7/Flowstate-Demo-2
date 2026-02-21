@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { StyleSheet, View, FlatList, RefreshControl, Pressable } from "react-native";
+import React, { useState, useCallback, useMemo } from "react";
+import { StyleSheet, View, FlatList, RefreshControl, Pressable, Modal } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -40,15 +40,29 @@ export default function DiscoverScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
+  const [sortBy, setSortBy] = useState<"default" | "distance" | "rating" | "price">("default");
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
-  const filteredPlaces = mockPlaces.filter((place) => {
-    const matchesSearch =
-      place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      place.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || place.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredPlaces = useMemo(() => {
+    let places = mockPlaces.filter((place) => {
+      const matchesSearch =
+        place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        place.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || place.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    if (sortBy === "distance") {
+      places = [...places].sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+    } else if (sortBy === "rating") {
+      places = [...places].sort((a, b) => b.rating - a.rating);
+    } else if (sortBy === "price") {
+      places = [...places].sort((a, b) => a.priceLevel - b.priceLevel);
+    }
+
+    return places;
+  }, [searchQuery, selectedCategory, sortBy]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -66,7 +80,15 @@ export default function DiscoverScreen() {
   };
 
   const getSubGreeting = () => {
-    return `${filteredPlaces.length} healthy spots near campus`;
+    const categoryLabel =
+      selectedCategory === "all"
+        ? "healthy spots"
+        : selectedCategory === "restaurant"
+          ? "restaurants"
+          : selectedCategory === "gym"
+            ? "gyms"
+            : "grocery stores";
+    return `${filteredPlaces.length} ${categoryLabel} near campus`;
   };
 
   const renderHeader = () => (
@@ -110,7 +132,7 @@ export default function DiscoverScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search healthy spots..."
-        onFilterPress={() => {}}
+        onFilterPress={() => setShowSortMenu(true)}
       />
       <View style={styles.categories}>
         <FlatList
@@ -131,6 +153,17 @@ export default function DiscoverScreen() {
           contentContainerStyle={styles.categoriesList}
         />
       </View>
+      {sortBy !== "default" && (
+        <View style={styles.sortIndicator}>
+          <Feather name="arrow-up" size={14} color={FlowstateColors.primary} />
+          <ThemedText type="caption" style={styles.sortIndicatorText}>
+            Sorted by {sortBy === "distance" ? "closest" : sortBy === "rating" ? "top rated" : "lowest price"}
+          </ThemedText>
+          <Pressable onPress={() => setSortBy("default")} hitSlop={8}>
+            <Feather name="x" size={14} color={FlowstateColors.textSecondary} />
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 
@@ -181,6 +214,37 @@ export default function DiscoverScreen() {
         }
       />
 
+      {/* Sort Menu Modal */}
+      <Modal
+        visible={showSortMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSortMenu(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowSortMenu(false)}>
+          <View style={styles.sortMenu}>
+            <ThemedText type="h4" style={styles.sortMenuTitle}>Sort By</ThemedText>
+            {([
+              { key: "default" as const, label: "Default", icon: "list" as const },
+              { key: "distance" as const, label: "Closest First", icon: "navigation" as const },
+              { key: "rating" as const, label: "Top Rated", icon: "star" as const },
+              { key: "price" as const, label: "Lowest Price", icon: "dollar-sign" as const },
+            ]).map((option) => (
+              <Pressable
+                key={option.key}
+                style={[styles.sortOption, sortBy === option.key && styles.sortOptionActive]}
+                onPress={() => { setSortBy(option.key); setShowSortMenu(false); }}
+              >
+                <Feather name={option.icon} size={18} color={sortBy === option.key ? FlowstateColors.primary : FlowstateColors.textSecondary} />
+                <ThemedText type="body" style={[styles.sortOptionText, sortBy === option.key && styles.sortOptionTextActive]}>
+                  {option.label}
+                </ThemedText>
+                {sortBy === option.key && <Feather name="check" size={18} color={FlowstateColors.primary} />}
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -237,5 +301,56 @@ const styles = StyleSheet.create({
   },
   categoriesList: {
     paddingRight: Spacing.lg,
+  },
+  sortIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    backgroundColor: `${FlowstateColors.primary}10`,
+    borderRadius: BorderRadius.full,
+    alignSelf: "flex-start",
+  },
+  sortIndicatorText: {
+    color: FlowstateColors.primary,
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  sortMenu: {
+    backgroundColor: FlowstateColors.background,
+    borderTopLeftRadius: BorderRadius["2xl"],
+    borderTopRightRadius: BorderRadius["2xl"],
+    padding: Spacing.xl,
+    paddingBottom: Spacing["3xl"],
+  },
+  sortMenuTitle: {
+    color: FlowstateColors.textPrimary,
+    marginBottom: Spacing.lg,
+  },
+  sortOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    gap: Spacing.md,
+    marginBottom: Spacing.xs,
+  },
+  sortOptionActive: {
+    backgroundColor: `${FlowstateColors.primary}10`,
+  },
+  sortOptionText: {
+    flex: 1,
+    color: FlowstateColors.textSecondary,
+  },
+  sortOptionTextActive: {
+    color: FlowstateColors.primary,
+    fontWeight: "600",
   },
 });
