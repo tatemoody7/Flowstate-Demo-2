@@ -7,7 +7,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { CompositeNavigationProp, useNavigation } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+
 import Animated, {
   FadeInDown,
 } from "react-native-reanimated";
@@ -104,32 +104,6 @@ export default function DiscoverScreen() {
           {getSubGreeting()}
         </ThemedText>
       </View>
-
-      {/* High Protein Picks Banner */}
-      <Pressable
-        onPress={() => navigation.navigate("HighProtein")}
-        style={styles.highProteinBanner}
-      >
-        <LinearGradient
-          colors={[FlowstateColors.secondary, FlowstateColors.gradientAccent]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.highProteinGradient}
-        >
-          <View style={styles.highProteinContent}>
-            <Feather name="zap" size={20} color="#FFFFFF" />
-            <View style={styles.highProteinText}>
-              <ThemedText type="h4" style={{ color: "#FFFFFF" }}>
-                High Protein Picks
-              </ThemedText>
-              <ThemedText type="caption" style={{ color: "rgba(255,255,255,0.8)" }}>
-                Curated lists from 9 stores near campus
-              </ThemedText>
-            </View>
-          </View>
-          <Feather name="chevron-right" size={20} color="#FFFFFF" />
-        </LinearGradient>
-      </Pressable>
 
       <SearchBar
         value={searchQuery}
@@ -278,27 +252,6 @@ const styles = StyleSheet.create({
   heroSubtitle: {
     color: FlowstateColors.textSecondary,
     marginTop: Spacing.xs,
-  },
-  highProteinBanner: {
-    marginTop: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    overflow: "hidden",
-  },
-  highProteinGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-  },
-  highProteinContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.md,
-    flex: 1,
-  },
-  highProteinText: {
-    flex: 1,
   },
   categories: {
     marginTop: Spacing.lg,
