@@ -12,6 +12,7 @@ import { Button } from "@/components/Button";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { AuthStackParamList } from "@/navigation/AuthStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
+import { useApp } from "@/context/AppContext";
 
 type SignUpScreenProps = {
   navigation: NativeStackNavigationProp<AuthStackParamList, "SignUp">;
@@ -21,6 +22,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
+  const { setUser, setIsOnboarded } = useApp();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,6 +68,16 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
     }, 500);
   };
 
+  const handleDemoBypass = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setUser({
+      email: "demo@eagle.fgcu.edu",
+      school: "fgcu",
+      locationEnabled: false,
+    });
+    await setIsOnboarded(true);
+  };
+
   return (
     <KeyboardAwareScrollViewCompat
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
@@ -85,6 +97,13 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
           Sign up with your student email to get started
         </ThemedText>
       </View>
+
+      <Pressable onPress={handleDemoBypass} style={styles.demoBadge}>
+        <Feather name="zap" size={14} color={FlowstateColors.accent} />
+        <ThemedText type="small" style={styles.demoBadgeText}>
+          Azul's Innovation
+        </ThemedText>
+      </Pressable>
 
       <View style={styles.form}>
         <View style={styles.inputGroup}>
@@ -214,6 +233,23 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: FlowstateColors.textSecondary,
+  },
+  demoBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: FlowstateColors.accent,
+    backgroundColor: "rgba(31, 128, 255, 0.06)",
+  },
+  demoBadgeText: {
+    color: FlowstateColors.accent,
+    fontWeight: "600",
   },
   form: {
     gap: Spacing.xl,

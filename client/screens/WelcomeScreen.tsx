@@ -9,7 +9,6 @@ import { Feather } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
-import { FlowstateLogo } from "@/components/FlowstateLogo";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { AuthStackParamList } from "@/navigation/AuthStackNavigator";
 
@@ -38,7 +37,11 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         ]}
       >
         <Animated.View entering={FadeInDown.delay(300).duration(700).springify()} style={styles.logoContainer}>
-          <FlowstateLogo size={52} color="#FFFFFF" variant="icon" />
+          <Image
+            source={require("../../assets/images/flowstate-logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(500).duration(700).springify()} style={styles.textContainer}>
