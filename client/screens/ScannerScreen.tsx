@@ -291,19 +291,17 @@ export default function ScannerScreen() {
                   end={{ x: 1, y: 1 }}
                   style={styles.healthBanner}
                 >
-                  <View style={styles.healthBannerGlass}>
-                    <Feather
-                      name={healthTier.icon}
-                      size={28}
-                      color={healthTier.tier === "yellow" ? FlowstateColors.textPrimary : "#FFFFFF"}
-                    />
-                    <ThemedText type="h3" style={[styles.healthBannerLabel, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
-                      {healthTier.label}
-                    </ThemedText>
-                    <ThemedText type="caption" style={[styles.healthBannerDescription, healthTier.tier === "yellow" && { color: FlowstateColors.textSecondary }]}>
-                      {getScanReaction(healthTier.tier)}
-                    </ThemedText>
-                  </View>
+                  <Feather
+                    name={healthTier.icon}
+                    size={28}
+                    color={healthTier.tier === "yellow" ? FlowstateColors.textPrimary : "#FFFFFF"}
+                  />
+                  <ThemedText type="h3" style={[styles.healthBannerLabel, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
+                    {healthTier.label}
+                  </ThemedText>
+                  <ThemedText type="caption" style={[styles.healthBannerDescription, healthTier.tier === "yellow" && { color: FlowstateColors.textSecondary }]}>
+                    {getScanReaction(healthTier.tier)}
+                  </ThemedText>
                 </LinearGradient>
               )}
 
@@ -716,24 +714,13 @@ const styles = StyleSheet.create({
   },
   // ─── Health Banner ─────────────────────────────────────────────────
   healthBanner: {
-    marginHorizontal: -Spacing.xl,
-    marginTop: -Spacing.xl,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.xl,
-    alignItems: "center",
-    borderTopLeftRadius: BorderRadius["2xl"],
-    borderTopRightRadius: BorderRadius["2xl"],
     marginBottom: Spacing.lg,
-    overflow: "hidden",
-  },
-  healthBannerGlass: {
+    paddingVertical: Spacing["2xl"],
+    paddingHorizontal: Spacing.xl,
     alignItems: "center",
     gap: Spacing.xs,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.xl,
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    width: "100%",
+    borderRadius: BorderRadius["2xl"],
+    overflow: "hidden",
   },
   healthBannerLabel: {
     color: "#FFFFFF",
