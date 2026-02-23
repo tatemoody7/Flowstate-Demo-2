@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TextInput, Pressable, Alert } from "react-native";
+import { StyleSheet, View, TextInput, Pressable, Alert, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -99,7 +99,11 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
       </View>
 
       <Pressable onPress={handleDemoBypass} style={styles.demoBadge}>
-        <Feather name="zap" size={14} color={FlowstateColors.accent} />
+        <Image
+          source={require("../../assets/logos/fgcu.png")}
+          style={styles.demoBadgeIcon}
+          resizeMode="contain"
+        />
         <ThemedText type="small" style={styles.demoBadgeText}>
           Azul's Innovation
         </ThemedText>
@@ -246,6 +250,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: FlowstateColors.accent,
     backgroundColor: "rgba(31, 128, 255, 0.06)",
+  },
+  demoBadgeIcon: {
+    width: 20,
+    height: 20,
   },
   demoBadgeText: {
     color: FlowstateColors.accent,
