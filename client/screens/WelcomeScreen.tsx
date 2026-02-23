@@ -38,11 +38,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         ]}
       >
         <Animated.View entering={FadeInDown.delay(300).duration(700).springify()} style={styles.logoContainer}>
-          <View style={styles.logoGlow}>
-            <View style={styles.logoCircle}>
-              <FlowstateLogo size={52} color="#FFFFFF" variant="icon" />
-            </View>
-          </View>
+          <FlowstateLogo size={52} color="#FFFFFF" variant="icon" />
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(500).duration(700).springify()} style={styles.textContainer}>
@@ -64,12 +60,9 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           <BlurView intensity={20} tint="light" style={styles.featureCard}>
             <View style={styles.featureRow}>
               <View style={styles.featureIconWrapper}>
-                <LinearGradient
-                  colors={["rgba(255,255,255,0.3)", "rgba(255,255,255,0.1)"]}
-                  style={styles.iconCircle}
-                >
-                  <Feather name="map-pin" size={22} color="#FFFFFF" />
-                </LinearGradient>
+                <View style={[styles.iconCircle, { backgroundColor: "#00357a" }]}>
+                  <Feather name="map-pin" size={22} color="#c2eff0" />
+                </View>
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
@@ -85,12 +78,9 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           <BlurView intensity={20} tint="light" style={styles.featureCard}>
             <View style={styles.featureRow}>
               <View style={styles.featureIconWrapper}>
-                <LinearGradient
-                  colors={["rgba(255,255,255,0.3)", "rgba(255,255,255,0.1)"]}
-                  style={styles.iconCircle}
-                >
-                  <Feather name="camera" size={22} color="#FFFFFF" />
-                </LinearGradient>
+                <View style={[styles.iconCircle, { backgroundColor: "#99daff" }]}>
+                  <Feather name="camera" size={22} color="#00357a" />
+                </View>
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
@@ -106,12 +96,9 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           <BlurView intensity={20} tint="light" style={styles.featureCard}>
             <View style={styles.featureRow}>
               <View style={styles.featureIconWrapper}>
-                <LinearGradient
-                  colors={["rgba(255,255,255,0.3)", "rgba(255,255,255,0.1)"]}
-                  style={styles.iconCircle}
-                >
-                  <Feather name="dollar-sign" size={22} color="#FFFFFF" />
-                </LinearGradient>
+                <View style={[styles.iconCircle, { backgroundColor: "#e4ffc2" }]}>
+                  <Feather name="dollar-sign" size={22} color="#0a714e" />
+                </View>
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
@@ -163,39 +150,26 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
   },
-  logoGlow: {
-    shadowColor: FlowstateColors.secondary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 30,
-    elevation: 10,
-  },
-  logoCircle: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.3)",
-  },
   logo: {
-    width: 75,
-    height: 75,
+    width: 240,
+    height: 168,
   },
   textContainer: {
     alignItems: "center",
+    marginTop: Spacing.lg,
   },
   title: {
     color: "#FFFFFF",
     marginBottom: Spacing.xs,
     fontSize: 42,
+    lineHeight: 50,
     letterSpacing: -1,
   },
   taglineRow: {
     flexDirection: "row",
     alignItems: "baseline",
+    overflow: "visible",
+    paddingVertical: 4,
   },
   tagline: {
     color: "rgba(255,255,255,0.9)",
@@ -204,8 +178,10 @@ const styles = StyleSheet.create({
   },
   taglineFlow: {
     fontFamily: "Yellowtail_400Regular",
-    fontSize: 28,
+    fontSize: 32,
+    lineHeight: 44,
     color: "#FFFFFF",
+    paddingHorizontal: 8,
   },
   subtitle: {
     color: "rgba(255,255,255,0.7)",
@@ -214,6 +190,7 @@ const styles = StyleSheet.create({
   },
   features: {
     gap: Spacing.md,
+    marginTop: Spacing.lg,
   },
   featureCard: {
     borderRadius: BorderRadius.xl,

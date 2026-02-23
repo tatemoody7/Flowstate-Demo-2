@@ -361,15 +361,24 @@ export default function ScannerScreen() {
                 return (
                   <View style={styles.macroBarSection}>
                     <View style={styles.macroLabels}>
-                      <ThemedText type="caption" style={{ color: FlowstateColors.accent }}>
-                        Protein {proteinPct}%
-                      </ThemedText>
-                      <ThemedText type="caption" style={{ color: FlowstateColors.warning }}>
-                        Carbs {carbsPct}%
-                      </ThemedText>
-                      <ThemedText type="caption" style={{ color: FlowstateColors.healthRed }}>
-                        Fat {fatPct}%
-                      </ThemedText>
+                      <View style={styles.macroDotLabel}>
+                        <View style={[styles.macroDot, { backgroundColor: FlowstateColors.accent }]} />
+                        <ThemedText type="caption" style={styles.macroDotText}>
+                          Protein {scannedFood.protein}g
+                        </ThemedText>
+                      </View>
+                      <View style={styles.macroDotLabel}>
+                        <View style={[styles.macroDot, { backgroundColor: FlowstateColors.warning }]} />
+                        <ThemedText type="caption" style={styles.macroDotText}>
+                          Carbs {scannedFood.carbs}g
+                        </ThemedText>
+                      </View>
+                      <View style={styles.macroDotLabel}>
+                        <View style={[styles.macroDot, { backgroundColor: FlowstateColors.healthRed }]} />
+                        <ThemedText type="caption" style={styles.macroDotText}>
+                          Fat {scannedFood.fat}g
+                        </ThemedText>
+                      </View>
                     </View>
                     <View style={styles.macroBar}>
                       <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: FlowstateColors.accent, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
@@ -380,72 +389,10 @@ export default function ScannerScreen() {
                 );
               })()}
 
-              {/* ─── Nutrition 2x2 Grid ─── */}
-              <ThemedText type="caption" style={{ color: FlowstateColors.textTertiary, marginBottom: Spacing.xs }}>
-                {scannedFood.servingSize ? `Per serving (${scannedFood.servingSize})` : "Per 100g"}
+              {/* ─── Calories ─── */}
+              <ThemedText type="body" style={styles.caloriesText}>
+                {scannedFood.calories} calories per serving
               </ThemedText>
-              <View style={styles.nutritionGrid2x2}>
-                <View style={styles.nutritionGridItem}>
-                  <ThemedText type="h3" style={styles.nutritionGridValue}>
-                    {scannedFood.calories}
-                  </ThemedText>
-                  <ThemedText type="caption" style={styles.nutritionGridLabel}>
-                    Calories
-                  </ThemedText>
-                </View>
-                <View style={styles.nutritionGridItem}>
-                  <ThemedText type="h3" style={[styles.nutritionGridValue, scannedFood.protein >= 15 && { color: FlowstateColors.secondary }]}>
-                    {scannedFood.protein}g
-                  </ThemedText>
-                  <ThemedText type="caption" style={styles.nutritionGridLabel}>
-                    Protein
-                  </ThemedText>
-                </View>
-                <View style={styles.nutritionGridItem}>
-                  <ThemedText type="h3" style={styles.nutritionGridValue}>
-                    {scannedFood.carbs}g
-                  </ThemedText>
-                  <ThemedText type="caption" style={styles.nutritionGridLabel}>
-                    Carbs
-                  </ThemedText>
-                </View>
-                <View style={styles.nutritionGridItem}>
-                  <ThemedText type="h3" style={styles.nutritionGridValue}>
-                    {scannedFood.fat}g
-                  </ThemedText>
-                  <ThemedText type="caption" style={styles.nutritionGridLabel}>
-                    Fat
-                  </ThemedText>
-                </View>
-              </View>
-
-              {/* ─── Nutrition Details ─── */}
-              <View style={styles.nutritionDetails}>
-                <View style={styles.nutritionDetailRow}>
-                  <ThemedText type="body" style={styles.nutritionDetailLabel}>
-                    Fiber
-                  </ThemedText>
-                  <ThemedText type="body" style={styles.nutritionDetailValue}>
-                    {scannedFood.fiber}g
-                  </ThemedText>
-                </View>
-                <View style={styles.nutritionDetailRow}>
-                  <ThemedText type="body" style={styles.nutritionDetailLabel}>
-                    Sugar
-                  </ThemedText>
-                  <ThemedText type="body" style={styles.nutritionDetailValue}>
-                    {scannedFood.sugar}g
-                  </ThemedText>
-                </View>
-                <View style={[styles.nutritionDetailRow, { borderBottomWidth: 0 }]}>
-                  <ThemedText type="body" style={styles.nutritionDetailLabel}>
-                    Sodium
-                  </ThemedText>
-                  <ThemedText type="body" style={styles.nutritionDetailValue}>
-                    {scannedFood.sodium}mg
-                  </ThemedText>
-                </View>
-              </View>
 
               {/* ─── Ingredients Section ─── */}
               {scannedFood.ingredients && scannedFood.ingredients.length > 0 ? (
@@ -454,51 +401,35 @@ export default function ScannerScreen() {
                     Ingredients
                   </ThemedText>
                   <View style={styles.ingredientsList}>
-                    {scannedFood.ingredients.map((ing, idx) => (
-                      <View
-                        key={idx}
-                        style={[
-                          styles.ingredientChip,
-                          ing.flag === "good" && styles.ingredientGood,
-                          ing.flag === "bad" && styles.ingredientBad,
-                          ing.flag === "caution" && styles.ingredientCaution,
-                        ]}
-                      >
+                    {scannedFood.ingredients.map((ing, idx) => {
+                      const flagColor =
+                        ing.flag === "good"
+                          ? FlowstateColors.healthGreen
+                          : ing.flag === "bad"
+                          ? FlowstateColors.healthRed
+                          : ing.flag === "caution"
+                          ? FlowstateColors.warning
+                          : FlowstateColors.textTertiary;
+                      return (
                         <View
+                          key={idx}
                           style={[
-                            styles.ingredientDot,
+                            styles.ingredientChip,
                             {
-                              backgroundColor:
-                                ing.flag === "good"
-                                  ? FlowstateColors.healthGreen
-                                  : ing.flag === "bad"
-                                  ? FlowstateColors.healthRed
-                                  : ing.flag === "caution"
-                                  ? FlowstateColors.warning
-                                  : FlowstateColors.textTertiary,
+                              backgroundColor: `${flagColor}22`,
+                              borderColor: `${flagColor}55`,
                             },
                           ]}
-                        />
-                        <View style={styles.ingredientChipContent}>
+                        >
                           <ThemedText
                             type="caption"
-                            style={[
-                              styles.ingredientText,
-                              ing.flag === "good" && { color: FlowstateColors.healthGreen },
-                              ing.flag === "bad" && { color: FlowstateColors.healthRed },
-                              ing.flag === "caution" && { color: FlowstateColors.warning },
-                            ]}
+                            style={[styles.ingredientText, { color: flagColor }]}
                           >
                             {ing.name}
                           </ThemedText>
-                          {ing.reason ? (
-                            <ThemedText type="caption" style={styles.ingredientReason}>
-                              {ing.reason}
-                            </ThemedText>
-                          ) : null}
                         </View>
-                      </View>
-                    ))}
+                      );
+                    })}
                   </View>
                 </View>
               ) : null}
@@ -507,9 +438,20 @@ export default function ScannerScreen() {
 
             {/* Action Buttons */}
             <View style={styles.resultActions}>
-              <Button onPress={handleScanAgain} style={styles.scanAgainButton}>
-                Scan Another
-              </Button>
+              <Pressable
+                onPress={() => scannedFood && navigation.navigate("FoodDetail", { food: scannedFood })}
+                style={styles.viewDetailsButton}
+              >
+                <ThemedText type="button" style={styles.viewDetailsText}>
+                  View Details
+                </ThemedText>
+              </Pressable>
+              <Pressable onPress={handleScanAgain} style={styles.scanAnotherButton}>
+                <Feather name="rotate-ccw" size={16} color={FlowstateColors.textPrimary} />
+                <ThemedText type="button" style={styles.scanAnotherText}>
+                  Scan Another
+                </ThemedText>
+              </Pressable>
             </View>
           </Animated.View>
         ) : null}
@@ -819,7 +761,28 @@ const styles = StyleSheet.create({
   macroLabels: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  macroDotLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  macroDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  macroDotText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: FlowstateColors.textPrimary,
+  },
+  caloriesText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: FlowstateColors.textPrimary,
+    marginBottom: Spacing.lg,
   },
   macroBar: {
     flexDirection: "row",
@@ -885,58 +848,56 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   ingredientsList: {
-    gap: Spacing.xs,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
   },
   ingredientChip: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 6,
-    paddingHorizontal: Spacing.sm,
+    alignItems: "center",
+    paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: BorderRadius.sm,
+    borderRadius: 30,
     borderWidth: 1,
-    borderColor: FlowstateColors.border,
-    backgroundColor: FlowstateColors.background,
-  },
-  ingredientGood: {
-    borderColor: `${FlowstateColors.healthGreen}40`,
-    backgroundColor: `${FlowstateColors.healthGreen}10`,
-  },
-  ingredientBad: {
-    borderColor: `${FlowstateColors.healthRed}40`,
-    backgroundColor: `${FlowstateColors.healthRed}10`,
-  },
-  ingredientCaution: {
-    borderColor: `${FlowstateColors.warning}40`,
-    backgroundColor: `${FlowstateColors.warning}10`,
-  },
-  ingredientDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginTop: 5,
-  },
-  ingredientChipContent: {
-    flex: 1,
   },
   ingredientText: {
-    color: FlowstateColors.textSecondary,
-    fontSize: 11,
-  },
-  ingredientReason: {
-    color: FlowstateColors.textTertiary,
-    fontSize: 10,
-    lineHeight: 14,
-    marginTop: 1,
+    fontSize: 12,
+    fontWeight: "600",
   },
   // ─── Actions ───────────────────────────────────────────────────────
   resultActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
-  scanAgainButton: {
+  viewDetailsButton: {
     flex: 1,
     backgroundColor: FlowstateColors.primary,
+    borderRadius: 30,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  viewDetailsText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  scanAnotherButton: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: FlowstateColors.background,
+    borderRadius: 30,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing.sm,
+    borderWidth: 1.5,
+    borderColor: FlowstateColors.border,
+  },
+  scanAnotherText: {
+    color: FlowstateColors.textPrimary,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

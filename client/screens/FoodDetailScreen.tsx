@@ -108,15 +108,24 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
             return (
               <>
                 <View style={styles.macroLabels}>
-                  <ThemedText type="caption" style={{ color: FlowstateColors.accent }}>
-                    Protein {proteinPct}%
-                  </ThemedText>
-                  <ThemedText type="caption" style={{ color: FlowstateColors.warning }}>
-                    Carbs {carbsPct}%
-                  </ThemedText>
-                  <ThemedText type="caption" style={{ color: FlowstateColors.healthRed }}>
-                    Fat {fatPct}%
-                  </ThemedText>
+                  <View style={styles.macroDotLabel}>
+                    <View style={[styles.macroDot, { backgroundColor: FlowstateColors.accent }]} />
+                    <ThemedText type="caption" style={styles.macroDotText}>
+                      Protein {food.protein}g
+                    </ThemedText>
+                  </View>
+                  <View style={styles.macroDotLabel}>
+                    <View style={[styles.macroDot, { backgroundColor: FlowstateColors.warning }]} />
+                    <ThemedText type="caption" style={styles.macroDotText}>
+                      Carbs {food.carbs}g
+                    </ThemedText>
+                  </View>
+                  <View style={styles.macroDotLabel}>
+                    <View style={[styles.macroDot, { backgroundColor: FlowstateColors.healthRed }]} />
+                    <ThemedText type="caption" style={styles.macroDotText}>
+                      Fat {food.fat}g
+                    </ThemedText>
+                  </View>
                 </View>
                 <View style={styles.macroBar}>
                   <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: FlowstateColors.accent, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
@@ -203,51 +212,35 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
               Ingredients
             </ThemedText>
             <View style={styles.ingredientsList}>
-              {food.ingredients.map((ing, idx) => (
-                <View
-                  key={idx}
-                  style={[
-                    styles.ingredientChip,
-                    ing.flag === "good" && styles.ingredientGood,
-                    ing.flag === "bad" && styles.ingredientBad,
-                    ing.flag === "caution" && styles.ingredientCaution,
-                  ]}
-                >
+              {food.ingredients.map((ing, idx) => {
+                const flagColor =
+                  ing.flag === "good"
+                    ? FlowstateColors.healthGreen
+                    : ing.flag === "bad"
+                    ? FlowstateColors.healthRed
+                    : ing.flag === "caution"
+                    ? FlowstateColors.warning
+                    : FlowstateColors.textTertiary;
+                return (
                   <View
+                    key={idx}
                     style={[
-                      styles.ingredientDot,
+                      styles.ingredientChip,
                       {
-                        backgroundColor:
-                          ing.flag === "good"
-                            ? FlowstateColors.healthGreen
-                            : ing.flag === "bad"
-                            ? FlowstateColors.healthRed
-                            : ing.flag === "caution"
-                            ? FlowstateColors.warning
-                            : FlowstateColors.textTertiary,
+                        backgroundColor: `${flagColor}22`,
+                        borderColor: `${flagColor}55`,
                       },
                     ]}
-                  />
-                  <View style={styles.ingredientInfo}>
+                  >
                     <ThemedText
-                      type="small"
-                      style={[
-                        styles.ingredientName,
-                        ing.flag === "good" && { color: FlowstateColors.healthGreen },
-                        ing.flag === "bad" && { color: FlowstateColors.healthRed },
-                        ing.flag === "caution" && { color: FlowstateColors.warning },
-                      ]}
+                      type="caption"
+                      style={[styles.ingredientName, { color: flagColor }]}
                     >
                       {ing.name}
                     </ThemedText>
-                    {ing.reason ? (
-                      <ThemedText type="caption" style={styles.ingredientReason}>
-                        {ing.reason}
-                      </ThemedText>
-                    ) : null}
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </Animated.View>
         ) : null}
@@ -357,7 +350,22 @@ const styles = StyleSheet.create({
   macroLabels: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  macroDotLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  macroDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  macroDotText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: FlowstateColors.textPrimary,
   },
   macroBar: {
     flexDirection: "row",
@@ -423,46 +431,21 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   ingredientsList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: Spacing.sm,
   },
   ingredientChip: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.sm,
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 30,
     borderWidth: 1,
-    borderColor: FlowstateColors.border,
-    backgroundColor: FlowstateColors.surface,
-  },
-  ingredientGood: {
-    borderColor: `${FlowstateColors.healthGreen}40`,
-    backgroundColor: `${FlowstateColors.healthGreen}08`,
-  },
-  ingredientBad: {
-    borderColor: `${FlowstateColors.healthRed}40`,
-    backgroundColor: `${FlowstateColors.healthRed}08`,
-  },
-  ingredientCaution: {
-    borderColor: `${FlowstateColors.warning}40`,
-    backgroundColor: `${FlowstateColors.warning}08`,
-  },
-  ingredientDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginTop: 5,
-  },
-  ingredientInfo: {
-    flex: 1,
   },
   ingredientName: {
-    color: FlowstateColors.textPrimary,
-  },
-  ingredientReason: {
-    color: FlowstateColors.textSecondary,
-    marginTop: 2,
+    fontSize: 12,
+    fontWeight: "600",
   },
   actionSection: {
     marginTop: Spacing.lg,
