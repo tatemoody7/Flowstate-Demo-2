@@ -97,8 +97,10 @@ export default function MainTabNavigator() {
         options={{
           title: "",
           tabBarIcon: () => (
-            <View style={styles.scanFab}>
-              <Feather name="camera" size={24} color="#FFFFFF" />
+            <View style={styles.scanFabOuter}>
+              <View style={styles.scanFab}>
+                <Feather name="camera" size={26} color="#FFFFFF" />
+              </View>
             </View>
           ),
         }}
@@ -118,14 +120,26 @@ export default function MainTabNavigator() {
 }
 
 const styles = StyleSheet.create({
+  scanFabOuter: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "rgba(31, 128, 255, 0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+  },
   scanFab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: FlowstateColors.accent,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
-    ...Shadows.fab,
+    shadowColor: FlowstateColors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
 });
