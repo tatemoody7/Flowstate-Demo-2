@@ -430,6 +430,15 @@ export default function ScannerScreen() {
                           >
                             {ing.name}
                           </ThemedText>
+                          {ing.reason ? (
+                            <ThemedText
+                              type="caption"
+                              style={[styles.ingredientReason, { color: flagColor }]}
+                              numberOfLines={1}
+                            >
+                              {ing.reason}
+                            </ThemedText>
+                          ) : null}
                         </View>
                       );
                     })}
@@ -864,16 +873,20 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   ingredientChip: {
-    flexDirection: "row",
-    alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 30,
+    borderRadius: 16,
     borderWidth: 1,
   },
   ingredientText: {
     fontSize: 12,
     fontWeight: "600",
+  },
+  ingredientReason: {
+    fontSize: 10,
+    fontWeight: "400",
+    opacity: 0.8,
+    marginTop: 1,
   },
   // ─── Actions ───────────────────────────────────────────────────────
   resultActions: {
