@@ -7,6 +7,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeIn, FadeInUp, FadeInDown } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
@@ -24,6 +25,19 @@ type ScannerScreenNavigationProp = NativeStackNavigationProp<
 >;
 
 // ─── Health Color Helpers ────────────────────────────────────────────────────
+
+function getHealthBannerGradient(tier: string): string[] {
+  switch (tier) {
+    case "green":
+      return ["#10bb82", "#0ea5a0"]; // green to teal
+    case "yellow":
+      return ["#f9f19c", "#fde68a"]; // light yellow to warm yellow
+    case "red":
+      return ["#f07269", "#e85d6f"]; // coral to rose
+    default:
+      return ["#10bb82", "#0ea5a0"];
+  }
+}
 
 export default function ScannerScreen() {
   const insets = useSafeAreaInsets();
@@ -271,24 +285,26 @@ export default function ScannerScreen() {
             >
               {/* ─── Health Color Banner ─── */}
               {healthTier && (
-                <View
-                  style={[
-                    styles.healthBanner,
-                    { backgroundColor: healthTier.color },
-                  ]}
+                <LinearGradient
+                  colors={getHealthBannerGradient(healthTier.tier)}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.healthBanner}
                 >
-                  <Feather
-                    name={healthTier.icon}
-                    size={32}
-                    color={healthTier.tier === "yellow" ? FlowstateColors.textPrimary : "#FFFFFF"}
-                  />
-                  <ThemedText type="h2" style={[styles.healthBannerLabel, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
-                    {healthTier.label}
-                  </ThemedText>
-                  <ThemedText type="small" style={[styles.healthBannerDescription, healthTier.tier === "yellow" && { color: FlowstateColors.textSecondary }]}>
-                    {getScanReaction(healthTier.tier)}
-                  </ThemedText>
-                </View>
+                  <View style={styles.healthBannerGlass}>
+                    <Feather
+                      name={healthTier.icon}
+                      size={28}
+                      color={healthTier.tier === "yellow" ? FlowstateColors.textPrimary : "#FFFFFF"}
+                    />
+                    <ThemedText type="h3" style={[styles.healthBannerLabel, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
+                      {healthTier.label}
+                    </ThemedText>
+                    <ThemedText type="caption" style={[styles.healthBannerDescription, healthTier.tier === "yellow" && { color: FlowstateColors.textSecondary }]}>
+                      {getScanReaction(healthTier.tier)}
+                    </ThemedText>
+                  </View>
+                </LinearGradient>
               )}
 
               {/* ─── Product Header ─── */}
@@ -701,13 +717,22 @@ const styles = StyleSheet.create({
   healthBanner: {
     marginHorizontal: -Spacing.xl,
     marginTop: -Spacing.xl,
-    paddingVertical: Spacing.xl,
+    paddingVertical: Spacing.lg,
     paddingHorizontal: Spacing.xl,
     alignItems: "center",
-    gap: Spacing.xs,
     borderTopLeftRadius: BorderRadius["2xl"],
     borderTopRightRadius: BorderRadius["2xl"],
     marginBottom: Spacing.lg,
+    overflow: "hidden",
+  },
+  healthBannerGlass: {
+    alignItems: "center",
+    gap: Spacing.xs,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: BorderRadius.xl,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    width: "100%",
   },
   healthBannerLabel: {
     color: "#FFFFFF",
