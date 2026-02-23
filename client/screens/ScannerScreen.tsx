@@ -148,7 +148,7 @@ export default function ScannerScreen() {
           onBarcodeScanned={isScanning ? handleBarcodeScanned : undefined}
         />
       ) : (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: "#000" }]} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: FlowstateColors.background }]} />
       )}
 
       {/* Overlay */}
