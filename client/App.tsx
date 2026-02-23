@@ -18,6 +18,7 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
+import { Yellowtail_400Regular } from "@expo-google-fonts/yellowtail";
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query-client";
@@ -37,6 +38,7 @@ export default function App() {
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
+    Yellowtail_400Regular,
   });
 
   useEffect(() => {

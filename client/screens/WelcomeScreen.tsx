@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Dimensions, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { LinearGradient } from "expo-linear-gradient";
@@ -49,8 +49,14 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           <ThemedText type="hero" style={styles.title}>
             Flowstate
           </ThemedText>
-          <ThemedText type="h3" style={styles.tagline}>
-            Nail the essentials. Unlock your flow.
+          <View style={styles.taglineRow}>
+            <ThemedText type="h3" style={styles.tagline}>
+              Find your{" "}
+            </ThemedText>
+            <Text style={styles.taglineFlow}>flow</Text>
+          </View>
+          <ThemedText type="small" style={styles.subtitle}>
+            Your College Health Companion
           </ThemedText>
         </Animated.View>
 
@@ -67,10 +73,10 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
-                  Find Your Spots
+                  Simple Discovery
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Healthy eats, gyms & groceries near campus
+                  Healthy eats, gyms, and groceries near campus
                 </ThemedText>
               </View>
             </View>
@@ -88,10 +94,10 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
-                  Scan & Know
+                  Scan Products
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Instant nutrition facts & ingredient analysis
+                  Instant grading and ingredient description
                 </ThemedText>
               </View>
             </View>
@@ -104,15 +110,15 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
                   colors={["rgba(255,255,255,0.3)", "rgba(255,255,255,0.1)"]}
                   style={styles.iconCircle}
                 >
-                  <Feather name="zap" size={22} color="#FFFFFF" />
+                  <Feather name="dollar-sign" size={22} color="#FFFFFF" />
                 </LinearGradient>
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="h4" style={styles.featureTitle}>
-                  Lock In Daily
+                  Save Money
                 </ThemedText>
                 <ThemedText type="small" style={styles.featureDesc}>
-                  Track your essentials. Build your streak.
+                  Claim student deals
                 </ThemedText>
               </View>
             </View>
@@ -187,11 +193,24 @@ const styles = StyleSheet.create({
     fontSize: 42,
     letterSpacing: -1,
   },
+  taglineRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
   tagline: {
     color: "rgba(255,255,255,0.9)",
-    textAlign: "center",
     fontWeight: "400",
     letterSpacing: 1,
+  },
+  taglineFlow: {
+    fontFamily: "Yellowtail_400Regular",
+    fontSize: 28,
+    color: "#FFFFFF",
+  },
+  subtitle: {
+    color: "rgba(255,255,255,0.7)",
+    textAlign: "center",
+    marginTop: Spacing.xs,
   },
   features: {
     gap: Spacing.md,
