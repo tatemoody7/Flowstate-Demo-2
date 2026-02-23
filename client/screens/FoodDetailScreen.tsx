@@ -79,34 +79,18 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
           </ThemedText>
         </Animated.View>
 
-        {/* Health Score */}
+        {/* Grade Label */}
         <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.healthScoreSection}>
-          <View
-            style={[
-              styles.healthScoreCard,
-              { backgroundColor: `${healthTier.color}15` },
-            ]}
-          >
+          <View style={styles.scoreCenter}>
             <View
               style={[
-                styles.healthScoreBadge,
-                { backgroundColor: healthTier.color },
+                styles.scorePill,
+                { backgroundColor: `${healthTier.color}18` },
               ]}
             >
-              <ThemedText type="h1" style={[styles.healthScoreValue, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
-                {food.healthScore}
-              </ThemedText>
-            </View>
-            <View style={styles.healthScoreInfo}>
-              <ThemedText type="h3" style={styles.healthScoreLabel}>
-                Health Score
-              </ThemedText>
               <ThemedText
-                type="body"
-                style={[
-                  styles.healthScoreRating,
-                  { color: healthTier.color },
-                ]}
+                type="small"
+                style={[styles.scorePillText, { color: healthTier.color }]}
               >
                 {healthTier.label}
               </ThemedText>
@@ -114,47 +98,73 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
           </View>
         </Animated.View>
 
-        {/* Nutrition Facts */}
+        {/* Macro Percentage Bar */}
+        <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.macroBarSection}>
+          {(() => {
+            const totalMacroGrams = food.protein + food.carbs + food.fat;
+            const proteinPct = totalMacroGrams > 0 ? Math.round((food.protein / totalMacroGrams) * 100) : 0;
+            const carbsPct = totalMacroGrams > 0 ? Math.round((food.carbs / totalMacroGrams) * 100) : 0;
+            const fatPct = totalMacroGrams > 0 ? 100 - proteinPct - carbsPct : 0;
+            return (
+              <>
+                <View style={styles.macroLabels}>
+                  <ThemedText type="caption" style={{ color: FlowstateColors.accent }}>
+                    Protein {proteinPct}%
+                  </ThemedText>
+                  <ThemedText type="caption" style={{ color: FlowstateColors.warning }}>
+                    Carbs {carbsPct}%
+                  </ThemedText>
+                  <ThemedText type="caption" style={{ color: FlowstateColors.healthRed }}>
+                    Fat {fatPct}%
+                  </ThemedText>
+                </View>
+                <View style={styles.macroBar}>
+                  <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: FlowstateColors.accent, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
+                  <View style={[styles.macroSegment, { flex: carbsPct, backgroundColor: FlowstateColors.warning }]} />
+                  <View style={[styles.macroSegment, { flex: fatPct, backgroundColor: FlowstateColors.healthRed, borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
+                </View>
+              </>
+            );
+          })()}
+        </Animated.View>
+
+        {/* Nutrition 2x2 Grid */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.nutritionSection}>
           <ThemedText type="h3" style={styles.sectionTitle}>
             Nutrition Facts
           </ThemedText>
-          <View style={styles.nutritionGrid}>
-            <View style={styles.nutritionRow}>
-              <View style={styles.nutritionItem}>
-                <ThemedText type="h2" style={styles.nutritionValue}>
-                  {food.calories}
-                </ThemedText>
-                <ThemedText type="small" style={styles.nutritionLabel}>
-                  Calories
-                </ThemedText>
-              </View>
-              <View style={styles.nutritionItem}>
-                <ThemedText type="h2" style={styles.nutritionValue}>
-                  {food.protein}g
-                </ThemedText>
-                <ThemedText type="small" style={styles.nutritionLabel}>
-                  Protein
-                </ThemedText>
-              </View>
+          <View style={styles.nutritionGrid2x2}>
+            <View style={styles.nutritionGridItem}>
+              <ThemedText type="h2" style={styles.nutritionGridValue}>
+                {food.calories}
+              </ThemedText>
+              <ThemedText type="small" style={styles.nutritionGridLabel}>
+                Calories
+              </ThemedText>
             </View>
-            <View style={styles.nutritionRow}>
-              <View style={styles.nutritionItem}>
-                <ThemedText type="h2" style={styles.nutritionValue}>
-                  {food.carbs}g
-                </ThemedText>
-                <ThemedText type="small" style={styles.nutritionLabel}>
-                  Carbs
-                </ThemedText>
-              </View>
-              <View style={styles.nutritionItem}>
-                <ThemedText type="h2" style={styles.nutritionValue}>
-                  {food.fat}g
-                </ThemedText>
-                <ThemedText type="small" style={styles.nutritionLabel}>
-                  Fat
-                </ThemedText>
-              </View>
+            <View style={styles.nutritionGridItem}>
+              <ThemedText type="h2" style={[styles.nutritionGridValue, food.protein >= 15 && { color: FlowstateColors.secondary }]}>
+                {food.protein}g
+              </ThemedText>
+              <ThemedText type="small" style={styles.nutritionGridLabel}>
+                Protein
+              </ThemedText>
+            </View>
+            <View style={styles.nutritionGridItem}>
+              <ThemedText type="h2" style={styles.nutritionGridValue}>
+                {food.carbs}g
+              </ThemedText>
+              <ThemedText type="small" style={styles.nutritionGridLabel}>
+                Carbs
+              </ThemedText>
+            </View>
+            <View style={styles.nutritionGridItem}>
+              <ThemedText type="h2" style={styles.nutritionGridValue}>
+                {food.fat}g
+              </ThemedText>
+              <ThemedText type="small" style={styles.nutritionGridLabel}>
+                Fat
+              </ThemedText>
             </View>
           </View>
 
@@ -329,32 +339,35 @@ const styles = StyleSheet.create({
   healthScoreSection: {
     marginBottom: Spacing.xl,
   },
-  healthScoreCard: {
-    flexDirection: "row",
+  scoreCenter: {
     alignItems: "center",
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
+    gap: Spacing.md,
   },
-  healthScoreBadge: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: Spacing.lg,
+  scorePill: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
   },
-  healthScoreValue: {
-    color: "#FFFFFF",
-  },
-  healthScoreInfo: {
-    flex: 1,
-  },
-  healthScoreLabel: {
-    color: FlowstateColors.textPrimary,
-    marginBottom: 2,
-  },
-  healthScoreRating: {
+  scorePillText: {
     fontWeight: "600",
+  },
+  macroBarSection: {
+    marginBottom: Spacing.xl,
+  },
+  macroLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: Spacing.xs,
+  },
+  macroBar: {
+    flexDirection: "row",
+    height: 8,
+    borderRadius: 4,
+    overflow: "hidden",
+    backgroundColor: FlowstateColors.border,
+  },
+  macroSegment: {
+    height: 8,
   },
   nutritionSection: {
     marginBottom: Spacing.xl,
@@ -363,27 +376,26 @@ const styles = StyleSheet.create({
     color: FlowstateColors.textPrimary,
     marginBottom: Spacing.lg,
   },
-  nutritionGrid: {
+  nutritionGrid2x2: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  nutritionGridItem: {
+    width: "48%",
     backgroundColor: FlowstateColors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    marginBottom: Spacing.lg,
+    alignItems: "center",
     borderWidth: 1,
     borderColor: FlowstateColors.border,
   },
-  nutritionRow: {
-    flexDirection: "row",
-  },
-  nutritionItem: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: Spacing.md,
-  },
-  nutritionValue: {
+  nutritionGridValue: {
     color: FlowstateColors.textPrimary,
     marginBottom: 2,
   },
-  nutritionLabel: {
+  nutritionGridLabel: {
     color: FlowstateColors.textSecondary,
   },
   nutritionDetails: {

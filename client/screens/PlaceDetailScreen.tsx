@@ -118,9 +118,9 @@ export default function PlaceDetailScreen({ navigation, route }: PlaceDetailScre
             </Pressable>
             <Pressable onPress={handleSavePress} style={styles.saveButton}>
               <Feather
-                name="heart"
+                name="bookmark"
                 size={24}
-                color={isSaved ? FlowstateColors.error : "#FFFFFF"}
+                color={isSaved ? FlowstateColors.accent : "#FFFFFF"}
               />
             </Pressable>
           </View>

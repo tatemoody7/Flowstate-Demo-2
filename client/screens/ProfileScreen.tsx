@@ -28,7 +28,7 @@ export default function ProfileScreen() {
   const { user, schoolColors, logout, savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { coords: userCoords } = useUserLocation();
-  const [savedTab, setSavedTab] = useState<"foods" | "places">("foods");
+  const [savedTab, setSavedTab] = useState<"foods" | "places">("places");
 
   const savedPlacesList = mockPlaces.filter((place) => savedPlaces.includes(place.id));
   const savedFoodsList = mockScannedFoods.filter((food) => savedFoods.includes(food.id));
@@ -156,23 +156,6 @@ export default function ProfileScreen() {
         </ThemedText>
         <View style={styles.savedSegmentedControl}>
           <Pressable
-            onPress={() => setSavedTab("foods")}
-            style={[
-              styles.savedSegment,
-              savedTab === "foods" && styles.savedSegmentActive,
-            ]}
-          >
-            <ThemedText
-              type="small"
-              style={[
-                styles.savedSegmentText,
-                savedTab === "foods" && styles.savedSegmentTextActive,
-              ]}
-            >
-              Foods ({savedFoodsList.length})
-            </ThemedText>
-          </Pressable>
-          <Pressable
             onPress={() => setSavedTab("places")}
             style={[
               styles.savedSegment,
@@ -186,7 +169,24 @@ export default function ProfileScreen() {
                 savedTab === "places" && styles.savedSegmentTextActive,
               ]}
             >
-              Places ({savedPlacesList.length})
+              Saved Places
+            </ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => setSavedTab("foods")}
+            style={[
+              styles.savedSegment,
+              savedTab === "foods" && styles.savedSegmentActive,
+            ]}
+          >
+            <ThemedText
+              type="small"
+              style={[
+                styles.savedSegmentText,
+                savedTab === "foods" && styles.savedSegmentTextActive,
+              ]}
+            >
+              Saved Foods
             </ThemedText>
           </Pressable>
         </View>

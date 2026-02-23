@@ -30,9 +30,6 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <Animated.View entering={FadeIn.delay(100).duration(800)} style={styles.decorCircle1} />
-      <Animated.View entering={FadeIn.delay(200).duration(800)} style={styles.decorCircle2} />
-      <Animated.View entering={FadeIn.delay(300).duration(800)} style={styles.decorCircle3} />
 
       <View
         style={[
@@ -151,33 +148,6 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  decorCircle1: {
-    position: "absolute",
-    top: -100,
-    right: -80,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: "rgba(0, 166, 81, 0.15)",
-  },
-  decorCircle2: {
-    position: "absolute",
-    bottom: 200,
-    left: -120,
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    backgroundColor: "rgba(255, 184, 28, 0.1)",
-  },
-  decorCircle3: {
-    position: "absolute",
-    bottom: -50,
-    right: -30,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
   },
   content: {
     flex: 1,

@@ -179,27 +179,6 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
           {isLoading ? "Creating Account..." : "Continue"}
         </Button>
 
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <ThemedText type="small" style={styles.dividerText}>
-            or
-          </ThemedText>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <Pressable style={styles.socialButton}>
-          <Feather name="smartphone" size={20} color={FlowstateColors.textPrimary} />
-          <ThemedText type="body" style={styles.socialButtonText}>
-            Continue with Apple
-          </ThemedText>
-        </Pressable>
-
-        <Pressable style={styles.socialButton}>
-          <Feather name="mail" size={20} color={FlowstateColors.textPrimary} />
-          <ThemedText type="body" style={styles.socialButtonText}>
-            Continue with Google
-          </ThemedText>
-        </Pressable>
       </View>
 
       <View style={styles.footer}>
@@ -251,8 +230,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: FlowstateColors.surface,
-    borderRadius: BorderRadius.sm,
-    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.lg,
     height: Spacing.inputHeight,
     borderWidth: 1,
     borderColor: FlowstateColors.border,
@@ -272,35 +251,6 @@ const styles = StyleSheet.create({
   signUpButton: {
     marginTop: Spacing.sm,
     backgroundColor: FlowstateColors.primary,
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: Spacing.sm,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: FlowstateColors.border,
-  },
-  dividerText: {
-    marginHorizontal: Spacing.lg,
-    color: FlowstateColors.textTertiary,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: FlowstateColors.surface,
-    borderRadius: BorderRadius.sm,
-    paddingVertical: Spacing.md,
-    borderWidth: 1,
-    borderColor: FlowstateColors.border,
-    gap: Spacing.sm,
-  },
-  socialButtonText: {
-    color: FlowstateColors.textPrimary,
-    fontWeight: "500",
   },
   footer: {
     marginTop: "auto",

@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, View, Platform } from "react-native";
+import { StyleSheet, View, Platform, Pressable } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
@@ -10,7 +11,7 @@ import * as Haptics from "expo-haptics";
 import DiscoverStackNavigator from "@/navigation/DiscoverStackNavigator";
 import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
 import { useTheme } from "@/hooks/useTheme";
-import { FlowstateColors } from "@/constants/theme";
+import { FlowstateColors, Spacing, BorderRadius, Shadows } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 export type MainTabParamList = {
@@ -28,6 +29,7 @@ function EmptyScanScreen() {
 export default function MainTabNavigator() {
   const { theme, isDark } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
@@ -37,21 +39,38 @@ export default function MainTabNavigator() {
         tabBarInactiveTintColor: FlowstateColors.textSecondary,
         tabBarStyle: {
           position: "absolute",
+          bottom: Math.max(insets.bottom, 12),
+          left: Spacing.xl,
+          right: Spacing.xl,
+          height: 64,
+          borderRadius: 32,
           backgroundColor: Platform.select({
             ios: "transparent",
             android: theme.backgroundRoot,
           }),
           borderTopWidth: 0,
           elevation: 0,
+          ...Shadows.large,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 16,
         },
         tabBarBackground: () =>
           Platform.OS === "ios" ? (
             <BlurView
-              intensity={100}
+              intensity={80}
               tint={isDark ? "dark" : "light"}
-              style={StyleSheet.absoluteFill}
+              style={[StyleSheet.absoluteFill, { borderRadius: 32, overflow: "hidden" }]}
             />
           ) : null,
+        tabBarItemStyle: {
+          paddingVertical: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: "500",
+        },
         headerShown: false,
       }}
     >
@@ -76,9 +95,11 @@ export default function MainTabNavigator() {
           },
         }}
         options={{
-          title: "Scan",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="camera" size={size} color={color} />
+          title: "",
+          tabBarIcon: () => (
+            <View style={styles.scanFab}>
+              <Feather name="camera" size={24} color="#FFFFFF" />
+            </View>
           ),
         }}
       />
@@ -95,3 +116,16 @@ export default function MainTabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  scanFab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: FlowstateColors.accent,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+    ...Shadows.fab,
+  },
+});

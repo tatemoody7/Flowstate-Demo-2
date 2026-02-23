@@ -96,15 +96,6 @@ export default function DiscoverScreen() {
 
   const renderHeader = () => (
     <View style={styles.header}>
-      <View style={styles.heroSection}>
-        <ThemedText type="h1" style={styles.heroTitle} testID="hero-greeting">
-          {getDynamicGreeting()}
-        </ThemedText>
-        <ThemedText type="small" style={styles.heroSubtitle}>
-          {getSubGreeting()}
-        </ThemedText>
-      </View>
-
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
