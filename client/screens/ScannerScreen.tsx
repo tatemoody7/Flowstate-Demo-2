@@ -83,6 +83,9 @@ export default function ScannerScreen() {
     navigation.goBack();
   }, [navigation]);
 
+  // Whether we're showing results (not actively scanning/loading)
+  const showingResults = !!(scannedFood || showError);
+
   // Health tier is determined by ingredient flags, not score
   const healthTier = useMemo(
     () => scannedFood ? getHealthTier(scannedFood.ingredients, scannedFood.healthScore) : null,
@@ -136,7 +139,7 @@ export default function ScannerScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, showingResults && { backgroundColor: FlowstateColors.background }]}>
       {/* Camera: keep alive during loading, unmount when showing results to save battery */}
       {isScanning || isLoading ? (
         <CameraView
@@ -157,14 +160,14 @@ export default function ScannerScreen() {
         <View style={[styles.topControls, { paddingTop: insets.top + Spacing.lg }]}>
           <Pressable
             onPress={handleClose}
-            style={styles.closeButton}
+            style={[styles.closeButton, showingResults && styles.closeButtonLight]}
             accessibilityRole="button"
             accessibilityLabel="Close scanner"
             testID="scanner-close"
           >
-            <Feather name="x" size={24} color="#FFFFFF" />
+            <Feather name="x" size={24} color={showingResults ? FlowstateColors.textPrimary : "#FFFFFF"} />
           </Pressable>
-          <ThemedText type="h3" style={styles.title}>
+          <ThemedText type="h3" style={[styles.title, showingResults && styles.titleLight]}>
             Scan Food
           </ThemedText>
           <View style={styles.placeholder} />
@@ -515,6 +518,14 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#FFFFFF",
+  },
+  titleLight: {
+    color: FlowstateColors.textPrimary,
+  },
+  closeButtonLight: {
+    backgroundColor: FlowstateColors.surface,
+    borderWidth: 1,
+    borderColor: FlowstateColors.border,
   },
   placeholder: {
     width: 44,
