@@ -651,6 +651,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: BorderRadius["2xl"],
     borderTopRightRadius: BorderRadius["2xl"],
     padding: Spacing.xl,
+    overflow: "hidden",
   },
   resultScroll: {
     flexGrow: 0,
