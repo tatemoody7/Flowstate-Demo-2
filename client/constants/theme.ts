@@ -25,6 +25,7 @@ export const FlowstateColors = {
   primaryLighter: "#c2eff0",
   primaryLightest: "#e4ffc2",
   cream: "#fff3c2",
+  creamYellow: "#f9f19c",
 
   // ─── Surfaces & Backgrounds ───────────────────────────────────
   background: "#F8FAFC",
@@ -41,11 +42,11 @@ export const FlowstateColors = {
 
   // ─── Status / Scan Colors ─────────────────────────────────────
   success: "#10bb82",
-  warning: "#f9f19c",
+  warning: "#ffde59",
   error: "#f07269",
   info: "#1f80ff",
   healthGreen: "#10bb82",
-  healthYellow: "#f9f19c",
+  healthYellow: "#ffde59",
   healthRed: "#f07269",
 
   // ─── Gradients ────────────────────────────────────────────────

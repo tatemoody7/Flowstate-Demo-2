@@ -31,7 +31,7 @@ function getHealthBannerGradient(tier: string): string[] {
     case "green":
       return ["#10bb82", "#0ea5a0"]; // green to teal
     case "yellow":
-      return ["#f9f19c", "#fde68a"]; // light yellow to warm yellow
+      return ["#ffde59", "#fde68a"]; // warm gold to golden yellow
     case "red":
       return ["#f07269", "#e85d6f"]; // coral to rose
     default:

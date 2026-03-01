@@ -15,6 +15,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { getHealthTier } from "@/utils/healthTier";
+import { generateFlowTip } from "@/utils/flowTip";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type FoodDetailScreenProps = {
@@ -31,6 +32,7 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
 
   const isSaved = savedFoods.includes(food.id);
   const healthTier = getHealthTier(food.ingredients, food.healthScore);
+  const flowTip = generateFlowTip(food, healthTier.tier);
 
   const handleSavePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -95,6 +97,21 @@ export default function FoodDetailScreen({ navigation, route }: FoodDetailScreen
                 {healthTier.label}
               </ThemedText>
             </View>
+          </View>
+        </Animated.View>
+
+        {/* Flow Tip */}
+        <Animated.View entering={FadeInDown.delay(225).duration(400)} style={styles.flowTipSection}>
+          <View style={styles.flowTipCard}>
+            <View style={styles.flowTipHeader}>
+              <Feather name="zap" size={14} color={FlowstateColors.accent} />
+              <ThemedText type="caption" style={styles.flowTipLabel}>
+                Flow Tip
+              </ThemedText>
+            </View>
+            <ThemedText type="small" style={styles.flowTipText}>
+              {flowTip}
+            </ThemedText>
           </View>
         </Animated.View>
 
@@ -446,6 +463,30 @@ const styles = StyleSheet.create({
   ingredientName: {
     fontSize: 12,
     fontWeight: "600",
+  },
+  flowTipSection: {
+    marginBottom: Spacing.xl,
+  },
+  flowTipCard: {
+    backgroundColor: FlowstateColors.surface,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: FlowstateColors.border,
+  },
+  flowTipHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: Spacing.sm,
+  },
+  flowTipLabel: {
+    color: FlowstateColors.accent,
+    fontWeight: "600",
+  },
+  flowTipText: {
+    color: FlowstateColors.textSecondary,
+    lineHeight: 20,
   },
   actionSection: {
     marginTop: Spacing.lg,
