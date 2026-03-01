@@ -86,7 +86,7 @@ export function getHealthTier(
 }
 
 /**
- * Get just the color for a food item (used by FoodCard, FoodDetailScreen).
+ * Get just the color for a food item (used by FoodCard, ScannerScreen).
  */
 export function getHealthTierColor(
   ingredients?: FlaggedIngredient[],

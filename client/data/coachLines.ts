@@ -58,33 +58,23 @@ export const COACH_LINES = {
   },
 
   scanReactions: {
-    healthy: [
-      "Solid choice. Your body thanks you.",
-      "Clean pick. This is how you fuel up.",
-      "Good fuel. You're thinking long-term.",
+    green: [
+      "Stay hot",
+      "You're hitting flow",
+      "Your golden",
+      "Holy dialed",
     ],
-    okay: [
-      "Not bad, not great. Check the label.",
-      "It's mid. You can do better.",
-      "Could be worse, but could be way better.",
-      "It'll do in a pinch. Don't make it a habit.",
+    yellow: [
+      "Pretty mid",
+      "Good effort",
+      "I guess bro",
+      "Not bad kid",
     ],
-    unhealthy: [
-      "You already know this isn't it.",
-      "Be honest with yourself on this one.",
-      "Not the worst... but you can do better.",
-      "Your future self would pick something else.",
-    ],
-    alternative: "Try {alternative} instead. Same vibe, better fuel.",
-    goodIngredients: [
-      "Clean ingredients. This is how you fuel.",
-      "Nothing sketchy in here. Solid.",
-      "Good stuff on the label. Keep it up.",
-    ],
-    badIngredients: [
-      "Check those ingredients. Some red flags in there.",
-      "A few questionable ingredients. Read the label.",
-      "Your body deserves better than those additives.",
+    red: [
+      "You're better than that",
+      "Need you to dial in",
+      "You might be cooked",
+      "You're selling",
     ],
   },
 };
@@ -116,16 +106,13 @@ export function getPillarReaction(pillar: "nourish" | "move" | "rest"): string {
   return getRandomLine(COACH_LINES.pillarReactions[pillar]);
 }
 
-export function getScanReaction(tier: "green" | "yellow" | "red", alternative?: string): string {
-  if (tier === "green") {
-    return getRandomLine(COACH_LINES.scanReactions.healthy);
-  }
-  if (tier === "yellow") {
-    return getRandomLine(COACH_LINES.scanReactions.okay);
-  }
-  const lines = [...COACH_LINES.scanReactions.unhealthy];
-  if (alternative) {
-    lines.push(COACH_LINES.scanReactions.alternative.replace("{alternative}", alternative));
-  }
-  return getRandomLine(lines);
+const _lastReaction: Record<string, string> = {};
+
+export function getScanReaction(tier: "green" | "yellow" | "red"): string {
+  const lines = COACH_LINES.scanReactions[tier];
+  const last = _lastReaction[tier];
+  const filtered = lines.filter((l) => l !== last);
+  const pick = filtered[Math.floor(Math.random() * filtered.length)];
+  _lastReaction[tier] = pick;
+  return pick;
 }

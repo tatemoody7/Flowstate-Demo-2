@@ -16,6 +16,7 @@ import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { ScannedFood } from "@/data/mockData";
 import { getScanReaction } from "@/data/coachLines";
 import { getHealthTier } from "@/utils/healthTier";
+import { generateFlowTip } from "@/utils/flowTip";
 import { useProductLookup } from "@/hooks/useProductLookup";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
@@ -24,16 +25,16 @@ type ScannerScreenNavigationProp = NativeStackNavigationProp<
   "Scanner"
 >;
 
-// ─── Health Color Helpers ────────────────────────────────────────────────────
+// ─── Full-Screen Gradient Colors ────────────────────────────────────────────
 
-function getHealthBannerGradient(tier: string): string[] {
+function getFullScreenGradient(tier: string): string[] {
   switch (tier) {
     case "green":
-      return ["#10bb82", "#0ea5a0"]; // green to teal
+      return ["#10bb82", "#0ea5a0"];
     case "yellow":
-      return ["#ffde59", "#fde68a"]; // warm gold to golden yellow
+      return ["#e6a817", "#d4960f"]; // deeper gold for white text contrast
     case "red":
-      return ["#f07269", "#e85d6f"]; // coral to rose
+      return ["#f07269", "#e85d6f"];
     default:
       return ["#10bb82", "#0ea5a0"];
   }
@@ -100,13 +101,25 @@ export default function ScannerScreen() {
   // Whether we're showing results (not actively scanning/loading)
   const showingResults = !!(scannedFood || showError);
 
-  // Health tier is determined by ingredient flags, not score
+  // Health tier
   const healthTier = useMemo(
     () => scannedFood ? getHealthTier(scannedFood.ingredients, scannedFood.healthScore) : null,
     [scannedFood]
   );
 
-  // Memoized ingredient summary — single-pass count instead of 3 filter passes
+  // Flow Tip
+  const flowTip = useMemo(
+    () => scannedFood && healthTier ? generateFlowTip(scannedFood, healthTier.tier) : null,
+    [scannedFood, healthTier]
+  );
+
+  // Scan reaction phrase (college slang)
+  const scanPhrase = useMemo(
+    () => healthTier ? getScanReaction(healthTier.tier) : null,
+    [healthTier]
+  );
+
+  // Memoized ingredient summary
   const ingredientSummary = useMemo(() => {
     if (!scannedFood?.ingredients || scannedFood.ingredients.length === 0) return null;
     let good = 0, bad = 0, caution = 0;
@@ -152,8 +165,290 @@ export default function ScannerScreen() {
     );
   }
 
+  // ─── Results Screen (Full-Screen Immersive) ─────────────────────────────────
+  if (scannedFood && healthTier) {
+    const isSaved = savedFoods.includes(scannedFood.id);
+    const gradientColors = getFullScreenGradient(healthTier.tier);
+
+    return (
+      <LinearGradient
+        colors={gradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.3, y: 1 }}
+        style={styles.container}
+      >
+        {/* Top Controls */}
+        <View style={[styles.topControls, { paddingTop: insets.top + Spacing.lg }]}>
+          <Pressable
+            onPress={handleClose}
+            style={styles.immersiveCloseButton}
+            accessibilityRole="button"
+            accessibilityLabel="Close scanner"
+          >
+            <Feather name="x" size={24} color="#FFFFFF" />
+          </Pressable>
+          <ThemedText type="h3" style={styles.immersiveTitle}>
+            Scan Food
+          </ThemedText>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              toggleSavedFood(scannedFood.id);
+            }}
+            style={[styles.immersiveSaveButton, isSaved && styles.immersiveSaveButtonActive]}
+          >
+            <Feather
+              name="heart"
+              size={20}
+              color={isSaved ? FlowstateColors.error : "#FFFFFF"}
+            />
+          </Pressable>
+        </View>
+
+        <ScrollView
+          style={styles.immersiveScroll}
+          contentContainerStyle={[styles.immersiveContent, { paddingBottom: insets.bottom + Spacing["3xl"] }]}
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+        >
+          {/* ─── Hero: Tier Icon + College Slang Phrase ─── */}
+          <Animated.View entering={FadeInDown.duration(500)} style={styles.heroSection}>
+            <View style={styles.heroIconCircle}>
+              <Feather name={healthTier.icon} size={36} color="#FFFFFF" />
+            </View>
+            <ThemedText type="hero" style={styles.heroPhrase}>
+              {scanPhrase}
+            </ThemedText>
+            <ThemedText type="small" style={styles.heroSubtitle}>
+              {healthTier.subtitle}
+            </ThemedText>
+          </Animated.View>
+
+          {/* ─── Product Info ─── */}
+          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.productSection}>
+            <Image
+              source={{ uri: scannedFood.image }}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+            <ThemedText type="h2" style={styles.productName} numberOfLines={2}>
+              {scannedFood.name}
+            </ThemedText>
+            <ThemedText type="small" style={styles.productBrand}>
+              {scannedFood.brand}
+            </ThemedText>
+          </Animated.View>
+
+          {/* ─── Ingredient Summary ─── */}
+          {ingredientSummary ? (
+            <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.summaryRow}>
+              {ingredientSummary.good > 0 ? (
+                <View style={styles.summaryChip}>
+                  <View style={[styles.summaryDot, { backgroundColor: "#4ade80" }]} />
+                  <ThemedText type="caption" style={styles.summaryText}>
+                    {ingredientSummary.good} good
+                  </ThemedText>
+                </View>
+              ) : null}
+              {ingredientSummary.caution > 0 ? (
+                <View style={styles.summaryChip}>
+                  <View style={[styles.summaryDot, { backgroundColor: "#fde68a" }]} />
+                  <ThemedText type="caption" style={styles.summaryText}>
+                    {ingredientSummary.caution} caution
+                  </ThemedText>
+                </View>
+              ) : null}
+              {ingredientSummary.bad > 0 ? (
+                <View style={styles.summaryChip}>
+                  <View style={[styles.summaryDot, { backgroundColor: "#fca5a5" }]} />
+                  <ThemedText type="caption" style={styles.summaryText}>
+                    {ingredientSummary.bad} flagged
+                  </ThemedText>
+                </View>
+              ) : null}
+            </Animated.View>
+          ) : null}
+
+          {/* ─── Flow Tip ─── */}
+          {flowTip ? (
+            <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.glassCard}>
+              <View style={styles.flowTipHeader}>
+                <Feather name="zap" size={14} color="#FFFFFF" />
+                <ThemedText type="caption" style={styles.flowTipLabel}>
+                  Flow Tip
+                </ThemedText>
+              </View>
+              <ThemedText type="small" style={styles.flowTipText}>
+                {flowTip}
+              </ThemedText>
+            </Animated.View>
+          ) : null}
+
+          {/* ─── Macro Percentage Bar ─── */}
+          <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.macroSection}>
+            {(() => {
+              const totalMacroGrams = scannedFood.protein + scannedFood.carbs + scannedFood.fat;
+              const proteinPct = totalMacroGrams > 0 ? Math.round((scannedFood.protein / totalMacroGrams) * 100) : 0;
+              const carbsPct = totalMacroGrams > 0 ? Math.round((scannedFood.carbs / totalMacroGrams) * 100) : 0;
+              const fatPct = totalMacroGrams > 0 ? 100 - proteinPct - carbsPct : 0;
+              return (
+                <>
+                  <View style={styles.macroLabels}>
+                    <View style={styles.macroDotLabel}>
+                      <View style={[styles.macroDot, { backgroundColor: "#60a5fa" }]} />
+                      <ThemedText type="caption" style={styles.macroLabelText}>
+                        Protein {scannedFood.protein}g
+                      </ThemedText>
+                    </View>
+                    <View style={styles.macroDotLabel}>
+                      <View style={[styles.macroDot, { backgroundColor: "#fbbf24" }]} />
+                      <ThemedText type="caption" style={styles.macroLabelText}>
+                        Carbs {scannedFood.carbs}g
+                      </ThemedText>
+                    </View>
+                    <View style={styles.macroDotLabel}>
+                      <View style={[styles.macroDot, { backgroundColor: "#fb923c" }]} />
+                      <ThemedText type="caption" style={styles.macroLabelText}>
+                        Fat {scannedFood.fat}g
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <View style={styles.macroBar}>
+                    <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: "#60a5fa", borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
+                    <View style={[styles.macroSegment, { flex: carbsPct, backgroundColor: "#fbbf24" }]} />
+                    <View style={[styles.macroSegment, { flex: fatPct, backgroundColor: "#fb923c", borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
+                  </View>
+                </>
+              );
+            })()}
+          </Animated.View>
+
+          {/* ─── Nutrition 2x2 Grid ─── */}
+          <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+            <ThemedText type="h4" style={styles.sectionTitle}>
+              Nutrition Facts
+            </ThemedText>
+            <View style={styles.nutritionGrid}>
+              <View style={styles.nutritionGridItem}>
+                <ThemedText type="h2" style={styles.nutritionValue}>
+                  {scannedFood.calories}
+                </ThemedText>
+                <ThemedText type="caption" style={styles.nutritionLabel}>
+                  Calories
+                </ThemedText>
+              </View>
+              <View style={styles.nutritionGridItem}>
+                <ThemedText type="h2" style={styles.nutritionValue}>
+                  {scannedFood.protein}g
+                </ThemedText>
+                <ThemedText type="caption" style={styles.nutritionLabel}>
+                  Protein
+                </ThemedText>
+              </View>
+              <View style={styles.nutritionGridItem}>
+                <ThemedText type="h2" style={styles.nutritionValue}>
+                  {scannedFood.carbs}g
+                </ThemedText>
+                <ThemedText type="caption" style={styles.nutritionLabel}>
+                  Carbs
+                </ThemedText>
+              </View>
+              <View style={styles.nutritionGridItem}>
+                <ThemedText type="h2" style={styles.nutritionValue}>
+                  {scannedFood.fat}g
+                </ThemedText>
+                <ThemedText type="caption" style={styles.nutritionLabel}>
+                  Fat
+                </ThemedText>
+              </View>
+            </View>
+
+            {/* Nutrition Details */}
+            <View style={styles.nutritionDetails}>
+              <View style={styles.nutritionDetailRow}>
+                <ThemedText type="body" style={styles.nutritionDetailLabel}>
+                  Fiber
+                </ThemedText>
+                <ThemedText type="body" style={styles.nutritionDetailValue}>
+                  {scannedFood.fiber}g
+                </ThemedText>
+              </View>
+              <View style={styles.nutritionDetailRow}>
+                <ThemedText type="body" style={styles.nutritionDetailLabel}>
+                  Sugar
+                </ThemedText>
+                <ThemedText type="body" style={styles.nutritionDetailValue}>
+                  {scannedFood.sugar}g
+                </ThemedText>
+              </View>
+              <View style={[styles.nutritionDetailRow, { borderBottomWidth: 0 }]}>
+                <ThemedText type="body" style={styles.nutritionDetailLabel}>
+                  Sodium
+                </ThemedText>
+                <ThemedText type="body" style={styles.nutritionDetailValue}>
+                  {scannedFood.sodium}mg
+                </ThemedText>
+              </View>
+            </View>
+          </Animated.View>
+
+          {/* ─── Ingredients ─── */}
+          {scannedFood.ingredients && scannedFood.ingredients.length > 0 ? (
+            <Animated.View entering={FadeInDown.delay(350).duration(400)} style={styles.ingredientsSection}>
+              <ThemedText type="h4" style={styles.sectionTitle}>
+                Ingredients
+              </ThemedText>
+              <View style={styles.ingredientsList}>
+                {scannedFood.ingredients.map((ing, idx) => {
+                  const dotColor =
+                    ing.flag === "good"
+                      ? "#4ade80"
+                      : ing.flag === "bad"
+                      ? "#fca5a5"
+                      : ing.flag === "caution"
+                      ? "#fde68a"
+                      : "rgba(255,255,255,0.4)";
+                  return (
+                    <View key={idx} style={styles.ingredientChip}>
+                      <View style={[styles.ingredientDot, { backgroundColor: dotColor }]} />
+                      <View style={styles.ingredientTextWrap}>
+                        <ThemedText type="caption" style={styles.ingredientName}>
+                          {ing.name}
+                        </ThemedText>
+                        {ing.reason ? (
+                          <ThemedText
+                            type="caption"
+                            style={styles.ingredientReason}
+                            numberOfLines={1}
+                          >
+                            {ing.reason}
+                          </ThemedText>
+                        ) : null}
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </Animated.View>
+          ) : null}
+
+          {/* ─── Scan Another Button ─── */}
+          <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.actionSection}>
+            <Pressable onPress={handleScanAgain} style={styles.scanAnotherButton}>
+              <Feather name="rotate-ccw" size={18} color="#FFFFFF" />
+              <ThemedText type="button" style={styles.scanAnotherText}>
+                Scan Another
+              </ThemedText>
+            </Pressable>
+          </Animated.View>
+        </ScrollView>
+      </LinearGradient>
+    );
+  }
+
+  // ─── Camera / Loading / Error States ──────────────────────────────────────────
   return (
-    <View style={[styles.container, showingResults && { backgroundColor: FlowstateColors.background }]}>
+    <View style={styles.container}>
       {/* Camera: keep alive during loading, unmount when showing results to save battery */}
       {isScanning || isLoading ? (
         <CameraView
@@ -225,7 +520,7 @@ export default function ScannerScreen() {
         {showError && !scannedFood ? (
           <Animated.View
             entering={FadeInUp.duration(400)}
-            style={[styles.resultCard, { paddingBottom: insets.bottom + Spacing.lg }]}
+            style={[styles.errorCard, { paddingBottom: insets.bottom + Spacing.lg }]}
           >
             <View style={styles.errorContent}>
               <View
@@ -263,219 +558,6 @@ export default function ScannerScreen() {
               <Pressable onPress={handleClose} style={styles.errorCloseLink}>
                 <ThemedText type="small" style={styles.errorCloseText}>
                   Go Back
-                </ThemedText>
-              </Pressable>
-            </View>
-          </Animated.View>
-        ) : null}
-
-        {/* Scanned result */}
-        {scannedFood ? (
-          <Animated.View
-            entering={FadeInUp.duration(400)}
-            style={[
-              styles.resultCard,
-              { paddingBottom: insets.bottom + Spacing.lg, backgroundColor: `${healthTier?.color ?? FlowstateColors.healthGreen}10` },
-            ]}
-          >
-            <ScrollView
-              style={styles.resultScroll}
-              showsVerticalScrollIndicator={false}
-              bounces={true}
-            >
-              {/* ─── Health Color Banner ─── */}
-              {healthTier && (
-                <LinearGradient
-                  colors={getHealthBannerGradient(healthTier.tier)}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.healthBanner}
-                >
-                  <Feather
-                    name={healthTier.icon}
-                    size={28}
-                    color={healthTier.tier === "yellow" ? FlowstateColors.textPrimary : "#FFFFFF"}
-                  />
-                  <ThemedText type="h3" style={[styles.healthBannerLabel, healthTier.tier === "yellow" && { color: FlowstateColors.textPrimary }]}>
-                    {healthTier.label}
-                  </ThemedText>
-                  <ThemedText type="caption" style={[styles.healthBannerDescription, healthTier.tier === "yellow" && { color: FlowstateColors.textSecondary }]}>
-                    {getScanReaction(healthTier.tier)}
-                  </ThemedText>
-                </LinearGradient>
-              )}
-
-              {/* ─── Product Header ─── */}
-              <View style={styles.resultHeader}>
-                <Image
-                  source={{ uri: scannedFood.image }}
-                  style={styles.resultImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.resultInfo}>
-                  <ThemedText type="h3" style={styles.resultName} numberOfLines={2}>
-                    {scannedFood.name}
-                  </ThemedText>
-                  <ThemedText type="small" style={styles.resultBrand}>
-                    {scannedFood.brand}
-                  </ThemedText>
-                </View>
-                <Pressable
-                  onPress={() => toggleSavedFood(scannedFood.id)}
-                  style={[
-                    styles.headerSaveButton,
-                    savedFoods.includes(scannedFood.id) && styles.headerSaveButtonActive,
-                  ]}
-                >
-                  <Feather
-                    name="heart"
-                    size={20}
-                    color={
-                      savedFoods.includes(scannedFood.id)
-                        ? FlowstateColors.error
-                        : FlowstateColors.textSecondary
-                    }
-                  />
-                </Pressable>
-              </View>
-
-              {/* ─── Ingredient Summary ─── */}
-              {ingredientSummary ? (
-                <View style={styles.ingredientSummary}>
-                  {ingredientSummary.good > 0 ? (
-                    <View style={styles.summaryChip}>
-                      <View style={[styles.summaryDot, { backgroundColor: FlowstateColors.healthGreen }]} />
-                      <ThemedText type="caption" style={{ color: FlowstateColors.healthGreen }}>
-                        {ingredientSummary.good} good
-                      </ThemedText>
-                    </View>
-                  ) : null}
-                  {ingredientSummary.caution > 0 ? (
-                    <View style={styles.summaryChip}>
-                      <View style={[styles.summaryDot, { backgroundColor: FlowstateColors.warning }]} />
-                      <ThemedText type="caption" style={{ color: FlowstateColors.warning }}>
-                        {ingredientSummary.caution} caution
-                      </ThemedText>
-                    </View>
-                  ) : null}
-                  {ingredientSummary.bad > 0 ? (
-                    <View style={styles.summaryChip}>
-                      <View style={[styles.summaryDot, { backgroundColor: FlowstateColors.healthRed }]} />
-                      <ThemedText type="caption" style={{ color: FlowstateColors.healthRed }}>
-                        {ingredientSummary.bad} flagged
-                      </ThemedText>
-                    </View>
-                  ) : null}
-                </View>
-              ) : null}
-
-              {/* ─── Macro Percentage Bar ─── */}
-              {(() => {
-                const totalMacroGrams = scannedFood.protein + scannedFood.carbs + scannedFood.fat;
-                const proteinPct = totalMacroGrams > 0 ? Math.round((scannedFood.protein / totalMacroGrams) * 100) : 0;
-                const carbsPct = totalMacroGrams > 0 ? Math.round((scannedFood.carbs / totalMacroGrams) * 100) : 0;
-                const fatPct = totalMacroGrams > 0 ? 100 - proteinPct - carbsPct : 0;
-                return (
-                  <View style={styles.macroBarSection}>
-                    <View style={styles.macroLabels}>
-                      <View style={styles.macroDotLabel}>
-                        <View style={[styles.macroDot, { backgroundColor: FlowstateColors.accent }]} />
-                        <ThemedText type="caption" style={styles.macroDotText}>
-                          Protein {scannedFood.protein}g
-                        </ThemedText>
-                      </View>
-                      <View style={styles.macroDotLabel}>
-                        <View style={[styles.macroDot, { backgroundColor: FlowstateColors.warning }]} />
-                        <ThemedText type="caption" style={styles.macroDotText}>
-                          Carbs {scannedFood.carbs}g
-                        </ThemedText>
-                      </View>
-                      <View style={styles.macroDotLabel}>
-                        <View style={[styles.macroDot, { backgroundColor: FlowstateColors.healthRed }]} />
-                        <ThemedText type="caption" style={styles.macroDotText}>
-                          Fat {scannedFood.fat}g
-                        </ThemedText>
-                      </View>
-                    </View>
-                    <View style={styles.macroBar}>
-                      <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: FlowstateColors.accent, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
-                      <View style={[styles.macroSegment, { flex: carbsPct, backgroundColor: FlowstateColors.warning }]} />
-                      <View style={[styles.macroSegment, { flex: fatPct, backgroundColor: FlowstateColors.healthRed, borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
-                    </View>
-                  </View>
-                );
-              })()}
-
-              {/* ─── Calories ─── */}
-              <ThemedText type="body" style={styles.caloriesText}>
-                {scannedFood.calories} calories per serving
-              </ThemedText>
-
-              {/* ─── Ingredients Section ─── */}
-              {scannedFood.ingredients && scannedFood.ingredients.length > 0 ? (
-                <View style={styles.ingredientsSection}>
-                  <ThemedText type="h4" style={styles.ingredientsTitle}>
-                    Ingredients
-                  </ThemedText>
-                  <View style={styles.ingredientsList}>
-                    {scannedFood.ingredients.map((ing, idx) => {
-                      const flagColor =
-                        ing.flag === "good"
-                          ? FlowstateColors.healthGreen
-                          : ing.flag === "bad"
-                          ? FlowstateColors.healthRed
-                          : ing.flag === "caution"
-                          ? FlowstateColors.warning
-                          : FlowstateColors.textTertiary;
-                      return (
-                        <View
-                          key={idx}
-                          style={[
-                            styles.ingredientChip,
-                            {
-                              backgroundColor: `${flagColor}22`,
-                              borderColor: `${flagColor}55`,
-                            },
-                          ]}
-                        >
-                          <ThemedText
-                            type="caption"
-                            style={[styles.ingredientText, { color: flagColor }]}
-                          >
-                            {ing.name}
-                          </ThemedText>
-                          {ing.reason ? (
-                            <ThemedText
-                              type="caption"
-                              style={[styles.ingredientReason, { color: flagColor }]}
-                              numberOfLines={1}
-                            >
-                              {ing.reason}
-                            </ThemedText>
-                          ) : null}
-                        </View>
-                      );
-                    })}
-                  </View>
-                </View>
-              ) : null}
-
-            </ScrollView>
-
-            {/* Action Buttons */}
-            <View style={styles.resultActions}>
-              <Pressable
-                onPress={() => scannedFood && navigation.navigate("FoodDetail", { food: scannedFood })}
-                style={styles.viewDetailsButton}
-              >
-                <ThemedText type="button" style={styles.viewDetailsText}>
-                  View Details
-                </ThemedText>
-              </Pressable>
-              <Pressable onPress={handleScanAgain} style={styles.scanAnotherButton}>
-                <Feather name="rotate-ccw" size={16} color={FlowstateColors.textPrimary} />
-                <ThemedText type="button" style={styles.scanAnotherText}>
-                  Scan Another
                 </ThemedText>
               </Pressable>
             </View>
@@ -530,7 +612,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: Spacing.lg,
+    zIndex: 10,
   },
+  // ─── Camera State Controls ──────────────────────────────────────────────────
   closeButton: {
     width: 44,
     height: 44,
@@ -539,20 +623,290 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  closeButtonLight: {
+    backgroundColor: FlowstateColors.surface,
+    borderWidth: 1,
+    borderColor: FlowstateColors.border,
+  },
   title: {
     color: "#FFFFFF",
   },
   titleLight: {
     color: FlowstateColors.textPrimary,
   },
-  closeButtonLight: {
-    backgroundColor: FlowstateColors.surface,
-    borderWidth: 1,
-    borderColor: FlowstateColors.border,
-  },
   placeholder: {
     width: 44,
   },
+  // ─── Immersive Results Controls ─────────────────────────────────────────────
+  immersiveCloseButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  immersiveTitle: {
+    color: "#FFFFFF",
+  },
+  immersiveSaveButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  immersiveSaveButtonActive: {
+    backgroundColor: "rgba(255,255,255,0.95)",
+  },
+  // ─── Immersive Results Content ──────────────────────────────────────────────
+  immersiveScroll: {
+    flex: 1,
+  },
+  immersiveContent: {
+    paddingHorizontal: Spacing.xl,
+  },
+  // ─── Hero Section ───────────────────────────────────────────────────────────
+  heroSection: {
+    alignItems: "center",
+    marginTop: Spacing["2xl"],
+    marginBottom: Spacing["2xl"],
+  },
+  heroIconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.lg,
+  },
+  heroPhrase: {
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginBottom: Spacing.sm,
+  },
+  heroSubtitle: {
+    color: "rgba(255,255,255,0.75)",
+    textAlign: "center",
+  },
+  // ─── Product Section ────────────────────────────────────────────────────────
+  productSection: {
+    alignItems: "center",
+    marginBottom: Spacing.xl,
+  },
+  productImage: {
+    width: 100,
+    height: 100,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 3,
+    borderColor: "rgba(255,255,255,0.3)",
+    marginBottom: Spacing.md,
+  },
+  productName: {
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  productBrand: {
+    color: "rgba(255,255,255,0.7)",
+    marginTop: 2,
+  },
+  // ─── Summary Row ────────────────────────────────────────────────────────────
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  summaryChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.full,
+  },
+  summaryDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  summaryText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 11,
+  },
+  // ─── Glass Card (Flow Tip, etc.) ────────────────────────────────────────────
+  glassCard: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
+    marginBottom: Spacing.xl,
+  },
+  flowTipHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: Spacing.sm,
+  },
+  flowTipLabel: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 12,
+  },
+  flowTipText: {
+    color: "rgba(255,255,255,0.85)",
+    lineHeight: 20,
+  },
+  // ─── Macro Bar Section ──────────────────────────────────────────────────────
+  macroSection: {
+    marginBottom: Spacing.xl,
+  },
+  macroLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: Spacing.sm,
+  },
+  macroDotLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  macroDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  macroLabelText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  macroBar: {
+    flexDirection: "row",
+    height: 8,
+    borderRadius: 4,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  macroSegment: {
+    height: 8,
+  },
+  // ─── Section Title ──────────────────────────────────────────────────────────
+  sectionTitle: {
+    color: "#FFFFFF",
+    marginBottom: Spacing.md,
+  },
+  // ─── Nutrition Grid ─────────────────────────────────────────────────────────
+  nutritionGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  nutritionGridItem: {
+    width: "48%",
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+  },
+  nutritionValue: {
+    color: "#FFFFFF",
+    marginBottom: 2,
+  },
+  nutritionLabel: {
+    color: "rgba(255,255,255,0.7)",
+  },
+  nutritionDetails: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+    marginBottom: Spacing.xl,
+  },
+  nutritionDetailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.15)",
+  },
+  nutritionDetailLabel: {
+    color: "rgba(255,255,255,0.7)",
+  },
+  nutritionDetailValue: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+  // ─── Ingredients ────────────────────────────────────────────────────────────
+  ingredientsSection: {
+    marginBottom: Spacing.xl,
+  },
+  ingredientsList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+  },
+  ingredientChip: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 6,
+  },
+  ingredientDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 5,
+  },
+  ingredientTextWrap: {
+    flexShrink: 1,
+  },
+  ingredientName: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  ingredientReason: {
+    fontSize: 10,
+    fontWeight: "400",
+    color: "rgba(255,255,255,0.65)",
+    marginTop: 1,
+  },
+  // ─── Action Section ─────────────────────────────────────────────────────────
+  actionSection: {
+    marginTop: Spacing.sm,
+  },
+  scanAnotherButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing.sm,
+    paddingVertical: 16,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.5)",
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  scanAnotherText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  // ─── Scan Frame ─────────────────────────────────────────────────────────────
   scanFrame: {
     position: "absolute",
     top: "30%",
@@ -639,7 +993,8 @@ const styles = StyleSheet.create({
   loadingSubtext: {
     color: "rgba(255,255,255,0.6)",
   },
-  resultCard: {
+  // ─── Error Card ─────────────────────────────────────────────────────────────
+  errorCard: {
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -651,11 +1006,6 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     overflow: "hidden",
   },
-  resultScroll: {
-    flexGrow: 0,
-    marginBottom: Spacing.md,
-  },
-  // ─── Error State ────────────────────────────────────────────────────
   errorContent: {
     alignItems: "center",
     paddingVertical: Spacing["2xl"],
@@ -691,250 +1041,5 @@ const styles = StyleSheet.create({
   errorCloseText: {
     color: FlowstateColors.textSecondary,
     textDecorationLine: "underline",
-  },
-  resultHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: Spacing.lg,
-  },
-  resultImage: {
-    width: 60,
-    height: 60,
-    borderRadius: BorderRadius.sm,
-  },
-  resultInfo: {
-    flex: 1,
-    marginLeft: Spacing.md,
-  },
-  resultName: {
-    color: FlowstateColors.textPrimary,
-  },
-  resultBrand: {
-    color: FlowstateColors.textSecondary,
-  },
-  // ─── Health Banner ─────────────────────────────────────────────────
-  healthBanner: {
-    marginBottom: Spacing.lg,
-    paddingVertical: Spacing["2xl"],
-    paddingHorizontal: Spacing.xl,
-    alignItems: "center",
-    gap: Spacing.xs,
-    borderRadius: BorderRadius["2xl"],
-    overflow: "hidden",
-  },
-  healthBannerLabel: {
-    color: "#FFFFFF",
-    marginTop: Spacing.xs,
-  },
-  healthBannerDescription: {
-    color: "rgba(255,255,255,0.85)",
-    textAlign: "center",
-  },
-  headerSaveButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: FlowstateColors.border,
-  },
-  headerSaveButtonActive: {
-    borderColor: FlowstateColors.error,
-    backgroundColor: `${FlowstateColors.error}10`,
-  },
-  ingredientSummary: {
-    flexDirection: "row",
-    gap: Spacing.md,
-    marginBottom: Spacing.lg,
-  },
-  summaryChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  summaryDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  // ─── Score Row ────────────────────────────────────────────────────
-  scoreRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: Spacing.lg,
-    gap: Spacing.md,
-  },
-  scoreCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 3,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: FlowstateColors.surface,
-  },
-  scoreValue: {
-    fontWeight: "700",
-  },
-  scoreInfo: {
-    flex: 1,
-  },
-  scoreLabel: {
-    color: FlowstateColors.textPrimary,
-  },
-  scoreBrand: {
-    color: FlowstateColors.textSecondary,
-    marginBottom: Spacing.xs,
-  },
-  // ─── Macro Bar ──────────────────────────────────────────────────
-  macroBarSection: {
-    marginBottom: Spacing.lg,
-  },
-  macroLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: Spacing.sm,
-  },
-  macroDotLabel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  macroDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  macroDotText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: FlowstateColors.textPrimary,
-  },
-  caloriesText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: FlowstateColors.textPrimary,
-    marginBottom: Spacing.lg,
-  },
-  macroBar: {
-    flexDirection: "row",
-    height: 8,
-    borderRadius: 4,
-    overflow: "hidden",
-    backgroundColor: FlowstateColors.border,
-  },
-  macroSegment: {
-    height: 8,
-  },
-  // ─── Nutrition 2x2 Grid ─────────────────────────────────────────
-  nutritionGrid2x2: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  nutritionGridItem: {
-    width: "48%",
-    backgroundColor: FlowstateColors.background,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    alignItems: "center",
-  },
-  nutritionGridValue: {
-    color: FlowstateColors.textPrimary,
-    marginBottom: 2,
-  },
-  nutritionGridLabel: {
-    color: FlowstateColors.textSecondary,
-  },
-  // ─── Nutrition Details ────────────────────────────────────────────
-  nutritionDetails: {
-    backgroundColor: FlowstateColors.surface,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    marginBottom: Spacing.xl,
-    borderWidth: 1,
-    borderColor: FlowstateColors.border,
-  },
-  nutritionDetailRow: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: FlowstateColors.border,
-  },
-  nutritionDetailLabel: {
-    color: FlowstateColors.textSecondary,
-  },
-  nutritionDetailValue: {
-    color: FlowstateColors.textPrimary,
-    fontWeight: "500" as const,
-  },
-  // ─── Ingredients ───────────────────────────────────────────────────
-  ingredientsSection: {
-    marginBottom: Spacing.xl,
-  },
-  ingredientsTitle: {
-    color: FlowstateColors.textPrimary,
-    marginBottom: Spacing.md,
-  },
-  ingredientsList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: Spacing.sm,
-  },
-  ingredientChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  ingredientText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  ingredientReason: {
-    fontSize: 10,
-    fontWeight: "400",
-    opacity: 0.8,
-    marginTop: 1,
-  },
-  // ─── Actions ───────────────────────────────────────────────────────
-  resultActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.md,
-  },
-  viewDetailsButton: {
-    flex: 1,
-    backgroundColor: FlowstateColors.primary,
-    borderRadius: 30,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  viewDetailsText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  scanAnotherButton: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: FlowstateColors.background,
-    borderRadius: 30,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: Spacing.sm,
-    borderWidth: 1.5,
-    borderColor: FlowstateColors.border,
-  },
-  scanAnotherText: {
-    color: FlowstateColors.textPrimary,
-    fontSize: 14,
-    fontWeight: "600",
   },
 });

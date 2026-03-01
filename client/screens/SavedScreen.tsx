@@ -51,8 +51,8 @@ export default function SavedScreen() {
     navigation.navigate("PlaceDetail", { place });
   };
 
-  const handleFoodPress = (food: ScannedFood) => {
-    navigation.navigate("FoodDetail", { food });
+  const handleFoodPress = (_food: ScannedFood) => {
+    // FoodDetail screen removed — details now shown inline on scan results
   };
 
   const renderHeader = () => (

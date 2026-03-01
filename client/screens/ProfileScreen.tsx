@@ -198,7 +198,7 @@ export default function ProfileScreen() {
                 <FoodCard
                   food={food}
                   isSaved={true}
-                  onPress={() => navigation.navigate("FoodDetail", { food })}
+                  onPress={() => {}}
                   onSavePress={() => toggleSavedFood(food.id)}
                 />
               </Animated.View>
