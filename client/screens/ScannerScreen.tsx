@@ -273,7 +273,7 @@ export default function ScannerScreen() {
           {flowTip ? (
             <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.glassCard}>
               <View style={styles.flowTipHeader}>
-                <Feather name="zap" size={14} color="#FFFFFF" />
+                <Feather name="wind" size={14} color="#FFFFFF" />
                 <ThemedText type="caption" style={styles.flowTipLabel}>
                   Flow Tip
                 </ThemedText>
@@ -295,28 +295,28 @@ export default function ScannerScreen() {
                 <>
                   <View style={styles.macroLabels}>
                     <View style={styles.macroDotLabel}>
-                      <View style={[styles.macroDot, { backgroundColor: "#60a5fa" }]} />
+                      <View style={[styles.macroDot, { backgroundColor: FlowstateColors.macroProtein }]} />
                       <ThemedText type="caption" style={styles.macroLabelText}>
                         Protein {scannedFood.protein}g
                       </ThemedText>
                     </View>
                     <View style={styles.macroDotLabel}>
-                      <View style={[styles.macroDot, { backgroundColor: "#fbbf24" }]} />
+                      <View style={[styles.macroDot, { backgroundColor: FlowstateColors.macroCarbs }]} />
                       <ThemedText type="caption" style={styles.macroLabelText}>
                         Carbs {scannedFood.carbs}g
                       </ThemedText>
                     </View>
                     <View style={styles.macroDotLabel}>
-                      <View style={[styles.macroDot, { backgroundColor: "#fb923c" }]} />
+                      <View style={[styles.macroDot, { backgroundColor: FlowstateColors.macroFat }]} />
                       <ThemedText type="caption" style={styles.macroLabelText}>
                         Fat {scannedFood.fat}g
                       </ThemedText>
                     </View>
                   </View>
                   <View style={styles.macroBar}>
-                    <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: "#60a5fa", borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
-                    <View style={[styles.macroSegment, { flex: carbsPct, backgroundColor: "#fbbf24" }]} />
-                    <View style={[styles.macroSegment, { flex: fatPct, backgroundColor: "#fb923c", borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
+                    <View style={[styles.macroSegment, { flex: proteinPct, backgroundColor: FlowstateColors.macroProtein, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
+                    <View style={[styles.macroSegment, { flex: carbsPct, backgroundColor: FlowstateColors.macroCarbs }]} />
+                    <View style={[styles.macroSegment, { flex: fatPct, backgroundColor: FlowstateColors.macroFat, borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
                   </View>
                 </>
               );

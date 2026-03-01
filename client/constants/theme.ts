@@ -49,6 +49,11 @@ export const FlowstateColors = {
   healthYellow: "#ffde59",
   healthRed: "#f07269",
 
+  // ─── Macro Bar ───────────────────────────────────────────────
+  macroProtein: "#99daff",
+  macroCarbs: "#1f80ff",
+  macroFat: "#00357a",
+
   // ─── Gradients ────────────────────────────────────────────────
   gradientStart: "#00357a",
   gradientEnd: "#0a714e",
