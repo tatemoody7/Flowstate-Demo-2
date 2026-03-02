@@ -1,5 +1,12 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  varchar,
+  integer,
+  jsonb,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -18,3 +25,36 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// ─── Scanned Products ─────────────────────────────────────────────────────────
+
+export const scannedProducts = pgTable("scanned_products", {
+  barcode: varchar("barcode").primaryKey(),
+  name: text("name").notNull(),
+  brand: text("brand").notNull(),
+  image: text("image").notNull(),
+  healthScore: integer("health_score").notNull(),
+  calories: integer("calories").notNull(),
+  protein: integer("protein").notNull(),
+  carbs: integer("carbs").notNull(),
+  fat: integer("fat").notNull(),
+  fiber: integer("fiber").notNull(),
+  sugar: integer("sugar").notNull(),
+  sodium: integer("sodium").notNull(),
+  ingredients: jsonb("ingredients"),
+  ingredientsRaw: text("ingredients_raw"),
+  allergens: text("allergens"),
+  additives: jsonb("additives"),
+  nutritionGrade: varchar("nutrition_grade", { length: 1 }),
+  servingSize: text("serving_size"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertScannedProductSchema = createInsertSchema(scannedProducts).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertScannedProduct = z.infer<typeof insertScannedProductSchema>;
+export type ScannedProduct = typeof scannedProducts.$inferSelect;
