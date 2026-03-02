@@ -284,8 +284,48 @@ export default function ScannerScreen() {
             </Animated.View>
           ) : null}
 
+          {/* ─── Ingredients ─── */}
+          {scannedFood.ingredients && scannedFood.ingredients.length > 0 ? (
+            <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.ingredientsSection}>
+              <ThemedText type="h4" style={styles.sectionTitle}>
+                Ingredients
+              </ThemedText>
+              <View style={styles.ingredientsList}>
+                {scannedFood.ingredients.map((ing, idx) => {
+                  const dotColor =
+                    ing.flag === "good"
+                      ? "#4ade80"
+                      : ing.flag === "bad"
+                      ? "#fca5a5"
+                      : ing.flag === "caution"
+                      ? "#fde68a"
+                      : "rgba(255,255,255,0.4)";
+                  return (
+                    <View key={idx} style={styles.ingredientChip}>
+                      <View style={[styles.ingredientDot, { backgroundColor: dotColor }]} />
+                      <View style={styles.ingredientTextWrap}>
+                        <ThemedText type="caption" style={styles.ingredientName}>
+                          {ing.name}
+                        </ThemedText>
+                        {ing.reason ? (
+                          <ThemedText
+                            type="caption"
+                            style={styles.ingredientReason}
+                            numberOfLines={1}
+                          >
+                            {ing.reason}
+                          </ThemedText>
+                        ) : null}
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </Animated.View>
+          ) : null}
+
           {/* ─── Macro Percentage Bar ─── */}
-          <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.macroSection}>
+          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.macroSection}>
             {(() => {
               const totalMacroGrams = scannedFood.protein + scannedFood.carbs + scannedFood.fat;
               const proteinPct = totalMacroGrams > 0 ? Math.round((scannedFood.protein / totalMacroGrams) * 100) : 0;
@@ -324,7 +364,7 @@ export default function ScannerScreen() {
           </Animated.View>
 
           {/* ─── Nutrition 2x2 Grid ─── */}
-          <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+          <Animated.View entering={FadeInDown.delay(350).duration(400)}>
             <ThemedText type="h4" style={styles.sectionTitle}>
               Nutrition Facts
             </ThemedText>
@@ -391,46 +431,6 @@ export default function ScannerScreen() {
               </View>
             </View>
           </Animated.View>
-
-          {/* ─── Ingredients ─── */}
-          {scannedFood.ingredients && scannedFood.ingredients.length > 0 ? (
-            <Animated.View entering={FadeInDown.delay(350).duration(400)} style={styles.ingredientsSection}>
-              <ThemedText type="h4" style={styles.sectionTitle}>
-                Ingredients
-              </ThemedText>
-              <View style={styles.ingredientsList}>
-                {scannedFood.ingredients.map((ing, idx) => {
-                  const dotColor =
-                    ing.flag === "good"
-                      ? "#4ade80"
-                      : ing.flag === "bad"
-                      ? "#fca5a5"
-                      : ing.flag === "caution"
-                      ? "#fde68a"
-                      : "rgba(255,255,255,0.4)";
-                  return (
-                    <View key={idx} style={styles.ingredientChip}>
-                      <View style={[styles.ingredientDot, { backgroundColor: dotColor }]} />
-                      <View style={styles.ingredientTextWrap}>
-                        <ThemedText type="caption" style={styles.ingredientName}>
-                          {ing.name}
-                        </ThemedText>
-                        {ing.reason ? (
-                          <ThemedText
-                            type="caption"
-                            style={styles.ingredientReason}
-                            numberOfLines={1}
-                          >
-                            {ing.reason}
-                          </ThemedText>
-                        ) : null}
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-            </Animated.View>
-          ) : null}
 
           {/* ─── Scan Another Button ─── */}
           <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.actionSection}>
