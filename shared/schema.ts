@@ -45,7 +45,7 @@ export const scannedProducts = pgTable("scanned_products", {
   ingredientsRaw: text("ingredients_raw"),
   allergens: text("allergens"),
   additives: jsonb("additives"),
-  nutritionGrade: varchar("nutrition_grade", { length: 1 }),
+  nutritionGrade: text("nutrition_grade"),
   servingSize: text("serving_size"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
