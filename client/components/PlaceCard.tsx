@@ -10,7 +10,7 @@ import Animated, {
 import * as Haptics from "expo-haptics";
 
 import { ThemedText } from "@/components/ThemedText";
-import { FlowstateColors, Spacing, BorderRadius, Shadows } from "@/constants/theme";
+import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { Place } from "@/data/mockData";
 import { Coordinates, getNearestLocation, formatDistance } from "@/utils/distance";
 
@@ -84,6 +84,7 @@ export function PlaceCard({ place, isSaved, onPress, onSavePress, userCoords }: 
       onPressOut={handlePressOut}
       style={[styles.card, animatedStyle]}
     >
+      {/* Image */}
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: place.image }}
@@ -91,28 +92,9 @@ export function PlaceCard({ place, isSaved, onPress, onSavePress, userCoords }: 
           contentFit="cover"
           transition={200}
         />
-        <Pressable
-          onPress={handleSavePress}
-          style={styles.saveButton}
-          hitSlop={8}
-        >
-          <Feather
-            name={isSaved ? "heart" : "heart"}
-            size={18}
-            color={isSaved ? FlowstateColors.error : "#FFFFFF"}
-            style={isSaved && styles.savedIcon}
-          />
-        </Pressable>
-        {place.studentDiscount ? (
-          <View style={styles.discountBadge}>
-            <Feather name="tag" size={10} color="#FFFFFF" />
-            <ThemedText type="caption" style={styles.discountText}>
-              Student Deal
-            </ThemedText>
-          </View>
-        ) : null}
       </View>
 
+      {/* Content */}
       <View style={styles.content}>
         <View style={styles.header}>
           {place.logo ? (
@@ -127,7 +109,7 @@ export function PlaceCard({ place, isSaved, onPress, onSavePress, userCoords }: 
             <View style={styles.categoryBadge}>
               <Feather
                 name={getCategoryIcon()}
-                size={12}
+                size={11}
                 color={FlowstateColors.primary}
               />
             </View>
@@ -139,118 +121,100 @@ export function PlaceCard({ place, isSaved, onPress, onSavePress, userCoords }: 
 
         <View style={styles.info}>
           <View style={styles.infoRow}>
-            <Feather name="map-pin" size={12} color={FlowstateColors.textSecondary} />
+            <Feather name="map-pin" size={11} color={FlowstateColors.textSecondary} />
             <ThemedText type="small" style={styles.distance}>
               {formatDistance(nearest.distance)}
             </ThemedText>
             {nearest.locationCount > 1 && (
               <ThemedText type="small" style={styles.locationCount}>
-                · {nearest.locationCount} locations
+                · {nearest.locationCount} loc
               </ThemedText>
             )}
           </View>
           <View style={styles.infoRow}>
-            <Feather name="star" size={12} color={FlowstateColors.accent} />
+            <Feather name="star" size={11} color={FlowstateColors.accent} />
             <ThemedText type="small" style={styles.rating}>
               {place.rating}
             </ThemedText>
           </View>
           {renderPriceLevel()}
+          {place.studentDiscount ? (
+            <View style={styles.dealTag}>
+              <Feather name="tag" size={9} color={FlowstateColors.secondary} />
+              <ThemedText type="caption" style={styles.dealText}>
+                Deal
+              </ThemedText>
+            </View>
+          ) : null}
         </View>
       </View>
+
+      {/* Save Button */}
+      <Pressable
+        onPress={handleSavePress}
+        style={styles.saveButton}
+        hitSlop={8}
+      >
+        <Feather
+          name="heart"
+          size={16}
+          color={isSaved ? FlowstateColors.error : FlowstateColors.textTertiary}
+          style={isSaved && styles.savedIcon}
+        />
+      </Pressable>
     </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: FlowstateColors.surface,
     borderRadius: BorderRadius.xl,
     overflow: "hidden",
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
     shadowColor: FlowstateColors.cardShadow,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 24,
-    elevation: 8,
+    shadowRadius: 12,
+    elevation: 4,
   },
   imageContainer: {
-    height: 160,
-    position: "relative",
+    width: 80,
+    height: 80,
+    margin: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
   },
-  imageOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.05)",
-  },
-  saveButton: {
-    position: "absolute",
-    top: Spacing.md,
-    right: Spacing.md,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.9)",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  savedIcon: {
-    textShadowColor: "rgba(0,0,0,0.3)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  discountBadge: {
-    position: "absolute",
-    bottom: Spacing.md,
-    left: Spacing.md,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: FlowstateColors.secondary,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.full,
-    gap: 6,
-    shadowColor: FlowstateColors.secondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  discountText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 0.3,
-  },
   content: {
-    padding: Spacing.lg,
+    flex: 1,
+    paddingVertical: Spacing.md,
+    paddingRight: 44,
+    justifyContent: "center",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: Spacing.sm,
+    marginBottom: 4,
   },
   categoryBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: FlowstateColors.primaryLighter,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.sm,
   },
   logoBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
@@ -260,37 +224,40 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   logoImage: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
   },
   name: {
     flex: 1,
     color: FlowstateColors.textPrimary,
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: "700",
   },
   info: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.lg,
+    gap: Spacing.md,
+    flexWrap: "wrap",
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 4,
   },
   distance: {
     color: FlowstateColors.textSecondary,
     fontWeight: "500",
+    fontSize: 12,
   },
   locationCount: {
     color: FlowstateColors.textTertiary,
     fontWeight: "500",
-    fontSize: 11,
+    fontSize: 10,
   },
   rating: {
     color: FlowstateColors.textSecondary,
     fontWeight: "500",
+    fontSize: 12,
   },
   priceLevel: {
     flexDirection: "row",
@@ -298,10 +265,40 @@ const styles = StyleSheet.create({
   },
   dollar: {
     color: FlowstateColors.textTertiary,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "600",
   },
   dollarActive: {
     color: FlowstateColors.secondary,
+  },
+  dealTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: `${FlowstateColors.secondary}15`,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.full,
+  },
+  dealText: {
+    color: FlowstateColors.secondary,
+    fontSize: 10,
+    fontWeight: "700",
+  },
+  saveButton: {
+    position: "absolute",
+    top: Spacing.md,
+    right: Spacing.md,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: FlowstateColors.background,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  savedIcon: {
+    textShadowColor: "rgba(0,0,0,0.2)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });
