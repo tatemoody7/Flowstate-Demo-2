@@ -5,6 +5,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { CompositeNavigationProp } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -19,6 +20,12 @@ import { FlowstateColors, Spacing, BorderRadius, SchoolColors } from "@/constant
 import { mockPlaces, mockScannedFoods, Place, ScannedFood } from "@/data/mockData";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+import { ProfileStackParamList } from "@/navigation/ProfileStackNavigator";
+
+type ProfileScreenNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<ProfileStackParamList, "Profile">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -26,7 +33,7 @@ export default function ProfileScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const { user, schoolColors, logout, savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
   const { coords: userCoords } = useUserLocation();
   const [savedTab, setSavedTab] = useState<"foods" | "places">("places");
 
@@ -263,6 +270,25 @@ export default function ProfileScreen() {
           <Feather name="chevron-right" size={20} color={FlowstateColors.textTertiary} />
         </View>
       </View>
+
+      {/* Product Database */}
+      <Pressable
+        onPress={() => navigation.navigate("ProductDatabase")}
+        style={styles.databaseCard}
+      >
+        <View style={styles.settingsIconContainer}>
+          <Feather name="archive" size={18} color={FlowstateColors.primary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <ThemedText type="body" style={styles.settingsLabel}>
+            Product Database
+          </ThemedText>
+          <ThemedText type="caption" style={{ color: FlowstateColors.textSecondary }}>
+            Browse all scanned & graded products
+          </ThemedText>
+        </View>
+        <Feather name="chevron-right" size={18} color={FlowstateColors.textTertiary} />
+      </Pressable>
 
       {/* Settings Section */}
       <View style={styles.section}>
@@ -555,5 +581,16 @@ const styles = StyleSheet.create({
   savedEmptyText: {
     color: FlowstateColors.textTertiary,
     textAlign: "center",
+  },
+  databaseCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: FlowstateColors.surface,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: FlowstateColors.border,
+    marginBottom: Spacing.xl,
+    gap: Spacing.md,
   },
 });

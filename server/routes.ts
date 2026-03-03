@@ -4,6 +4,22 @@ import { storage } from "./storage";
 import { fetchProduct, transformToProduct } from "./services/openFoodFacts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // GET /api/products — list all scanned products
+  app.get("/api/products", async (req, res) => {
+    try {
+      const search = req.query.search as string | undefined;
+      const tier = req.query.tier as string | undefined;
+
+      const products = await storage.getAllProducts(search, tier);
+      return res.json({ products });
+    } catch (error) {
+      console.error("Failed to list products:", error);
+      return res
+        .status(500)
+        .json({ status: "error", message: "Failed to list products" });
+    }
+  });
+
   // GET /api/products/:barcode — lookup a scanned product
   app.get("/api/products/:barcode", async (req, res) => {
     const { barcode } = req.params;

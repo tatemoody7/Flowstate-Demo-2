@@ -6,7 +6,7 @@ import {
   users,
   scannedProducts,
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc, ilike, or, gte, lt, and, SQL } from "drizzle-orm";
 import { db } from "./db";
 
 export interface IStorage {
@@ -15,6 +15,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getProduct(barcode: string): Promise<ScannedProduct | undefined>;
   upsertProduct(product: InsertScannedProduct): Promise<ScannedProduct>;
+  getAllProducts(search?: string, tier?: string): Promise<ScannedProduct[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -78,6 +79,49 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return result;
+  }
+  async getAllProducts(
+    search?: string,
+    tier?: string,
+  ): Promise<ScannedProduct[]> {
+    const conditions: SQL[] = [];
+
+    // Search filter — match name or brand (case-insensitive)
+    if (search && search.trim()) {
+      const pattern = `%${search.trim()}%`;
+      conditions.push(
+        or(
+          ilike(scannedProducts.name, pattern),
+          ilike(scannedProducts.brand, pattern),
+        )!,
+      );
+    }
+
+    // Tier filter — map to healthScore ranges
+    if (tier === "green") {
+      conditions.push(gte(scannedProducts.healthScore, 65));
+    } else if (tier === "yellow") {
+      conditions.push(
+        and(
+          gte(scannedProducts.healthScore, 40),
+          lt(scannedProducts.healthScore, 65),
+        )!,
+      );
+    } else if (tier === "red") {
+      conditions.push(lt(scannedProducts.healthScore, 40));
+    }
+
+    const query = db
+      .select()
+      .from(scannedProducts)
+      .orderBy(desc(scannedProducts.updatedAt))
+      .limit(50);
+
+    if (conditions.length > 0) {
+      return query.where(and(...conditions));
+    }
+
+    return query;
   }
 }
 
