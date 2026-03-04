@@ -48,10 +48,10 @@ export default function ScannerScreen() {
   const [isScanning, setIsScanning] = useState(true);
   const [scannedFood, setScannedFood] = useState<ScannedFood | null>(null);
   const [showError, setShowError] = useState(false);
-  const [errorType, setErrorType] = useState<"none" | "not_found" | "network" | "timeout">("none");
+  const [errorType, setErrorType] = useState<"none" | "not_found" | "network" | "timeout" | "under_review">("none");
   const hasHandledResult = useRef(false);
 
-  const { lookupBarcode, reset, scannedFood: apiFood, isLoading, isError, isNotFound } = useProductLookup();
+  const { lookupBarcode, reset, scannedFood: apiFood, isLoading, isError, isNotFound, isUnderReview } = useProductLookup();
 
   // Handle API results
   useEffect(() => {
@@ -62,6 +62,12 @@ export default function ScannerScreen() {
       setScannedFood(apiFood);
       setShowError(false);
       setErrorType("none");
+    } else if (isUnderReview) {
+      hasHandledResult.current = true;
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      setScannedFood(null);
+      setShowError(true);
+      setErrorType("under_review");
     } else if (isNotFound) {
       hasHandledResult.current = true;
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -75,7 +81,7 @@ export default function ScannerScreen() {
       setShowError(true);
       setErrorType("network");
     }
-  }, [apiFood, isError, isNotFound]);
+  }, [apiFood, isError, isNotFound, isUnderReview]);
 
   const handleBarcodeScanned = useCallback((result: { data: string; type: string }) => {
     if (!isScanning) return;
@@ -528,32 +534,42 @@ export default function ScannerScreen() {
                   styles.errorIconContainer,
                   {
                     backgroundColor:
-                      errorType === "network"
-                        ? `${FlowstateColors.error}15`
-                        : `${FlowstateColors.warning}15`,
+                      errorType === "under_review"
+                        ? `${FlowstateColors.secondary}15`
+                        : errorType === "network"
+                          ? `${FlowstateColors.error}15`
+                          : `${FlowstateColors.warning}15`,
                   },
                 ]}
               >
                 <Feather
-                  name={errorType === "network" ? "wifi-off" : "search"}
+                  name={errorType === "under_review" ? "clock" : errorType === "network" ? "wifi-off" : "search"}
                   size={32}
                   color={
-                    errorType === "network"
-                      ? FlowstateColors.error
-                      : FlowstateColors.warning
+                    errorType === "under_review"
+                      ? FlowstateColors.secondary
+                      : errorType === "network"
+                        ? FlowstateColors.error
+                        : FlowstateColors.warning
                   }
                 />
               </View>
               <ThemedText type="h3" style={styles.errorTitle}>
-                {errorType === "network" ? "Connection Issue" : "Product Not Found"}
+                {errorType === "under_review"
+                  ? "Product Under Review"
+                  : errorType === "network"
+                    ? "Connection Issue"
+                    : "Product Not Found"}
               </ThemedText>
               <ThemedText type="body" style={styles.errorDescription}>
-                {errorType === "network"
-                  ? "We couldn't reach the food database. Check your internet connection and try again."
-                  : "This product isn't in the Open Food Facts database yet. Try scanning a different item."}
+                {errorType === "under_review"
+                  ? "We're checking this product now. It'll be ready the next time you scan it."
+                  : errorType === "network"
+                    ? "We couldn't reach the food database. Check your internet connection and try again."
+                    : "This product isn't in the Open Food Facts database yet. Try scanning a different item."}
               </ThemedText>
               <Button onPress={handleScanAgain} style={styles.errorScanButton}>
-                {errorType === "network" ? "Try Again" : "Scan Again"}
+                {errorType === "under_review" ? "Scan Another" : errorType === "network" ? "Try Again" : "Scan Again"}
               </Button>
               <Pressable onPress={handleClose} style={styles.errorCloseLink}>
                 <ThemedText type="small" style={styles.errorCloseText}>

@@ -4,7 +4,7 @@ import { getApiUrl } from "@/lib/query-client";
 import type { ScannedFood } from "@/data/mockData";
 
 interface ProductResponse {
-  status: "found" | "not_found" | "error";
+  status: "found" | "not_found" | "under_review" | "error";
   product?: {
     barcode: string;
     name: string;
@@ -109,6 +109,7 @@ export function useProductLookup() {
     isLoading: query.isFetching && !!barcode,
     isError: query.isError,
     isNotFound: query.data?.status === "not_found",
+    isUnderReview: query.data?.status === "under_review",
     rawProduct: query.data?.product ?? null,
   };
 }

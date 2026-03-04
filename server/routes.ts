@@ -57,18 +57,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return;
       }
 
-      // 2. Not in cache — fetch from Open Food Facts
-      const offResponse = await fetchProduct(barcode);
+      // 2. Not in cache — respond instantly, look up in background
+      res.json({ status: "under_review" });
 
-      if (offResponse.status === 0 || !offResponse.product) {
-        return res.json({ status: "not_found" });
-      }
+      // Fire background OFF lookup (user doesn't wait)
+      fetchProduct(barcode)
+        .then((offResponse) => {
+          if (offResponse.status === 1 && offResponse.product) {
+            const product = transformToProduct(barcode, offResponse.product);
+            return storage.upsertProduct(product);
+          }
+        })
+        .then((saved) => {
+          if (saved) {
+            console.log(`Background lookup added: ${saved.name} (${barcode})`);
+          }
+        })
+        .catch((err) =>
+          console.error(`Background lookup failed for ${barcode}:`, err),
+        );
 
-      // 3. Transform, save to DB, return
-      const product = transformToProduct(barcode, offResponse.product);
-      const saved = await storage.upsertProduct(product);
-
-      return res.json({ status: "found", product: saved, source: "api" });
+      return;
     } catch (error) {
       console.error(`Product lookup failed for ${barcode}:`, error);
       return res
