@@ -54,22 +54,14 @@ const API_BASE = "https://world.openfoodfacts.org/api/v2/product";
 const FIELDS =
   "product_name,nutrition_grades,nutriments,allergens_text,ingredients_text,additives_tags,brands,image_front_url,serving_size";
 const USER_AGENT = "FlowstateApp/1.0 (Server; Node.js)";
-const TIMEOUT_MS = 8000;
+const TIMEOUT_MS = 3000;
 
 // ─── Rate Limiter ────────────────────────────────────────────────────────────
 
 let requestTimestamps: number[] = [];
 const MAX_REQUESTS_PER_SECOND = 10;
-let rateLimitLock: Promise<void> = Promise.resolve();
 
 async function waitForRateLimit(): Promise<void> {
-  const previousLock = rateLimitLock;
-  let resolve: () => void;
-  rateLimitLock = new Promise<void>((r) => {
-    resolve = r;
-  });
-  await previousLock;
-
   const now = Date.now();
   requestTimestamps = requestTimestamps.filter((t) => t >= now - 1000);
   if (requestTimestamps.length >= MAX_REQUESTS_PER_SECOND) {
@@ -77,7 +69,6 @@ async function waitForRateLimit(): Promise<void> {
     await new Promise((res) => setTimeout(res, Math.max(0, waitTime)));
   }
   requestTimestamps.push(Date.now());
-  resolve!();
 }
 
 // ─── Fetch ───────────────────────────────────────────────────────────────────

@@ -37,18 +37,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Return cached result immediately
         res.json({ status: "found", product: cached, source: "cache" });
 
-        // Fire background refresh (don't await)
-        fetchProduct(barcode)
-          .then((offResponse) => {
-            if (offResponse.status === 1 && offResponse.product) {
-              const updated = transformToProduct(barcode, offResponse.product);
-              return storage.upsertProduct(updated);
-            }
-          })
-          .then(() => console.log(`Background refresh complete for ${barcode}`))
-          .catch((err) =>
-            console.error(`Background refresh failed for ${barcode}:`, err),
-          );
+        // Only refresh if data is older than 7 days
+        const REFRESH_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
+        const age = Date.now() - new Date(cached.updatedAt).getTime();
+        if (age > REFRESH_THRESHOLD_MS) {
+          fetchProduct(barcode)
+            .then((offResponse) => {
+              if (offResponse.status === 1 && offResponse.product) {
+                const updated = transformToProduct(barcode, offResponse.product);
+                return storage.upsertProduct(updated);
+              }
+            })
+            .then(() => console.log(`Background refresh complete for ${barcode}`))
+            .catch((err) =>
+              console.error(`Background refresh failed for ${barcode}:`, err),
+            );
+        }
 
         return;
       }

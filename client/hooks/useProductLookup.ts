@@ -29,17 +29,26 @@ interface ProductResponse {
   message?: string;
 }
 
+const CLIENT_TIMEOUT_MS = 5000;
+
 async function fetchProductFromServer(barcode: string): Promise<ProductResponse> {
   const baseUrl = getApiUrl();
   const url = new URL(`/api/products/${barcode}`, baseUrl);
 
-  const res = await fetch(url);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    return await res.json();
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return await res.json();
 }
 
 function mapToScannedFood(barcode: string, product: ProductResponse["product"]): ScannedFood | null {
