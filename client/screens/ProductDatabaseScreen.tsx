@@ -28,17 +28,31 @@ const TIER_FILTERS = [
   { id: "red", label: "Be Honest", icon: "x-circle" as const },
 ];
 
+const STORE_FILTERS = [
+  { id: "all", label: "All Stores", icon: "shopping-bag" as const },
+  { id: "Publix", label: "Publix", icon: "shopping-cart" as const },
+  { id: "Walmart", label: "Walmart", icon: "shopping-cart" as const },
+  { id: "Target", label: "Target", icon: "shopping-cart" as const },
+  { id: "Whole Foods", label: "Whole Foods", icon: "shopping-cart" as const },
+  { id: "Costco", label: "Costco", icon: "shopping-cart" as const },
+  { id: "Trader Joe's", label: "Trader Joe's", icon: "shopping-cart" as const },
+  { id: "ALDI", label: "ALDI", icon: "shopping-cart" as const },
+  { id: "Sprouts", label: "Sprouts", icon: "shopping-cart" as const },
+  { id: "The Fresh Market", label: "Fresh Market", icon: "shopping-cart" as const },
+];
+
 export default function ProductDatabaseScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTier, setSelectedTier] = useState("all");
+  const [selectedStore, setSelectedStore] = useState("all");
 
-  // Debounced search — pass raw values to the hook which handles API call
   const { products, isLoading, isError, refetch } = useProducts(
     searchQuery,
     selectedTier,
+    selectedStore,
   );
 
   const [refreshing, setRefreshing] = useState(false);
@@ -98,6 +112,28 @@ export default function ProductDatabaseScreen() {
               icon={filter.icon}
               isSelected={selectedTier === filter.id}
               onPress={() => setSelectedTier(filter.id)}
+            />
+          </Animated.View>
+        ))}
+      </ScrollView>
+
+      {/* Store Filter Chips */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipsList}
+        style={styles.chipsRow}
+      >
+        {STORE_FILTERS.map((filter, index) => (
+          <Animated.View
+            key={filter.id}
+            entering={FadeInDown.delay(index * 40).duration(300)}
+          >
+            <CategoryChip
+              label={filter.label}
+              icon={filter.icon}
+              isSelected={selectedStore === filter.id}
+              onPress={() => setSelectedStore(filter.id)}
             />
           </Animated.View>
         ))}

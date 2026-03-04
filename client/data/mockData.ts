@@ -49,6 +49,7 @@ export interface ScannedFood {
   nutritionGrade?: string;
   barcode?: string;
   servingSize?: string;
+  stores?: string[];
 }
 
 // ─── RESTAURANTS ───────────────────────────────────────────────────────────────

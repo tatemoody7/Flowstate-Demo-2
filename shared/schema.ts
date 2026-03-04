@@ -47,6 +47,7 @@ export const scannedProducts = pgTable("scanned_products", {
   additives: jsonb("additives"),
   nutritionGrade: text("nutrition_grade"),
   servingSize: text("serving_size"),
+  stores: jsonb("stores").$type<string[]>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

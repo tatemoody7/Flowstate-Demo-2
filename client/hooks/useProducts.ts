@@ -22,6 +22,7 @@ interface ProductsResponse {
     additives: string[] | null;
     nutritionGrade: string | null;
     servingSize: string | null;
+    stores: string[] | null;
   }[];
 }
 
@@ -49,18 +50,21 @@ function mapProductsToScannedFood(
     nutritionGrade: p.nutritionGrade ?? undefined,
     barcode: p.barcode,
     servingSize: p.servingSize ?? undefined,
+    stores: p.stores ?? undefined,
   }));
 }
 
 async function fetchProducts(
   search?: string,
   tier?: string,
+  store?: string,
 ): Promise<ProductsResponse> {
   const baseUrl = getApiUrl();
   const url = new URL("/api/products", baseUrl);
 
   if (search?.trim()) url.searchParams.set("search", search.trim());
   if (tier && tier !== "all") url.searchParams.set("tier", tier);
+  if (store && store !== "all") url.searchParams.set("store", store);
 
   const res = await fetch(url);
 
@@ -71,10 +75,10 @@ async function fetchProducts(
   return await res.json();
 }
 
-export function useProducts(search?: string, tier?: string) {
+export function useProducts(search?: string, tier?: string, store?: string) {
   const query = useQuery({
-    queryKey: ["products", search ?? "", tier ?? "all"],
-    queryFn: () => fetchProducts(search, tier),
+    queryKey: ["products", search ?? "", tier ?? "all", store ?? "all"],
+    queryFn: () => fetchProducts(search, tier, store),
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 15, // 15 minutes
     retry: 1,

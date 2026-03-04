@@ -9,8 +9,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const search = req.query.search as string | undefined;
       const tier = req.query.tier as string | undefined;
+      const store = req.query.store as string | undefined;
 
-      const products = await storage.getAllProducts(search, tier);
+      const products = await storage.getAllProducts(search, tier, store);
       return res.json({ products });
     } catch (error) {
       console.error("Failed to list products:", error);

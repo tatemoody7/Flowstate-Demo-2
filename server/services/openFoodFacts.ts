@@ -225,3 +225,81 @@ export function transformToProduct(
     servingSize: product.serving_size ?? null,
   };
 }
+
+// ─── Search API ─────────────────────────────────────────────────────────────
+
+export interface OpenFoodFactsSearchResponse {
+  count: number;
+  page: number;
+  page_count: number;
+  page_size: number;
+  products: (OpenFoodFactsProduct & {
+    code?: string;
+    stores_tags?: string[];
+    stores?: string;
+  })[];
+}
+
+// Search rate limiter: 10 req/min (stricter than barcode lookup)
+let searchTimestamps: number[] = [];
+const MAX_SEARCH_PER_MIN = 10;
+
+async function waitForSearchRateLimit(): Promise<void> {
+  const now = Date.now();
+  searchTimestamps = searchTimestamps.filter((t) => t >= now - 60000);
+  if (searchTimestamps.length >= MAX_SEARCH_PER_MIN) {
+    const waitTime = searchTimestamps[0] + 60000 - now;
+    console.log(
+      `Search rate limit: waiting ${Math.round(waitTime / 1000)}s...`,
+    );
+    await new Promise((res) => setTimeout(res, Math.max(0, waitTime)));
+  }
+  searchTimestamps.push(Date.now());
+}
+
+const SEARCH_API_BASE = "https://world.openfoodfacts.net/api/v2/search";
+const SEARCH_FIELDS = FIELDS + ",stores_tags,stores";
+
+export async function searchProducts(params: {
+  stores_tags?: string;
+  categories_tags_en?: string;
+  brands_tags?: string;
+  page_size?: number;
+  page?: number;
+}): Promise<OpenFoodFactsSearchResponse> {
+  await waitForSearchRateLimit();
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const url = new URL(SEARCH_API_BASE);
+    url.searchParams.set("fields", SEARCH_FIELDS + ",code");
+    url.searchParams.set("page_size", String(params.page_size ?? 100));
+    url.searchParams.set("page", String(params.page ?? 1));
+    url.searchParams.set("countries_tags_en", "united-states");
+
+    if (params.stores_tags) {
+      url.searchParams.set("stores_tags", params.stores_tags);
+    }
+    if (params.categories_tags_en) {
+      url.searchParams.set("categories_tags_en", params.categories_tags_en);
+    }
+    if (params.brands_tags) {
+      url.searchParams.set("brands_tags", params.brands_tags);
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: { "User-Agent": USER_AGENT },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Search HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } finally {
+    clearTimeout(timeout);
+  }
+}

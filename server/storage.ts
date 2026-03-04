@@ -6,7 +6,7 @@ import {
   users,
   scannedProducts,
 } from "@shared/schema";
-import { eq, desc, ilike, or, gte, lt, and, SQL } from "drizzle-orm";
+import { eq, desc, ilike, or, gte, lt, and, sql, SQL } from "drizzle-orm";
 import { db } from "./db";
 
 export interface IStorage {
@@ -15,7 +15,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getProduct(barcode: string): Promise<ScannedProduct | undefined>;
   upsertProduct(product: InsertScannedProduct): Promise<ScannedProduct>;
-  getAllProducts(search?: string, tier?: string): Promise<ScannedProduct[]>;
+  getAllProducts(search?: string, tier?: string, store?: string): Promise<ScannedProduct[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -74,6 +74,14 @@ export class DatabaseStorage implements IStorage {
           additives: product.additives,
           nutritionGrade: product.nutritionGrade,
           servingSize: product.servingSize,
+          stores: product.stores
+            ? sql`(
+                SELECT jsonb_agg(DISTINCT value)
+                FROM jsonb_array_elements(
+                  COALESCE(${scannedProducts.stores}, '[]'::jsonb) || ${JSON.stringify(product.stores)}::jsonb
+                )
+              )`
+            : scannedProducts.stores,
           updatedAt: new Date(),
         },
       })
@@ -83,6 +91,7 @@ export class DatabaseStorage implements IStorage {
   async getAllProducts(
     search?: string,
     tier?: string,
+    store?: string,
   ): Promise<ScannedProduct[]> {
     const conditions: SQL[] = [];
 
@@ -111,11 +120,18 @@ export class DatabaseStorage implements IStorage {
       conditions.push(lt(scannedProducts.healthScore, 40));
     }
 
+    // Store filter — JSONB contains
+    if (store && store.trim()) {
+      conditions.push(
+        sql`${scannedProducts.stores} @> ${JSON.stringify([store.trim()])}::jsonb`,
+      );
+    }
+
     const query = db
       .select()
       .from(scannedProducts)
       .orderBy(desc(scannedProducts.updatedAt))
-      .limit(50);
+      .limit(250);
 
     if (conditions.length > 0) {
       return query.where(and(...conditions));
