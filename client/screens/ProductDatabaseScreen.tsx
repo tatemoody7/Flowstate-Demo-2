@@ -273,9 +273,10 @@ const styles = StyleSheet.create({
   },
   chipsRow: {
     marginTop: Spacing.md,
+    marginHorizontal: -Spacing.lg,
   },
   chipsList: {
-    paddingRight: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
   },
   resultCount: {
     color: FlowstateColors.textSecondary,

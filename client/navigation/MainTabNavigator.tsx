@@ -40,8 +40,8 @@ export default function MainTabNavigator() {
         tabBarStyle: {
           position: "absolute",
           bottom: Math.max(insets.bottom, 12),
-          left: Spacing.xl,
-          right: Spacing.xl,
+          left: Spacing.md,
+          right: Spacing.md,
           height: 64,
           borderRadius: 32,
           backgroundColor: Platform.select({

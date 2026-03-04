@@ -16,7 +16,7 @@ export function HeaderTitle({ title }: HeaderTitleProps) {
         style={styles.headerLogo}
         resizeMode="contain"
       />
-      <ThemedText style={styles.title}>{title}</ThemedText>
+      <ThemedText style={styles.title} numberOfLines={1}>{title}</ThemedText>
     </View>
   );
 }
@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     gap: Spacing.sm,
+    flex: 1,
+    overflow: "hidden",
   },
   title: {
     fontSize: 18,

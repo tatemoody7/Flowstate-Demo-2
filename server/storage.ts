@@ -6,7 +6,7 @@ import {
   users,
   scannedProducts,
 } from "@shared/schema";
-import { eq, desc, ilike, or, gte, lt, and, sql, SQL } from "drizzle-orm";
+import { eq, desc, ilike, or, and, sql, SQL } from "drizzle-orm";
 import { db } from "./db";
 
 export interface IStorage {
@@ -106,18 +106,65 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Tier filter — map to healthScore ranges
+    // Tier filter — match client-side getHealthTier() logic (ingredient flags first, score fallback)
     if (tier === "green") {
-      conditions.push(gte(scannedProducts.healthScore, 65));
-    } else if (tier === "yellow") {
+      // Has at least one "good" flag AND no "bad" flags
+      // OR: no flagged ingredients at all AND healthScore >= 65
       conditions.push(
-        and(
-          gte(scannedProducts.healthScore, 40),
-          lt(scannedProducts.healthScore, 65),
-        )!,
+        sql`(
+          (
+            ${scannedProducts.ingredients} IS NOT NULL
+            AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'good')
+            AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
+          )
+          OR (
+            (
+              ${scannedProducts.ingredients} IS NULL
+              OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
+            )
+            AND ${scannedProducts.healthScore} >= 65
+          )
+        )`,
+      );
+    } else if (tier === "yellow") {
+      // Has caution (no good, no bad)
+      // OR: no flagged ingredients AND healthScore 40-64
+      conditions.push(
+        sql`(
+          (
+            ${scannedProducts.ingredients} IS NOT NULL
+            AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'caution')
+            AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'good')
+            AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
+          )
+          OR (
+            (
+              ${scannedProducts.ingredients} IS NULL
+              OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
+            )
+            AND ${scannedProducts.healthScore} >= 40
+            AND ${scannedProducts.healthScore} < 65
+          )
+        )`,
       );
     } else if (tier === "red") {
-      conditions.push(lt(scannedProducts.healthScore, 40));
+      // Has any "bad" flag
+      // OR: no flagged ingredients AND healthScore < 40
+      conditions.push(
+        sql`(
+          (
+            ${scannedProducts.ingredients} IS NOT NULL
+            AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
+          )
+          OR (
+            (
+              ${scannedProducts.ingredients} IS NULL
+              OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
+            )
+            AND ${scannedProducts.healthScore} < 40
+          )
+        )`,
+      );
     }
 
     // Store filter — JSONB contains
