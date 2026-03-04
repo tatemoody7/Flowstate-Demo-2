@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Platform, Pressable } from "react-native";
+import { StyleSheet, View, Platform, Pressable, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -42,8 +42,8 @@ export default function MainTabNavigator() {
           bottom: Math.max(insets.bottom, 12),
           left: Spacing.sm,
           right: Spacing.sm,
-          height: 64,
-          borderRadius: 32,
+          height: 70,
+          borderRadius: 35,
           backgroundColor: Platform.select({
             ios: "transparent",
             android: theme.backgroundRoot,
@@ -61,7 +61,7 @@ export default function MainTabNavigator() {
             <BlurView
               intensity={80}
               tint={isDark ? "dark" : "light"}
-              style={[StyleSheet.absoluteFill, { borderRadius: 32, overflow: "hidden" }]}
+              style={[StyleSheet.absoluteFill, { borderRadius: 35, overflow: "hidden" }]}
             />
           ) : null,
         tabBarItemStyle: {
@@ -79,8 +79,18 @@ export default function MainTabNavigator() {
         component={DiscoverStackNavigator}
         options={{
           title: "Discover",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="compass" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Feather name="compass" size={22} color={color} />
+          ),
+          tabBarLabel: ({ color }) => (
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={[styles.tabLabel, { color }]}
+            >
+              Discover
+            </Text>
           ),
         }}
       />
@@ -110,8 +120,18 @@ export default function MainTabNavigator() {
         component={ProfileStackNavigator}
         options={{
           title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="user" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Feather name="user" size={22} color={color} />
+          ),
+          tabBarLabel: ({ color }) => (
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={[styles.tabLabel, { color }]}
+            >
+              Profile
+            </Text>
           ),
         }}
       />
@@ -120,6 +140,11 @@ export default function MainTabNavigator() {
 }
 
 const styles = StyleSheet.create({
+  tabLabel: {
+    fontSize: 11,
+    fontWeight: "500",
+    marginBottom: 2,
+  },
   scanFabOuter: {
     width: 60,
     height: 60,
