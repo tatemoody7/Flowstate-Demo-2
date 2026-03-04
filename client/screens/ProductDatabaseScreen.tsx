@@ -9,6 +9,8 @@ import {
   ScrollView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -43,6 +45,8 @@ const STORE_FILTERS = [
 
 export default function ProductDatabaseScreen() {
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+  const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -214,7 +218,8 @@ export default function ProductDatabaseScreen() {
         contentContainerStyle={[
           styles.content,
           {
-            paddingBottom: insets.bottom + Spacing["3xl"],
+            paddingTop: headerHeight + Spacing.lg,
+            paddingBottom: tabBarHeight + Spacing["3xl"],
           },
         ]}
         data={products}
@@ -244,7 +249,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
   },
   header: {
     marginBottom: Spacing.lg,

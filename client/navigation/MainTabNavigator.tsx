@@ -40,8 +40,8 @@ export default function MainTabNavigator() {
         tabBarStyle: {
           position: "absolute",
           bottom: Math.max(insets.bottom, 12),
-          left: Spacing.md,
-          right: Spacing.md,
+          left: Spacing.sm,
+          right: Spacing.sm,
           height: 64,
           borderRadius: 32,
           backgroundColor: Platform.select({
@@ -99,7 +99,7 @@ export default function MainTabNavigator() {
           tabBarIcon: () => (
             <View style={styles.scanFabOuter}>
               <View style={styles.scanFab}>
-                <Feather name="camera" size={26} color="#FFFFFF" />
+                <Feather name="camera" size={22} color="#FFFFFF" />
               </View>
             </View>
           ),
@@ -121,18 +121,18 @@ export default function MainTabNavigator() {
 
 const styles = StyleSheet.create({
   scanFabOuter: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: "rgba(31, 128, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 24,
+    marginBottom: 20,
   },
   scanFab: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: FlowstateColors.accent,
     alignItems: "center",
     justifyContent: "center",
