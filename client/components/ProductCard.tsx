@@ -44,7 +44,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 export function ProductCard({ product, onPress }: ProductCardProps) {
   const scale = useSharedValue(1);
 
-  const { tier } = getHealthTier(product.ingredients, product.healthScore);
+  const { tier, label: tierLabel } = getHealthTier(product.ingredients);
   const tierColors = TIER_CARD_COLORS[tier];
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -93,10 +93,10 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
         </ThemedText>
 
         <View style={styles.infoRow}>
-          {/* Health Score Pill */}
+          {/* Tier Label Pill */}
           <View style={[styles.scorePill, { backgroundColor: tierColors.pillBg }]}>
             <ThemedText type="caption" style={styles.scoreText}>
-              {product.healthScore}
+              {tierLabel}
             </ThemedText>
           </View>
 

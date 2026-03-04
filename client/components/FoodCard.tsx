@@ -12,7 +12,7 @@ import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import { ScannedFood } from "@/data/mockData";
-import { getHealthTierColor } from "@/utils/healthTier";
+import { getHealthTier } from "@/utils/healthTier";
 
 interface FoodCardProps {
   food: ScannedFood;
@@ -43,7 +43,7 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
     onSavePress();
   };
 
-  const healthColor = getHealthTierColor(food.ingredients, food.healthScore);
+  const { color: healthColor, label: tierLabel } = getHealthTier(food.ingredients);
 
   return (
     <AnimatedPressable
@@ -85,12 +85,9 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
                 type="caption"
                 style={[styles.healthScoreText, { color: healthColor }]}
               >
-                {food.healthScore}
+                {tierLabel}
               </ThemedText>
             </View>
-            <ThemedText type="small" style={styles.healthLabel}>
-              Health Score
-            </ThemedText>
           </View>
 
           <View style={styles.nutritionPreview}>
@@ -164,9 +161,9 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   healthScoreBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },

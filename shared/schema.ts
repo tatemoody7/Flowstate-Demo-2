@@ -33,7 +33,7 @@ export const scannedProducts = pgTable("scanned_products", {
   name: text("name").notNull(),
   brand: text("brand").notNull(),
   image: text("image").notNull(),
-  healthScore: integer("health_score").notNull(),
+  healthScore: integer("health_score").notNull().default(0),
   calories: integer("calories").notNull(),
   protein: integer("protein").notNull(),
   carbs: integer("carbs").notNull(),

@@ -6,7 +6,7 @@ import { FlowstateColors } from "@/constants/theme";
 //   Green ("Solid Pick"):  Has good ingredients, NO bad ones (caution is fine)
 //   Yellow ("Not Bad"):    Has only caution ingredients (no good, no bad)
 //   Red ("Be Honest"):     Has ANY bad ingredients
-//   Fallback:              No flagged ingredients → use score-based fallback
+//   Default:               No flagged ingredients → yellow ("Not Bad")
 
 export type HealthTier = "green" | "yellow" | "red";
 
@@ -40,17 +40,16 @@ const TIER_CONFIG: Record<HealthTier, Omit<HealthTierResult, "tier">> = {
 };
 
 /**
- * Determine health tier based on ingredient flags.
+ * Determine health tier based on ingredient flags only.
  *
  * Logic:
  *   - Has ANY bad → red
  *   - Has good (no bad) → green  (caution alongside good is still green)
  *   - Has only caution (no good, no bad) → yellow
- *   - No flagged ingredients at all → fallback by healthScore
+ *   - No flagged ingredients at all → default yellow ("Not Bad")
  */
 export function getHealthTier(
   ingredients?: FlaggedIngredient[],
-  healthScore?: number
 ): HealthTierResult {
   let hasBad = false;
   let hasGood = false;
@@ -75,11 +74,8 @@ export function getHealthTier(
     // Only caution, no good, no bad = yellow
     tier = "yellow";
   } else {
-    // No flagged ingredients — fallback to score-based
-    const score = healthScore ?? 50;
-    if (score >= 65) tier = "green";
-    else if (score >= 40) tier = "yellow";
-    else tier = "red";
+    // No flagged ingredients — default to yellow
+    tier = "yellow";
   }
 
   return { tier, ...TIER_CONFIG[tier] };
@@ -90,7 +86,6 @@ export function getHealthTier(
  */
 export function getHealthTierColor(
   ingredients?: FlaggedIngredient[],
-  healthScore?: number
 ): string {
-  return getHealthTier(ingredients, healthScore).color;
+  return getHealthTier(ingredients).color;
 }

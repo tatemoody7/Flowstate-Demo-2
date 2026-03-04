@@ -457,15 +457,3 @@ export function parseAndFlagIngredients(ingredientsText: string): FlaggedIngredi
   });
 }
 
-export function calculateIngredientScoreModifier(flagged: FlaggedIngredient[]): number {
-  let modifier = 0;
-
-  for (const ing of flagged) {
-    if (ing.flag === "bad") modifier -= 3;
-    if (ing.flag === "good") modifier += 2;
-    if (ing.flag === "caution") modifier -= 0.5; // very minor penalty
-  }
-
-  // Expanded caps for larger ingredient database
-  return Math.max(-25, Math.min(15, Math.round(modifier)));
-}

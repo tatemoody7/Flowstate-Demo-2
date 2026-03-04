@@ -2,10 +2,7 @@
 // Fetches from Open Food Facts, grades products, and returns InsertScannedProduct shape.
 
 import type { InsertScannedProduct } from "@shared/schema";
-import {
-  parseAndFlagIngredients,
-  calculateIngredientScoreModifier,
-} from "./ingredientKnowledge";
+import { parseAndFlagIngredients } from "./ingredientKnowledge";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -100,43 +97,6 @@ export async function fetchProduct(
   }
 }
 
-// ─── Health Score Calculation ─────────────────────────────────────────────────
-
-function calculateHealthScore(
-  product: OpenFoodFactsProduct,
-  ingredientModifier: number,
-): number {
-  let score = 50;
-
-  const gradeMap: Record<string, number> = {
-    a: 30,
-    b: 15,
-    c: 0,
-    d: -15,
-    e: -25,
-  };
-  if (product.nutrition_grades) {
-    score += gradeMap[product.nutrition_grades] ?? 0;
-  }
-
-  const n = product.nutriments;
-  if (n) {
-    const protein = n.proteins_100g ?? n.proteins ?? 0;
-    const fiber = n.fiber_100g ?? n.fiber ?? 0;
-    const sugar = n.sugars_100g ?? n.sugars ?? 0;
-    const sodium = n.sodium_100g ?? n.sodium ?? 0;
-
-    if (protein > 10) score += Math.min(15, Math.round(protein));
-    if (fiber > 2) score += Math.min(10, Math.round(fiber * 2));
-    if (sugar > 10) score -= Math.min(15, Math.round(sugar - 10));
-    if (sodium > 0.3) score -= Math.min(10, Math.round((sodium - 0.3) * 20));
-  }
-
-  score += ingredientModifier;
-
-  return Math.max(0, Math.min(100, Math.round(score)));
-}
-
 // ─── Transform ───────────────────────────────────────────────────────────────
 
 export function transformToProduct(
@@ -149,10 +109,6 @@ export function transformToProduct(
     ? parseAndFlagIngredients(product.ingredients_text)
     : undefined;
 
-  const ingredientModifier = flaggedIngredients
-    ? calculateIngredientScoreModifier(flaggedIngredients)
-    : 0;
-
   const hasServing = !!(n?.["energy-kcal_serving"] || n?.proteins_serving);
 
   return {
@@ -162,7 +118,7 @@ export function transformToProduct(
     image:
       product.image_front_url ||
       "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",
-    healthScore: calculateHealthScore(product, ingredientModifier),
+    healthScore: 0,
     calories: Math.round(
       (hasServing ? n?.["energy-kcal_serving"] : undefined) ??
         n?.["energy-kcal_100g"] ??

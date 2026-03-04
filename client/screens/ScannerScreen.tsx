@@ -109,7 +109,7 @@ export default function ScannerScreen() {
 
   // Health tier
   const healthTier = useMemo(
-    () => scannedFood ? getHealthTier(scannedFood.ingredients, scannedFood.healthScore) : null,
+    () => scannedFood ? getHealthTier(scannedFood.ingredients) : null,
     [scannedFood]
   );
 

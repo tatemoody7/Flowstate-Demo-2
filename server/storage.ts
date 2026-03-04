@@ -106,29 +106,19 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Tier filter — match client-side getHealthTier() logic (ingredient flags first, score fallback)
+    // Tier filter — ingredient-flags only (no score fallback)
+    // Green ("Solid Pick"):  Has good flags, NO bad flags (caution alongside good is fine)
+    // Yellow ("Not Bad"):    Has only caution flags (no good, no bad) OR no flagged ingredients at all
+    // Red ("Be Honest"):     Has ANY bad flags
     if (tier === "green") {
-      // Has at least one "good" flag AND no "bad" flags
-      // OR: no flagged ingredients at all AND healthScore >= 65
       conditions.push(
         sql`(
-          (
-            ${scannedProducts.ingredients} IS NOT NULL
-            AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'good')
-            AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
-          )
-          OR (
-            (
-              ${scannedProducts.ingredients} IS NULL
-              OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
-            )
-            AND ${scannedProducts.healthScore} >= 65
-          )
+          ${scannedProducts.ingredients} IS NOT NULL
+          AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'good')
+          AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
         )`,
       );
     } else if (tier === "yellow") {
-      // Has caution (no good, no bad)
-      // OR: no flagged ingredients AND healthScore 40-64
       conditions.push(
         sql`(
           (
@@ -138,31 +128,16 @@ export class DatabaseStorage implements IStorage {
             AND NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
           )
           OR (
-            (
-              ${scannedProducts.ingredients} IS NULL
-              OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
-            )
-            AND ${scannedProducts.healthScore} >= 40
-            AND ${scannedProducts.healthScore} < 65
+            ${scannedProducts.ingredients} IS NULL
+            OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
           )
         )`,
       );
     } else if (tier === "red") {
-      // Has any "bad" flag
-      // OR: no flagged ingredients AND healthScore < 40
       conditions.push(
         sql`(
-          (
-            ${scannedProducts.ingredients} IS NOT NULL
-            AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
-          )
-          OR (
-            (
-              ${scannedProducts.ingredients} IS NULL
-              OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
-            )
-            AND ${scannedProducts.healthScore} < 40
-          )
+          ${scannedProducts.ingredients} IS NOT NULL
+          AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
         )`,
       );
     }
