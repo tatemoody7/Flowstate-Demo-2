@@ -5,15 +5,17 @@ import AuthStackNavigator from "@/navigation/AuthStackNavigator";
 import MainTabNavigator from "@/navigation/MainTabNavigator";
 import ScannerScreen from "@/screens/ScannerScreen";
 import PlaceDetailScreen from "@/screens/PlaceDetailScreen";
+import ProductDetailScreen from "@/screens/ProductDetailScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 import { useApp } from "@/context/AppContext";
-import { Place } from "@/data/mockData";
+import { Place, ScannedFood } from "@/data/mockData";
 
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   Scanner: undefined;
   PlaceDetail: { place: Place };
+  ProductDetail: { product: ScannedFood };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -51,6 +53,14 @@ export default function RootStackNavigator() {
             options={{
               headerShown: false,
               presentation: "card",
+            }}
+          />
+          <Stack.Screen
+            name="ProductDetail"
+            component={ProductDetailScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
             }}
           />
         </>

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getApiUrl } from "@/lib/query-client";
 import type { ScannedFood } from "@/data/mockData";
+import { getHealthTier } from "@/utils/healthTier";
 
 interface ProductsResponse {
   products: {
@@ -85,9 +86,15 @@ export function useProducts(search?: string, tier?: string, store?: string) {
     refetchOnWindowFocus: false,
   });
 
-  const products: ScannedFood[] = query.data?.products
+  const mapped: ScannedFood[] = query.data?.products
     ? mapProductsToScannedFood(query.data.products)
     : [];
+
+  // Client-side post-filter ensures card colors always match the selected tier tab
+  const products: ScannedFood[] =
+    tier && tier !== "all"
+      ? mapped.filter((p) => getHealthTier(p.ingredients).tier === tier)
+      : mapped;
 
   return {
     products,

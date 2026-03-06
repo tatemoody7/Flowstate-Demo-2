@@ -153,7 +153,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(scannedProducts)
       .orderBy(desc(scannedProducts.updatedAt))
-      .limit(250);
+      .limit(1000);
 
     if (conditions.length > 0) {
       return query.where(and(...conditions));

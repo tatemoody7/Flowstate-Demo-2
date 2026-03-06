@@ -11,6 +11,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -22,6 +24,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useProducts } from "@/hooks/useProducts";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import type { ScannedFood } from "@/data/mockData";
+import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 const TIER_FILTERS = [
   { id: "all", label: "All", icon: "grid" as const },
@@ -43,10 +46,13 @@ const STORE_FILTERS = [
   { id: "The Fresh Market", label: "Fresh Market", icon: "shopping-cart" as const },
 ];
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 export default function ProductDatabaseScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
+  const navigation = useNavigation<NavigationProp>();
   const { theme } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,7 +74,7 @@ export default function ProductDatabaseScreen() {
   }, [refetch]);
 
   const handleProductPress = (product: ScannedFood) => {
-    // For now, no-op — in the future could navigate to a detail screen
+    navigation.navigate("ProductDetail", { product });
   };
 
   const renderHeader = () => (
