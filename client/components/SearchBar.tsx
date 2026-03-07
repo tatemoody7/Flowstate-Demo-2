@@ -9,6 +9,7 @@ interface SearchBarProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   onFilterPress?: () => void;
+  variant?: "default" | "glass";
 }
 
 export function SearchBar({
@@ -16,33 +17,36 @@ export function SearchBar({
   onChangeText,
   placeholder = "Search...",
   onFilterPress,
+  variant = "default",
 }: SearchBarProps) {
+  const isGlass = variant === "glass";
+
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, isGlass && styles.inputContainerGlass]}>
         <Feather
           name="search"
           size={18}
-          color={FlowstateColors.textSecondary}
+          color={isGlass ? "rgba(255,255,255,0.7)" : FlowstateColors.textSecondary}
           style={styles.searchIcon}
         />
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={FlowstateColors.textTertiary}
-          style={styles.input}
+          placeholderTextColor={isGlass ? "rgba(255,255,255,0.5)" : FlowstateColors.textTertiary}
+          style={[styles.input, isGlass && styles.inputGlass]}
           returnKeyType="search"
         />
         {value.length > 0 ? (
           <Pressable onPress={() => onChangeText("")} hitSlop={8}>
-            <Feather name="x" size={16} color={FlowstateColors.textSecondary} />
+            <Feather name="x" size={16} color={isGlass ? "rgba(255,255,255,0.7)" : FlowstateColors.textSecondary} />
           </Pressable>
         ) : null}
       </View>
       {onFilterPress ? (
-        <Pressable onPress={onFilterPress} style={styles.filterButton}>
-          <Feather name="sliders" size={18} color={FlowstateColors.primary} />
+        <Pressable onPress={onFilterPress} style={[styles.filterButton, isGlass && styles.filterButtonGlass]}>
+          <Feather name="sliders" size={18} color={isGlass ? "#FFFFFF" : FlowstateColors.primary} />
         </Pressable>
       ) : null}
     </View>
@@ -69,6 +73,14 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 4,
   },
+  inputContainerGlass: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+    shadowColor: "transparent",
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   searchIcon: {
     marginRight: Spacing.md,
   },
@@ -77,6 +89,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: FlowstateColors.textPrimary,
     fontWeight: "500",
+  },
+  inputGlass: {
+    color: "#FFFFFF",
   },
   filterButton: {
     width: 52,
@@ -90,5 +105,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 12,
     elevation: 4,
+  },
+  filterButtonGlass: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+    shadowColor: "transparent",
+    shadowOpacity: 0,
+    elevation: 0,
   },
 });

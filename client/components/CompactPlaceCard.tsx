@@ -84,7 +84,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
               />
             </View>
           )}
-          <ThemedText type="small" style={styles.name} numberOfLines={1}>
+          <ThemedText type="small" style={styles.name} numberOfLines={2}>
             {place.name}
           </ThemedText>
         </View>
@@ -97,7 +97,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
           </View>
           {place.studentDiscount && (
             <View style={styles.dealTag}>
-              <Feather name="tag" size={8} color={FlowstateColors.secondary} />
+              <Feather name="tag" size={8} color="#FFFFFF" />
               <ThemedText type="caption" style={styles.dealText}>
                 Deal
               </ThemedText>
@@ -107,7 +107,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
       </View>
 
       {/* Chevron */}
-      <Feather name="chevron-right" size={14} color={FlowstateColors.textTertiary} style={styles.chevron} />
+      <Feather name="chevron-right" size={14} color="rgba(255,255,255,0.5)" style={styles.chevron} />
     </AnimatedPressable>
   );
 }
@@ -116,15 +116,12 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: FlowstateColors.surface,
+    backgroundColor: "rgba(255,255,255,0.15)",
     borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
     overflow: "hidden",
     marginBottom: Spacing.sm,
-    shadowColor: FlowstateColors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
   },
   imageContainer: {
     width: 52,
@@ -152,17 +149,17 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255,255,255,0.9)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: FlowstateColors.border,
+    borderColor: "rgba(255,255,255,0.3)",
     overflow: "hidden",
     marginRight: 6,
   },
   categoryBadge: {
-    backgroundColor: FlowstateColors.primaryLighter,
-    borderColor: FlowstateColors.primaryLight,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(255,255,255,0.3)",
   },
   logoImage: {
     width: 18,
@@ -170,7 +167,7 @@ const styles = StyleSheet.create({
   },
   name: {
     flex: 1,
-    color: FlowstateColors.textPrimary,
+    color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "700",
   },
@@ -186,7 +183,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   rating: {
-    color: FlowstateColors.textSecondary,
+    color: "rgba(255,255,255,0.75)",
     fontWeight: "500",
     fontSize: 11,
   },
@@ -194,13 +191,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 2,
-    backgroundColor: `${FlowstateColors.secondary}15`,
+    backgroundColor: "rgba(255,255,255,0.2)",
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: BorderRadius.full,
   },
   dealText: {
-    color: FlowstateColors.secondary,
+    color: "#FFFFFF",
     fontSize: 9,
     fontWeight: "700",
   },

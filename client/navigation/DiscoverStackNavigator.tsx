@@ -22,7 +22,9 @@ export default function DiscoverStackNavigator() {
         name="Discover"
         component={DiscoverScreen}
         options={{
-          headerTitle: () => <HeaderTitle title="Flowstate" />,
+          headerTitle: () => <HeaderTitle title="Flowstate" variant="light" />,
+          headerStyle: { backgroundColor: "transparent" },
+          headerBlurEffect: undefined,
         }}
       />
       <Stack.Screen

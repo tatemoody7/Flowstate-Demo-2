@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { StyleSheet, View, RefreshControl, Pressable, Modal, ScrollView, Text } from "react-native";
+import { StyleSheet, View, RefreshControl, Pressable, Modal, ScrollView, Text, StatusBar } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -110,6 +111,7 @@ export default function DiscoverScreen() {
         onChangeText={setSearchQuery}
         placeholder="Search healthy spots..."
         onFilterPress={() => setShowSortMenu(true)}
+        variant="glass"
       />
 
       {/* Store Circle Tabs */}
@@ -126,7 +128,7 @@ export default function DiscoverScreen() {
             onPress={() => navigation.navigate("ProductDatabase")}
           >
             <View style={[styles.storeCircle, styles.storeCircleAll]}>
-              <Feather name="grid" size={24} color={FlowstateColors.primary} />
+              <Feather name="grid" size={24} color="#FFFFFF" />
             </View>
             <ThemedText type="caption" style={styles.storeCircleLabel} numberOfLines={2}>
               All
@@ -164,12 +166,12 @@ export default function DiscoverScreen() {
 
       {sortBy !== "default" && (
         <View style={styles.sortIndicator}>
-          <Feather name="arrow-up" size={14} color={FlowstateColors.primary} />
+          <Feather name="arrow-up" size={14} color="#FFFFFF" />
           <ThemedText type="caption" style={styles.sortIndicatorText}>
             Sorted by {sortBy === "distance" ? "closest" : sortBy === "rating" ? "top rated" : "lowest price"}
           </ThemedText>
           <Pressable onPress={() => setSortBy("default")} hitSlop={8}>
-            <Feather name="x" size={14} color={FlowstateColors.textSecondary} />
+            <Feather name="x" size={14} color="rgba(255,255,255,0.7)" />
           </Pressable>
         </View>
       )}
@@ -178,8 +180,14 @@ export default function DiscoverScreen() {
 
   return (
     <View style={styles.root}>
+      <LinearGradient
+        colors={[FlowstateColors.primary, FlowstateColors.accent, FlowstateColors.secondary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
       <ScrollView
-        style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
+        style={styles.container}
         testID="discover-list"
         contentContainerStyle={[
           styles.content,
@@ -194,7 +202,7 @@ export default function DiscoverScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={FlowstateColors.primary}
+            tintColor="#FFFFFF"
           />
         }
       >
@@ -306,23 +314,23 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255,255,255,0.95)",
     borderWidth: 1.5,
-    borderColor: FlowstateColors.border,
+    borderColor: "rgba(255,255,255,0.4)",
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
   },
   storeCircleAll: {
-    backgroundColor: FlowstateColors.primaryLighter,
-    borderColor: FlowstateColors.primaryLight,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(255,255,255,0.4)",
   },
   storeCircleLogo: {
     width: 52,
     height: 52,
   },
   storeCircleLabel: {
-    color: FlowstateColors.textSecondary,
+    color: "rgba(255,255,255,0.85)",
     fontSize: 10,
     fontWeight: "500",
     marginTop: 4,
@@ -335,12 +343,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    backgroundColor: FlowstateColors.primaryLighter,
+    backgroundColor: "rgba(255,255,255,0.2)",
     borderRadius: BorderRadius.full,
     alignSelf: "flex-start",
   },
   sortIndicatorText: {
-    color: FlowstateColors.primary,
+    color: "#FFFFFF",
     fontWeight: "600",
   },
   columnsContainer: {
@@ -354,7 +362,7 @@ const styles = StyleSheet.create({
     fontFamily: "Yellowtail_400Regular",
     fontSize: 26,
     lineHeight: 34,
-    color: FlowstateColors.primary,
+    color: "#FFFFFF",
     marginBottom: Spacing.sm,
     paddingLeft: Spacing.xs,
   },

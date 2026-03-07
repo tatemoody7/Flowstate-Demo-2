@@ -6,9 +6,10 @@ import { Spacing, FlowstateColors } from "@/constants/theme";
 
 interface HeaderTitleProps {
   title: string;
+  variant?: "default" | "light";
 }
 
-export function HeaderTitle({ title }: HeaderTitleProps) {
+export function HeaderTitle({ title, variant = "default" }: HeaderTitleProps) {
   return (
     <View style={styles.container}>
       <Image
@@ -16,7 +17,7 @@ export function HeaderTitle({ title }: HeaderTitleProps) {
         style={styles.headerLogo}
         resizeMode="contain"
       />
-      <ThemedText style={styles.title} numberOfLines={1}>{title}</ThemedText>
+      <ThemedText style={[styles.title, variant === "light" && styles.titleLight]} numberOfLines={1}>{title}</ThemedText>
     </View>
   );
 }
@@ -35,6 +36,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontFamily: "Poppins_700Bold",
     color: FlowstateColors.primary,
+  },
+  titleLight: {
+    color: "#FFFFFF",
   },
   headerLogo: {
     width: 48,
