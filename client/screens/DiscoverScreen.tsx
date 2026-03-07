@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { StyleSheet, View, FlatList, RefreshControl, Pressable, Modal, ScrollView } from "react-native";
+import { StyleSheet, View, RefreshControl, Pressable, Modal, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -14,16 +14,15 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { SearchBar } from "@/components/SearchBar";
-import { CategoryChip } from "@/components/CategoryChip";
-import { PlaceCard } from "@/components/PlaceCard";
+import { CompactPlaceCard } from "@/components/CompactPlaceCard";
 import { EmptyState } from "@/components/EmptyState";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
-import { mockPlaces, categories, Place } from "@/data/mockData";
+import { mockPlaces, Place } from "@/data/mockData";
 import { useUserLocation } from "@/hooks/useUserLocation";
-import { getNearestLocation, sortPlacesByDistance } from "@/utils/distance";
+import { sortPlacesByDistance } from "@/utils/distance";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { DiscoverStackParamList } from "@/navigation/DiscoverStackNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -41,12 +40,11 @@ export default function DiscoverScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const { savedPlaces, toggleSavedPlace, schoolColors } = useApp();
+  const { schoolColors } = useApp();
   const navigation = useNavigation<DiscoverScreenNavigationProp>();
   const { coords: userCoords } = useUserLocation();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [refreshing, setRefreshing] = useState(false);
   const [sortBy, setSortBy] = useState<"default" | "distance" | "rating" | "price">("default");
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -56,26 +54,39 @@ export default function DiscoverScreen() {
     [],
   );
 
-  const filteredPlaces = useMemo(() => {
-    let places = mockPlaces.filter((place) => {
-      const matchesSearch =
-        place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        place.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "all" || place.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-
+  const applySort = (places: Place[]) => {
     if (sortBy === "distance") {
-      places = sortPlacesByDistance(places, userCoords);
+      return sortPlacesByDistance(places, userCoords);
     } else if (sortBy === "rating") {
-      places = [...places].sort((a, b) => b.rating - a.rating);
+      return [...places].sort((a, b) => b.rating - a.rating);
     } else if (sortBy === "price") {
-      places = [...places].sort((a, b) => a.priceLevel - b.priceLevel);
+      return [...places].sort((a, b) => a.priceLevel - b.priceLevel);
     }
-
     return places;
-  }, [searchQuery, selectedCategory, sortBy, userCoords]);
+  };
+
+  const applySearch = (place: Place) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      place.name.toLowerCase().includes(q) ||
+      place.description.toLowerCase().includes(q)
+    );
+  };
+
+  const foodPlaces = useMemo(() => {
+    const filtered = mockPlaces.filter(
+      (p) => p.category === "restaurant" && applySearch(p),
+    );
+    return applySort(filtered);
+  }, [searchQuery, sortBy, userCoords]);
+
+  const fitnessPlaces = useMemo(() => {
+    const filtered = mockPlaces.filter(
+      (p) => p.category === "gym" && applySearch(p),
+    );
+    return applySort(filtered);
+  }, [searchQuery, sortBy, userCoords]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -92,22 +103,6 @@ export default function DiscoverScreen() {
     }
   };
 
-  const getDynamicGreeting = () => {
-    return `Lock in today, ${schoolColors.mascotGreeting}.`;
-  };
-
-  const getSubGreeting = () => {
-    const categoryLabel =
-      selectedCategory === "all"
-        ? "healthy spots"
-        : selectedCategory === "restaurant"
-          ? "restaurants"
-          : selectedCategory === "gym"
-            ? "gyms"
-            : "grocery stores";
-    return `${filteredPlaces.length} ${categoryLabel} near campus`;
-  };
-
   const renderHeader = () => (
     <View style={styles.header}>
       <SearchBar
@@ -116,25 +111,6 @@ export default function DiscoverScreen() {
         placeholder="Search healthy spots..."
         onFilterPress={() => setShowSortMenu(true)}
       />
-      <View style={styles.categories}>
-        <FlatList
-          horizontal
-          data={categories}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
-              <CategoryChip
-                label={item.label}
-                icon={item.icon}
-                isSelected={selectedCategory === item.id}
-                onPress={() => setSelectedCategory(item.id)}
-              />
-            </Animated.View>
-          )}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesList}
-        />
-      </View>
 
       {/* Store Circle Tabs */}
       <ScrollView
@@ -200,29 +176,9 @@ export default function DiscoverScreen() {
     </View>
   );
 
-  const renderEmpty = () => (
-    <EmptyState
-      image={require("../../assets/images/empty-discover.png")}
-      title="No places found"
-      description="Try adjusting your search or explore a different category"
-    />
-  );
-
-  const renderPlace = ({ item, index }: { item: Place; index: number }) => (
-    <Animated.View entering={FadeInDown.delay(index * 100).duration(400)}>
-      <PlaceCard
-        place={item}
-        isSaved={savedPlaces.includes(item.id)}
-        onPress={() => handlePlacePress(item)}
-        onSavePress={() => toggleSavedPlace(item.id)}
-        userCoords={userCoords}
-      />
-    </Animated.View>
-  );
-
   return (
     <View style={styles.root}>
-      <FlatList
+      <ScrollView
         style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
         testID="discover-list"
         contentContainerStyle={[
@@ -233,11 +189,6 @@ export default function DiscoverScreen() {
           },
         ]}
         scrollIndicatorInsets={{ bottom: insets.bottom }}
-        data={filteredPlaces}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPlace}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmpty}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -246,7 +197,56 @@ export default function DiscoverScreen() {
             tintColor={FlowstateColors.primary}
           />
         }
-      />
+      >
+        {renderHeader()}
+
+        {/* Two-Column Layout */}
+        {foodPlaces.length === 0 && fitnessPlaces.length === 0 ? (
+          <EmptyState
+            image={require("../../assets/images/empty-discover.png")}
+            title="No places found"
+            description="Try adjusting your search"
+          />
+        ) : (
+          <View style={styles.columnsContainer}>
+            {/* Food Column */}
+            <View style={styles.column}>
+              <ThemedText type="h3" style={styles.columnHeader}>
+                Food
+              </ThemedText>
+              {foodPlaces.map((place, index) => (
+                <Animated.View
+                  key={place.id}
+                  entering={FadeInDown.delay(Math.min(index, 6) * 80).duration(350)}
+                >
+                  <CompactPlaceCard
+                    place={place}
+                    onPress={() => handlePlacePress(place)}
+                  />
+                </Animated.View>
+              ))}
+            </View>
+
+            {/* Fitness Column */}
+            <View style={styles.column}>
+              <ThemedText type="h3" style={styles.columnHeader}>
+                Fitness
+              </ThemedText>
+              {fitnessPlaces.map((place, index) => (
+                <Animated.View
+                  key={place.id}
+                  entering={FadeInDown.delay(Math.min(index, 6) * 80).duration(350)}
+                >
+                  <CompactPlaceCard
+                    place={place}
+                    onPress={() => handlePlacePress(place)}
+                  />
+                </Animated.View>
+              ))}
+            </View>
+          </View>
+        )}
+      </ScrollView>
 
       {/* Sort Menu Modal */}
       <Modal
@@ -295,25 +295,6 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing.lg,
-  },
-  heroSection: {
-    marginBottom: Spacing.xl,
-  },
-  heroTitle: {
-    color: FlowstateColors.textPrimary,
-    fontWeight: "800",
-    fontSize: 22,
-    lineHeight: 28,
-  },
-  heroSubtitle: {
-    color: FlowstateColors.textSecondary,
-    marginTop: Spacing.xs,
-  },
-  categories: {
-    marginTop: Spacing.lg,
-  },
-  categoriesList: {
-    paddingRight: Spacing.lg,
   },
   storeCirclesRow: {
     marginTop: Spacing.lg,
@@ -365,6 +346,18 @@ const styles = StyleSheet.create({
   sortIndicatorText: {
     color: FlowstateColors.primary,
     fontWeight: "600",
+  },
+  columnsContainer: {
+    flexDirection: "row",
+    gap: Spacing.md,
+  },
+  column: {
+    flex: 1,
+  },
+  columnHeader: {
+    color: FlowstateColors.textPrimary,
+    fontWeight: "800",
+    marginBottom: Spacing.md,
   },
   modalOverlay: {
     flex: 1,
