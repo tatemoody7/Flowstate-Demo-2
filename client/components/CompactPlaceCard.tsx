@@ -27,7 +27,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.98);
+    scale.value = withSpring(0.97);
   };
 
   const handlePressOut = () => {
@@ -54,7 +54,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
       onPressOut={handlePressOut}
       style={[styles.card, animatedStyle]}
     >
-      {/* Thumbnail */}
+      {/* Image */}
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: place.image }}
@@ -64,9 +64,9 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
         />
       </View>
 
-      {/* Info */}
-      <View style={styles.info}>
-        <View style={styles.topRow}>
+      {/* Content below image */}
+      <View style={styles.content}>
+        <View style={styles.nameRow}>
           {place.logo ? (
             <View style={styles.logoBadge}>
               <Image
@@ -84,11 +84,11 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
               />
             </View>
           )}
-          <ThemedText type="small" style={styles.name} numberOfLines={2}>
+          <ThemedText type="small" style={styles.name}>
             {place.name}
           </ThemedText>
         </View>
-        <View style={styles.bottomRow}>
+        <View style={styles.metaRow}>
           <View style={styles.ratingRow}>
             <Feather name="star" size={10} color={FlowstateColors.accent} />
             <ThemedText type="caption" style={styles.rating}>
@@ -105,45 +105,35 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
           )}
         </View>
       </View>
-
-      {/* Chevron */}
-      <Feather name="chevron-right" size={14} color="rgba(255,255,255,0.5)" style={styles.chevron} />
     </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: BorderRadius.sm,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
     overflow: "hidden",
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   imageContainer: {
-    width: 52,
-    height: 52,
-    margin: Spacing.sm,
-    borderRadius: BorderRadius.xs,
-    overflow: "hidden",
+    width: "100%",
+    height: 90,
   },
   image: {
     width: "100%",
     height: "100%",
   },
-  info: {
-    flex: 1,
-    paddingVertical: Spacing.sm,
-    paddingRight: Spacing.xs,
-    justifyContent: "center",
+  content: {
+    padding: Spacing.sm,
+    paddingTop: Spacing.sm,
   },
-  topRow: {
+  nameRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 3,
+    alignItems: "flex-start",
+    marginBottom: 4,
   },
   logoBadge: {
     width: 20,
@@ -156,6 +146,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.3)",
     overflow: "hidden",
     marginRight: 6,
+    marginTop: 1,
   },
   categoryBadge: {
     backgroundColor: "rgba(255,255,255,0.2)",
@@ -170,8 +161,9 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "700",
+    lineHeight: 17,
   },
-  bottomRow: {
+  metaRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.sm,
@@ -200,8 +192,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 9,
     fontWeight: "700",
-  },
-  chevron: {
-    marginRight: Spacing.sm,
   },
 });
