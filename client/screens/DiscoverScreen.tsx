@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { StyleSheet, View, RefreshControl, Pressable, Modal, ScrollView } from "react-native";
+import { StyleSheet, View, RefreshControl, Pressable, Modal, ScrollView, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -8,7 +8,6 @@ import { CompositeNavigationProp, useNavigation } from "@react-navigation/native
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 
 import Animated, {
   FadeInDown,
@@ -212,24 +211,7 @@ export default function DiscoverScreen() {
           <View style={styles.columnsContainer}>
             {/* Food Column */}
             <View style={styles.column}>
-              <View style={styles.columnHeaderContainer}>
-                <LinearGradient
-                  colors={[`${FlowstateColors.secondary}18`, `${FlowstateColors.secondary}06`]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.columnHeaderGradient}
-                >
-                  <View style={[styles.columnHeaderIcon, { backgroundColor: `${FlowstateColors.secondary}20` }]}>
-                    <Feather name="coffee" size={14} color={FlowstateColors.secondary} />
-                  </View>
-                  <ThemedText type="h4" style={[styles.columnHeader, { color: FlowstateColors.secondary }]}>
-                    Food
-                  </ThemedText>
-                  <ThemedText type="caption" style={styles.columnCount}>
-                    {foodPlaces.length}
-                  </ThemedText>
-                </LinearGradient>
-              </View>
+              <Text style={styles.columnHeader}>Food</Text>
               {foodPlaces.map((place, index) => (
                 <Animated.View
                   key={place.id}
@@ -245,24 +227,7 @@ export default function DiscoverScreen() {
 
             {/* Fitness Column */}
             <View style={styles.column}>
-              <View style={styles.columnHeaderContainer}>
-                <LinearGradient
-                  colors={[`${FlowstateColors.accent}18`, `${FlowstateColors.accent}06`]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.columnHeaderGradient}
-                >
-                  <View style={[styles.columnHeaderIcon, { backgroundColor: `${FlowstateColors.accent}20` }]}>
-                    <Feather name="activity" size={14} color={FlowstateColors.accent} />
-                  </View>
-                  <ThemedText type="h4" style={[styles.columnHeader, { color: FlowstateColors.accent }]}>
-                    Fitness
-                  </ThemedText>
-                  <ThemedText type="caption" style={styles.columnCount}>
-                    {fitnessPlaces.length}
-                  </ThemedText>
-                </LinearGradient>
-              </View>
+              <Text style={styles.columnHeader}>Fitness</Text>
               {fitnessPlaces.map((place, index) => (
                 <Animated.View
                   key={place.id}
@@ -385,32 +350,13 @@ const styles = StyleSheet.create({
   column: {
     flex: 1,
   },
-  columnHeaderContainer: {
-    marginBottom: Spacing.sm,
-  },
-  columnHeaderGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.xs,
-  },
-  columnHeaderIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: Spacing.sm,
-  },
   columnHeader: {
-    flex: 1,
-    fontWeight: "800",
-  },
-  columnCount: {
-    color: FlowstateColors.textTertiary,
-    fontWeight: "600",
-    fontSize: 11,
+    fontFamily: "Yellowtail_400Regular",
+    fontSize: 26,
+    lineHeight: 34,
+    color: FlowstateColors.primary,
+    marginBottom: Spacing.sm,
+    paddingLeft: Spacing.xs,
   },
   modalOverlay: {
     flex: 1,

@@ -64,21 +64,24 @@ export default function ProfileScreen() {
       icon: "bell" as const,
       label: "Notifications",
       value: "On",
-      color: FlowstateColors.accent,
+      iconColor: FlowstateColors.primaryLighter,
+      iconBg: FlowstateColors.primary,
       onPress: () => {},
     },
     {
       icon: "map-pin" as const,
       label: "Location",
       value: user?.locationEnabled ? "Enabled" : "Disabled",
-      color: FlowstateColors.secondary,
+      iconColor: FlowstateColors.primary,
+      iconBg: FlowstateColors.primaryLight,
       onPress: () => {},
     },
     {
       icon: "moon" as const,
       label: "Appearance",
       value: "System",
-      color: FlowstateColors.primary,
+      iconColor: FlowstateColors.secondary,
+      iconBg: FlowstateColors.primaryLightest,
       onPress: () => {},
     },
   ];
@@ -87,19 +90,22 @@ export default function ProfileScreen() {
     {
       icon: "help-circle" as const,
       label: "Help & Support",
-      color: FlowstateColors.info,
+      iconColor: FlowstateColors.primary,
+      iconBg: FlowstateColors.primaryLighter,
       onPress: () => {},
     },
     {
       icon: "file-text" as const,
       label: "Privacy Policy",
-      color: FlowstateColors.textSecondary,
+      iconColor: FlowstateColors.textSecondary,
+      iconBg: FlowstateColors.backgroundSecondary,
       onPress: () => {},
     },
     {
       icon: "info" as const,
       label: "Terms of Service",
-      color: FlowstateColors.textSecondary,
+      iconColor: FlowstateColors.textSecondary,
+      iconBg: FlowstateColors.backgroundSecondary,
       onPress: () => {},
     },
   ];
@@ -116,9 +122,9 @@ export default function ProfileScreen() {
       ]}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
-      {/* Profile Header with Gradient */}
+      {/* Profile Header with Welcome-style Gradient */}
       <LinearGradient
-        colors={[FlowstateColors.primary, FlowstateColors.secondary]}
+        colors={[FlowstateColors.primary, FlowstateColors.accent, FlowstateColors.secondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.profileHeader}
@@ -170,14 +176,9 @@ export default function ProfileScreen() {
 
       {/* Saved Items Section */}
       <View style={styles.section}>
-        <View style={styles.sectionTitleRow}>
-          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.error}15` }]}>
-            <Feather name="heart" size={14} color={FlowstateColors.error} />
-          </View>
-          <ThemedText type="h4" style={styles.sectionTitle}>
-            Saved
-          </ThemedText>
-        </View>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Saved
+        </ThemedText>
         <View style={styles.savedSegmentedControl}>
           <Pressable
             onPress={() => setSavedTab("places")}
@@ -186,12 +187,6 @@ export default function ProfileScreen() {
               savedTab === "places" && styles.savedSegmentActive,
             ]}
           >
-            <Feather
-              name="map-pin"
-              size={14}
-              color={savedTab === "places" ? FlowstateColors.primary : FlowstateColors.textTertiary}
-              style={{ marginRight: 4 }}
-            />
             <ThemedText
               type="small"
               style={[
@@ -199,7 +194,7 @@ export default function ProfileScreen() {
                 savedTab === "places" && styles.savedSegmentTextActive,
               ]}
             >
-              Places
+              Saved Places
             </ThemedText>
           </Pressable>
           <Pressable
@@ -209,12 +204,6 @@ export default function ProfileScreen() {
               savedTab === "foods" && styles.savedSegmentActive,
             ]}
           >
-            <Feather
-              name="package"
-              size={14}
-              color={savedTab === "foods" ? FlowstateColors.secondary : FlowstateColors.textTertiary}
-              style={{ marginRight: 4 }}
-            />
             <ThemedText
               type="small"
               style={[
@@ -222,7 +211,7 @@ export default function ProfileScreen() {
                 savedTab === "foods" && styles.savedSegmentTextActive,
               ]}
             >
-              Foods
+              Saved Foods
             </ThemedText>
           </Pressable>
         </View>
@@ -241,9 +230,7 @@ export default function ProfileScreen() {
             ))
           ) : (
             <View style={styles.savedEmpty}>
-              <View style={[styles.emptyIcon, { backgroundColor: `${FlowstateColors.secondary}12` }]}>
-                <Feather name="package" size={28} color={FlowstateColors.secondary} />
-              </View>
+              <Feather name="package" size={32} color={FlowstateColors.textTertiary} />
               <ThemedText type="small" style={styles.savedEmptyText}>
                 No saved foods yet. Scan items to save them!
               </ThemedText>
@@ -263,9 +250,7 @@ export default function ProfileScreen() {
           ))
         ) : (
           <View style={styles.savedEmpty}>
-            <View style={[styles.emptyIcon, { backgroundColor: `${FlowstateColors.accent}12` }]}>
-              <Feather name="map-pin" size={28} color={FlowstateColors.accent} />
-            </View>
+            <Feather name="map-pin" size={32} color={FlowstateColors.textTertiary} />
             <ThemedText type="small" style={styles.savedEmptyText}>
               No saved places yet. Explore and save your favorites!
             </ThemedText>
@@ -275,20 +260,10 @@ export default function ProfileScreen() {
 
       {/* School Section */}
       <View style={styles.section}>
-        <View style={styles.sectionTitleRow}>
-          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.primary}15` }]}>
-            <Feather name="book" size={14} color={FlowstateColors.primary} />
-          </View>
-          <ThemedText type="h4" style={styles.sectionTitle}>
-            School
-          </ThemedText>
-        </View>
-        <LinearGradient
-          colors={[`${schoolColors.primary}10`, `${schoolColors.secondary}08`]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.schoolCard}
-        >
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          School
+        </ThemedText>
+        <View style={styles.schoolCard}>
           <View
             style={[
               styles.schoolColorPreview,
@@ -311,19 +286,14 @@ export default function ProfileScreen() {
             </ThemedText>
           </View>
           <Feather name="chevron-right" size={20} color={FlowstateColors.textTertiary} />
-        </LinearGradient>
+        </View>
       </View>
 
       {/* Settings Section */}
       <View style={styles.section}>
-        <View style={styles.sectionTitleRow}>
-          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.accent}15` }]}>
-            <Feather name="settings" size={14} color={FlowstateColors.accent} />
-          </View>
-          <ThemedText type="h4" style={styles.sectionTitle}>
-            Preferences
-          </ThemedText>
-        </View>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          Preferences
+        </ThemedText>
         <View style={styles.settingsCard}>
           {settingsItems.map((item, index) => (
             <Pressable
@@ -335,11 +305,11 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={styles.settingsItemLeft}>
-                <View style={[styles.settingsIconContainer, { backgroundColor: `${item.color}15` }]}>
+                <View style={[styles.settingsIconContainer, { backgroundColor: item.iconBg }]}>
                   <Feather
                     name={item.icon}
                     size={18}
-                    color={item.color}
+                    color={item.iconColor}
                   />
                 </View>
                 <ThemedText type="body" style={styles.settingsLabel}>
@@ -363,14 +333,9 @@ export default function ProfileScreen() {
 
       {/* About Section */}
       <View style={styles.section}>
-        <View style={styles.sectionTitleRow}>
-          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.textSecondary}12` }]}>
-            <Feather name="info" size={14} color={FlowstateColors.textSecondary} />
-          </View>
-          <ThemedText type="h4" style={styles.sectionTitle}>
-            About
-          </ThemedText>
-        </View>
+        <ThemedText type="h4" style={styles.sectionTitle}>
+          About
+        </ThemedText>
         <View style={styles.settingsCard}>
           {aboutItems.map((item, index) => (
             <Pressable
@@ -382,11 +347,11 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={styles.settingsItemLeft}>
-                <View style={[styles.settingsIconContainer, { backgroundColor: `${item.color}12` }]}>
+                <View style={[styles.settingsIconContainer, { backgroundColor: item.iconBg }]}>
                   <Feather
                     name={item.icon}
                     size={18}
-                    color={item.color}
+                    color={item.iconColor}
                   />
                 </View>
                 <ThemedText type="body" style={styles.settingsLabel}>
@@ -493,26 +458,15 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: Spacing.xl,
   },
-  sectionTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  sectionTitle: {
+    color: FlowstateColors.textSecondary,
     marginBottom: Spacing.md,
     marginLeft: Spacing.xs,
-  },
-  sectionIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: Spacing.sm,
-  },
-  sectionTitle: {
-    color: FlowstateColors.textPrimary,
   },
   schoolCard: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: FlowstateColors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
@@ -608,22 +562,15 @@ const styles = StyleSheet.create({
   },
   savedSegment: {
     flex: 1,
-    flexDirection: "row",
     paddingVertical: Spacing.sm,
     alignItems: "center",
-    justifyContent: "center",
     borderRadius: BorderRadius.xs,
   },
   savedSegmentActive: {
     backgroundColor: FlowstateColors.surface,
-    shadowColor: FlowstateColors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   savedSegmentText: {
-    color: FlowstateColors.textTertiary,
+    color: FlowstateColors.textSecondary,
   },
   savedSegmentTextActive: {
     color: FlowstateColors.textPrimary,
@@ -633,13 +580,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: Spacing["3xl"],
     gap: Spacing.md,
-  },
-  emptyIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
   },
   savedEmptyText: {
     color: FlowstateColors.textTertiary,

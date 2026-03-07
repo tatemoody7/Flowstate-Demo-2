@@ -47,19 +47,6 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
     }
   };
 
-  const getCategoryColor = () => {
-    switch (place.category) {
-      case "restaurant":
-        return FlowstateColors.secondary;
-      case "gym":
-        return FlowstateColors.accent;
-      default:
-        return FlowstateColors.primary;
-    }
-  };
-
-  const categoryColor = getCategoryColor();
-
   return (
     <AnimatedPressable
       onPress={onPress}
@@ -109,9 +96,9 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
             </ThemedText>
           </View>
           {place.studentDiscount && (
-            <View style={[styles.dealTag, { backgroundColor: `${categoryColor}15` }]}>
-              <Feather name="tag" size={8} color={categoryColor} />
-              <ThemedText type="caption" style={[styles.dealText, { color: categoryColor }]}>
+            <View style={styles.dealTag}>
+              <Feather name="tag" size={8} color={FlowstateColors.secondary} />
+              <ThemedText type="caption" style={styles.dealText}>
                 Deal
               </ThemedText>
             </View>
@@ -207,11 +194,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 2,
+    backgroundColor: `${FlowstateColors.secondary}15`,
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: BorderRadius.full,
   },
   dealText: {
+    color: FlowstateColors.secondary,
     fontSize: 9,
     fontWeight: "700",
   },
