@@ -8,6 +8,7 @@ import { CompositeNavigationProp, useNavigation } from "@react-navigation/native
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 
 import Animated, {
   FadeInDown,
@@ -211,9 +212,24 @@ export default function DiscoverScreen() {
           <View style={styles.columnsContainer}>
             {/* Food Column */}
             <View style={styles.column}>
-              <ThemedText type="h3" style={styles.columnHeader}>
-                Food
-              </ThemedText>
+              <View style={styles.columnHeaderContainer}>
+                <LinearGradient
+                  colors={[`${FlowstateColors.secondary}18`, `${FlowstateColors.secondary}06`]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.columnHeaderGradient}
+                >
+                  <View style={[styles.columnHeaderIcon, { backgroundColor: `${FlowstateColors.secondary}20` }]}>
+                    <Feather name="coffee" size={14} color={FlowstateColors.secondary} />
+                  </View>
+                  <ThemedText type="h4" style={[styles.columnHeader, { color: FlowstateColors.secondary }]}>
+                    Food
+                  </ThemedText>
+                  <ThemedText type="caption" style={styles.columnCount}>
+                    {foodPlaces.length}
+                  </ThemedText>
+                </LinearGradient>
+              </View>
               {foodPlaces.map((place, index) => (
                 <Animated.View
                   key={place.id}
@@ -229,9 +245,24 @@ export default function DiscoverScreen() {
 
             {/* Fitness Column */}
             <View style={styles.column}>
-              <ThemedText type="h3" style={styles.columnHeader}>
-                Fitness
-              </ThemedText>
+              <View style={styles.columnHeaderContainer}>
+                <LinearGradient
+                  colors={[`${FlowstateColors.accent}18`, `${FlowstateColors.accent}06`]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.columnHeaderGradient}
+                >
+                  <View style={[styles.columnHeaderIcon, { backgroundColor: `${FlowstateColors.accent}20` }]}>
+                    <Feather name="activity" size={14} color={FlowstateColors.accent} />
+                  </View>
+                  <ThemedText type="h4" style={[styles.columnHeader, { color: FlowstateColors.accent }]}>
+                    Fitness
+                  </ThemedText>
+                  <ThemedText type="caption" style={styles.columnCount}>
+                    {fitnessPlaces.length}
+                  </ThemedText>
+                </LinearGradient>
+              </View>
               {fitnessPlaces.map((place, index) => (
                 <Animated.View
                   key={place.id}
@@ -354,10 +385,32 @@ const styles = StyleSheet.create({
   column: {
     flex: 1,
   },
+  columnHeaderContainer: {
+    marginBottom: Spacing.sm,
+  },
+  columnHeaderGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.xs,
+  },
+  columnHeaderIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: Spacing.sm,
+  },
   columnHeader: {
-    color: FlowstateColors.textPrimary,
+    flex: 1,
     fontWeight: "800",
-    marginBottom: Spacing.md,
+  },
+  columnCount: {
+    color: FlowstateColors.textTertiary,
+    fontWeight: "600",
+    fontSize: 11,
   },
   modalOverlay: {
     flex: 1,

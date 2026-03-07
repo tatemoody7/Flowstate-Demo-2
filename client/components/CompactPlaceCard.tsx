@@ -47,6 +47,19 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
     }
   };
 
+  const getCategoryColor = () => {
+    switch (place.category) {
+      case "restaurant":
+        return FlowstateColors.secondary;
+      case "gym":
+        return FlowstateColors.accent;
+      default:
+        return FlowstateColors.primary;
+    }
+  };
+
+  const categoryColor = getCategoryColor();
+
   return (
     <AnimatedPressable
       onPress={onPress}
@@ -54,7 +67,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
       onPressOut={handlePressOut}
       style={[styles.card, animatedStyle]}
     >
-      {/* Square Image */}
+      {/* Thumbnail */}
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: place.image }}
@@ -62,105 +75,147 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
           contentFit="cover"
           transition={200}
         />
-        {/* Logo Badge Overlay */}
-        {place.logo ? (
-          <View style={styles.logoBadge}>
-            <Image
-              source={place.logo}
-              style={styles.logoImage}
-              contentFit="cover"
-            />
-          </View>
-        ) : (
-          <View style={[styles.logoBadge, styles.categoryBadge]}>
-            <Feather
-              name={getCategoryIcon()}
-              size={11}
-              color={FlowstateColors.primary}
-            />
-          </View>
-        )}
       </View>
 
       {/* Info */}
       <View style={styles.info}>
-        <ThemedText type="small" style={styles.name} numberOfLines={1}>
-          {place.name}
-        </ThemedText>
-        <View style={styles.ratingRow}>
-          <Feather name="star" size={11} color={FlowstateColors.accent} />
-          <ThemedText type="caption" style={styles.rating}>
-            {place.rating}
+        <View style={styles.topRow}>
+          {place.logo ? (
+            <View style={styles.logoBadge}>
+              <Image
+                source={place.logo}
+                style={styles.logoImage}
+                contentFit="cover"
+              />
+            </View>
+          ) : (
+            <View style={[styles.logoBadge, styles.categoryBadge]}>
+              <Feather
+                name={getCategoryIcon()}
+                size={10}
+                color={FlowstateColors.primary}
+              />
+            </View>
+          )}
+          <ThemedText type="small" style={styles.name} numberOfLines={1}>
+            {place.name}
           </ThemedText>
         </View>
+        <View style={styles.bottomRow}>
+          <View style={styles.ratingRow}>
+            <Feather name="star" size={10} color={FlowstateColors.accent} />
+            <ThemedText type="caption" style={styles.rating}>
+              {place.rating}
+            </ThemedText>
+          </View>
+          {place.studentDiscount && (
+            <View style={[styles.dealTag, { backgroundColor: `${categoryColor}15` }]}>
+              <Feather name="tag" size={8} color={categoryColor} />
+              <ThemedText type="caption" style={[styles.dealText, { color: categoryColor }]}>
+                Deal
+              </ThemedText>
+            </View>
+          )}
+        </View>
       </View>
+
+      {/* Chevron */}
+      <Feather name="chevron-right" size={14} color={FlowstateColors.textTertiary} style={styles.chevron} />
     </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: FlowstateColors.surface,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.sm,
     overflow: "hidden",
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
     shadowColor: FlowstateColors.cardShadow,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowRadius: 6,
+    elevation: 2,
   },
   imageContainer: {
-    aspectRatio: 1,
-    width: "100%",
-    borderTopLeftRadius: BorderRadius.lg,
-    borderTopRightRadius: BorderRadius.lg,
+    width: 52,
+    height: 52,
+    margin: Spacing.sm,
+    borderRadius: BorderRadius.xs,
     overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
   },
+  info: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    paddingRight: Spacing.xs,
+    justifyContent: "center",
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 3,
+  },
   logoBadge: {
-    position: "absolute",
-    bottom: 8,
-    left: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: FlowstateColors.border,
     overflow: "hidden",
+    marginRight: 6,
   },
   categoryBadge: {
     backgroundColor: FlowstateColors.primaryLighter,
     borderColor: FlowstateColors.primaryLight,
   },
   logoImage: {
-    width: 22,
-    height: 22,
-  },
-  info: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.sm,
+    width: 18,
+    height: 18,
   },
   name: {
+    flex: 1,
     color: FlowstateColors.textPrimary,
     fontSize: 13,
     fontWeight: "700",
   },
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginLeft: 26,
+  },
   ratingRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    marginTop: 2,
+    gap: 3,
   },
   rating: {
     color: FlowstateColors.textSecondary,
     fontWeight: "500",
     fontSize: 11,
+  },
+  dealTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: BorderRadius.full,
+  },
+  dealText: {
+    fontSize: 9,
+    fontWeight: "700",
+  },
+  chevron: {
+    marginRight: Spacing.sm,
   },
 });

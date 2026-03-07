@@ -9,6 +9,7 @@ import { CompositeNavigationProp } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { PlaceCard } from "@/components/PlaceCard";
@@ -63,18 +64,21 @@ export default function ProfileScreen() {
       icon: "bell" as const,
       label: "Notifications",
       value: "On",
+      color: FlowstateColors.accent,
       onPress: () => {},
     },
     {
       icon: "map-pin" as const,
       label: "Location",
       value: user?.locationEnabled ? "Enabled" : "Disabled",
+      color: FlowstateColors.secondary,
       onPress: () => {},
     },
     {
       icon: "moon" as const,
       label: "Appearance",
       value: "System",
+      color: FlowstateColors.primary,
       onPress: () => {},
     },
   ];
@@ -83,16 +87,19 @@ export default function ProfileScreen() {
     {
       icon: "help-circle" as const,
       label: "Help & Support",
+      color: FlowstateColors.info,
       onPress: () => {},
     },
     {
       icon: "file-text" as const,
       label: "Privacy Policy",
+      color: FlowstateColors.textSecondary,
       onPress: () => {},
     },
     {
       icon: "info" as const,
       label: "Terms of Service",
+      color: FlowstateColors.textSecondary,
       onPress: () => {},
     },
   ];
@@ -109,8 +116,13 @@ export default function ProfileScreen() {
       ]}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
     >
-      {/* Profile Header */}
-      <View style={styles.profileHeader}>
+      {/* Profile Header with Gradient */}
+      <LinearGradient
+        colors={[FlowstateColors.primary, FlowstateColors.secondary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.profileHeader}
+      >
         <View style={styles.avatarContainer}>
           <Image
             source={require("../../assets/images/avatar-default.png")}
@@ -154,13 +166,18 @@ export default function ProfileScreen() {
             </ThemedText>
           </View>
         </View>
-      </View>
+      </LinearGradient>
 
       {/* Saved Items Section */}
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>
-          Saved
-        </ThemedText>
+        <View style={styles.sectionTitleRow}>
+          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.error}15` }]}>
+            <Feather name="heart" size={14} color={FlowstateColors.error} />
+          </View>
+          <ThemedText type="h4" style={styles.sectionTitle}>
+            Saved
+          </ThemedText>
+        </View>
         <View style={styles.savedSegmentedControl}>
           <Pressable
             onPress={() => setSavedTab("places")}
@@ -169,6 +186,12 @@ export default function ProfileScreen() {
               savedTab === "places" && styles.savedSegmentActive,
             ]}
           >
+            <Feather
+              name="map-pin"
+              size={14}
+              color={savedTab === "places" ? FlowstateColors.primary : FlowstateColors.textTertiary}
+              style={{ marginRight: 4 }}
+            />
             <ThemedText
               type="small"
               style={[
@@ -176,7 +199,7 @@ export default function ProfileScreen() {
                 savedTab === "places" && styles.savedSegmentTextActive,
               ]}
             >
-              Saved Places
+              Places
             </ThemedText>
           </Pressable>
           <Pressable
@@ -186,6 +209,12 @@ export default function ProfileScreen() {
               savedTab === "foods" && styles.savedSegmentActive,
             ]}
           >
+            <Feather
+              name="package"
+              size={14}
+              color={savedTab === "foods" ? FlowstateColors.secondary : FlowstateColors.textTertiary}
+              style={{ marginRight: 4 }}
+            />
             <ThemedText
               type="small"
               style={[
@@ -193,7 +222,7 @@ export default function ProfileScreen() {
                 savedTab === "foods" && styles.savedSegmentTextActive,
               ]}
             >
-              Saved Foods
+              Foods
             </ThemedText>
           </Pressable>
         </View>
@@ -212,7 +241,9 @@ export default function ProfileScreen() {
             ))
           ) : (
             <View style={styles.savedEmpty}>
-              <Feather name="package" size={32} color={FlowstateColors.textTertiary} />
+              <View style={[styles.emptyIcon, { backgroundColor: `${FlowstateColors.secondary}12` }]}>
+                <Feather name="package" size={28} color={FlowstateColors.secondary} />
+              </View>
               <ThemedText type="small" style={styles.savedEmptyText}>
                 No saved foods yet. Scan items to save them!
               </ThemedText>
@@ -232,7 +263,9 @@ export default function ProfileScreen() {
           ))
         ) : (
           <View style={styles.savedEmpty}>
-            <Feather name="map-pin" size={32} color={FlowstateColors.textTertiary} />
+            <View style={[styles.emptyIcon, { backgroundColor: `${FlowstateColors.accent}12` }]}>
+              <Feather name="map-pin" size={28} color={FlowstateColors.accent} />
+            </View>
             <ThemedText type="small" style={styles.savedEmptyText}>
               No saved places yet. Explore and save your favorites!
             </ThemedText>
@@ -242,10 +275,20 @@ export default function ProfileScreen() {
 
       {/* School Section */}
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>
-          School
-        </ThemedText>
-        <View style={styles.schoolCard}>
+        <View style={styles.sectionTitleRow}>
+          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.primary}15` }]}>
+            <Feather name="book" size={14} color={FlowstateColors.primary} />
+          </View>
+          <ThemedText type="h4" style={styles.sectionTitle}>
+            School
+          </ThemedText>
+        </View>
+        <LinearGradient
+          colors={[`${schoolColors.primary}10`, `${schoolColors.secondary}08`]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.schoolCard}
+        >
           <View
             style={[
               styles.schoolColorPreview,
@@ -268,14 +311,19 @@ export default function ProfileScreen() {
             </ThemedText>
           </View>
           <Feather name="chevron-right" size={20} color={FlowstateColors.textTertiary} />
-        </View>
+        </LinearGradient>
       </View>
 
       {/* Settings Section */}
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>
-          Preferences
-        </ThemedText>
+        <View style={styles.sectionTitleRow}>
+          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.accent}15` }]}>
+            <Feather name="settings" size={14} color={FlowstateColors.accent} />
+          </View>
+          <ThemedText type="h4" style={styles.sectionTitle}>
+            Preferences
+          </ThemedText>
+        </View>
         <View style={styles.settingsCard}>
           {settingsItems.map((item, index) => (
             <Pressable
@@ -287,11 +335,11 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={styles.settingsItemLeft}>
-                <View style={styles.settingsIconContainer}>
+                <View style={[styles.settingsIconContainer, { backgroundColor: `${item.color}15` }]}>
                   <Feather
                     name={item.icon}
                     size={18}
-                    color={FlowstateColors.primary}
+                    color={item.color}
                   />
                 </View>
                 <ThemedText type="body" style={styles.settingsLabel}>
@@ -315,9 +363,14 @@ export default function ProfileScreen() {
 
       {/* About Section */}
       <View style={styles.section}>
-        <ThemedText type="h4" style={styles.sectionTitle}>
-          About
-        </ThemedText>
+        <View style={styles.sectionTitleRow}>
+          <View style={[styles.sectionIcon, { backgroundColor: `${FlowstateColors.textSecondary}12` }]}>
+            <Feather name="info" size={14} color={FlowstateColors.textSecondary} />
+          </View>
+          <ThemedText type="h4" style={styles.sectionTitle}>
+            About
+          </ThemedText>
+        </View>
         <View style={styles.settingsCard}>
           {aboutItems.map((item, index) => (
             <Pressable
@@ -329,11 +382,11 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={styles.settingsItemLeft}>
-                <View style={styles.settingsIconContainer}>
+                <View style={[styles.settingsIconContainer, { backgroundColor: `${item.color}12` }]}>
                   <Feather
                     name={item.icon}
                     size={18}
-                    color={FlowstateColors.textSecondary}
+                    color={item.color}
                   />
                 </View>
                 <ThemedText type="body" style={styles.settingsLabel}>
@@ -375,8 +428,8 @@ const styles = StyleSheet.create({
   profileHeader: {
     alignItems: "center",
     paddingVertical: Spacing["2xl"],
-    borderBottomWidth: 1,
-    borderBottomColor: FlowstateColors.border,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
     marginBottom: Spacing.xl,
   },
   avatarContainer: {
@@ -387,7 +440,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: FlowstateColors.backgroundSecondary,
+    borderWidth: 3,
+    borderColor: "rgba(255,255,255,0.4)",
   },
   schoolBadge: {
     position: "absolute",
@@ -397,7 +451,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: BorderRadius.xs,
     borderWidth: 2,
-    borderColor: FlowstateColors.background,
+    borderColor: "#FFFFFF",
   },
   schoolBadgeText: {
     color: "#FFFFFF",
@@ -405,45 +459,60 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   userName: {
-    color: FlowstateColors.textPrimary,
+    color: "#FFFFFF",
     marginBottom: Spacing.xs,
   },
   userEmail: {
-    color: FlowstateColors.textSecondary,
+    color: "rgba(255,255,255,0.75)",
     marginBottom: Spacing.xl,
   },
   statsRow: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   statItem: {
+    flex: 1,
     alignItems: "center",
-    paddingHorizontal: Spacing["2xl"],
   },
   statValue: {
-    color: FlowstateColors.primary,
+    color: "#FFFFFF",
     marginBottom: 2,
   },
   statLabel: {
-    color: FlowstateColors.textSecondary,
+    color: "rgba(255,255,255,0.75)",
   },
   statDivider: {
     width: 1,
-    height: 40,
-    backgroundColor: FlowstateColors.border,
+    height: 32,
+    backgroundColor: "rgba(255,255,255,0.25)",
   },
   section: {
     marginBottom: Spacing.xl,
   },
-  sectionTitle: {
-    color: FlowstateColors.textSecondary,
+  sectionTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: Spacing.md,
     marginLeft: Spacing.xs,
+  },
+  sectionIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: Spacing.sm,
+  },
+  sectionTitle: {
+    color: FlowstateColors.textPrimary,
   },
   schoolCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: FlowstateColors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
@@ -496,7 +565,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: FlowstateColors.primaryLighter,
     alignItems: "center",
     justifyContent: "center",
     marginRight: Spacing.md,
@@ -540,15 +608,22 @@ const styles = StyleSheet.create({
   },
   savedSegment: {
     flex: 1,
+    flexDirection: "row",
     paddingVertical: Spacing.sm,
     alignItems: "center",
+    justifyContent: "center",
     borderRadius: BorderRadius.xs,
   },
   savedSegmentActive: {
     backgroundColor: FlowstateColors.surface,
+    shadowColor: FlowstateColors.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   savedSegmentText: {
-    color: FlowstateColors.textSecondary,
+    color: FlowstateColors.textTertiary,
   },
   savedSegmentTextActive: {
     color: FlowstateColors.textPrimary,
@@ -558,6 +633,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: Spacing["3xl"],
     gap: Spacing.md,
+  },
+  emptyIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
   },
   savedEmptyText: {
     color: FlowstateColors.textTertiary,
