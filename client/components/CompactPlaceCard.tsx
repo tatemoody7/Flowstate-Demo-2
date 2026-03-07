@@ -68,7 +68,7 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
             <Image
               source={place.logo}
               style={styles.logoImage}
-              contentFit="contain"
+              contentFit="cover"
             />
           </View>
         ) : (
@@ -140,8 +140,8 @@ const styles = StyleSheet.create({
     borderColor: FlowstateColors.primaryLight,
   },
   logoImage: {
-    width: 18,
-    height: 18,
+    width: 22,
+    height: 22,
   },
   info: {
     paddingHorizontal: Spacing.sm,

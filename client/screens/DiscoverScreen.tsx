@@ -148,7 +148,7 @@ export default function DiscoverScreen() {
                   <Image
                     source={store.logo}
                     style={styles.storeCircleLogo}
-                    contentFit="contain"
+                    contentFit="cover"
                   />
                 ) : (
                   <Feather name="shopping-cart" size={24} color={FlowstateColors.primary} />
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
     borderColor: FlowstateColors.primaryLight,
   },
   storeCircleLogo: {
-    width: 36,
-    height: 36,
+    width: 52,
+    height: 52,
   },
   storeCircleLabel: {
     color: FlowstateColors.textSecondary,

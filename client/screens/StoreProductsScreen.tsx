@@ -73,7 +73,7 @@ export default function StoreProductsScreen({
             <Image
               source={place.logo}
               style={styles.storeLogoImage}
-              contentFit="contain"
+              contentFit="cover"
             />
           </View>
         ) : (
@@ -286,8 +286,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   storeLogoImage: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
   },
   storeInfo: {
     flex: 1,
