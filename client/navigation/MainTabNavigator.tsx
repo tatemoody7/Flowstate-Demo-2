@@ -3,6 +3,7 @@ import { StyleSheet, View, Platform, Text, Animated as RNAnimated } from "react-
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -26,39 +27,70 @@ function EmptyScanScreen() {
   return <View style={{ flex: 1 }} />;
 }
 
-/** Pulsing glow scan button */
+/** Pulsing gradient scan button */
 function ScanFab() {
   const pulseAnim = useRef(new RNAnimated.Value(1)).current;
+  const glowOpacity = useRef(new RNAnimated.Value(0.4)).current;
 
   useEffect(() => {
     const pulse = RNAnimated.loop(
       RNAnimated.sequence([
         RNAnimated.timing(pulseAnim, {
-          toValue: 1.18,
-          duration: 1200,
+          toValue: 1.25,
+          duration: 1400,
           useNativeDriver: true,
         }),
         RNAnimated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1200,
+          duration: 1400,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    const glow = RNAnimated.loop(
+      RNAnimated.sequence([
+        RNAnimated.timing(glowOpacity, {
+          toValue: 0.1,
+          duration: 1400,
+          useNativeDriver: true,
+        }),
+        RNAnimated.timing(glowOpacity, {
+          toValue: 0.4,
+          duration: 1400,
           useNativeDriver: true,
         }),
       ]),
     );
     pulse.start();
-    return () => pulse.stop();
-  }, [pulseAnim]);
+    glow.start();
+    return () => { pulse.stop(); glow.stop(); };
+  }, [pulseAnim, glowOpacity]);
 
   return (
     <View style={styles.scanFabWrapper}>
+      {/* Outer glow ring */}
       <RNAnimated.View
         style={[
           styles.scanGlowRing,
+          { transform: [{ scale: pulseAnim }], opacity: glowOpacity },
+        ]}
+      />
+      {/* Inner glow ring */}
+      <RNAnimated.View
+        style={[
+          styles.scanGlowRingInner,
           { transform: [{ scale: pulseAnim }] },
         ]}
       />
+      {/* Gradient button */}
       <View style={styles.scanFab}>
-        <Feather name="camera" size={24} color="#FFFFFF" />
+        <LinearGradient
+          colors={[FlowstateColors.primary, FlowstateColors.accent, FlowstateColors.secondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.scanFabGradient}
+        />
+        <Feather name="camera" size={26} color="#FFFFFF" />
       </View>
     </View>
   );
@@ -169,30 +201,42 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   scanFabWrapper: {
-    width: 64,
-    height: 64,
+    width: 72,
+    height: 72,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 28,
   },
   scanGlowRing: {
     position: "absolute",
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "rgba(31, 128, 255, 0.18)",
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: FlowstateColors.accent,
+  },
+  scanGlowRingInner: {
+    position: "absolute",
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.25)",
+    backgroundColor: "transparent",
   },
   scanFab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: FlowstateColors.accent,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: FlowstateColors.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
-    elevation: 8,
+    overflow: "hidden",
+    shadowColor: FlowstateColors.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  scanFabGradient: {
+    ...StyleSheet.absoluteFillObject,
   },
 });
