@@ -271,25 +271,6 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Product Database */}
-      <Pressable
-        onPress={() => navigation.navigate("ProductDatabase")}
-        style={styles.databaseCard}
-      >
-        <View style={styles.settingsIconContainer}>
-          <Feather name="archive" size={18} color={FlowstateColors.primary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <ThemedText type="body" style={styles.settingsLabel}>
-            Product Database
-          </ThemedText>
-          <ThemedText type="caption" style={{ color: FlowstateColors.textSecondary }}>
-            Browse all scanned & graded products
-          </ThemedText>
-        </View>
-        <Feather name="chevron-right" size={18} color={FlowstateColors.textTertiary} />
-      </Pressable>
-
       {/* Settings Section */}
       <View style={styles.section}>
         <ThemedText type="h4" style={styles.sectionTitle}>
@@ -581,16 +562,5 @@ const styles = StyleSheet.create({
   savedEmptyText: {
     color: FlowstateColors.textTertiary,
     textAlign: "center",
-  },
-  databaseCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: FlowstateColors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: FlowstateColors.border,
-    marginBottom: Spacing.xl,
-    gap: Spacing.md,
   },
 });

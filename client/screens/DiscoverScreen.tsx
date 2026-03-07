@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { StyleSheet, View, FlatList, RefreshControl, Pressable, Modal } from "react-native";
+import { StyleSheet, View, FlatList, RefreshControl, Pressable, Modal, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { CompositeNavigationProp, useNavigation } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
 import Animated, {
   FadeInDown,
@@ -24,10 +25,14 @@ import { mockPlaces, categories, Place } from "@/data/mockData";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { getNearestLocation, sortPlacesByDistance } from "@/utils/distance";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
+import { DiscoverStackParamList } from "@/navigation/DiscoverStackNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 type DiscoverScreenNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<MainTabParamList, "DiscoverTab">,
+  CompositeNavigationProp<
+    BottomTabNavigationProp<MainTabParamList, "DiscoverTab">,
+    NativeStackNavigationProp<DiscoverStackParamList>
+  >,
   NativeStackNavigationProp<RootStackParamList>
 >;
 
@@ -45,6 +50,11 @@ export default function DiscoverScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [sortBy, setSortBy] = useState<"default" | "distance" | "rating" | "price">("default");
   const [showSortMenu, setShowSortMenu] = useState(false);
+
+  const groceryStores = useMemo(
+    () => mockPlaces.filter((p) => p.category === "grocery"),
+    [],
+  );
 
   const filteredPlaces = useMemo(() => {
     let places = mockPlaces.filter((place) => {
@@ -75,7 +85,11 @@ export default function DiscoverScreen() {
   }, []);
 
   const handlePlacePress = (place: Place) => {
-    navigation.navigate("PlaceDetail", { place });
+    if (place.category === "grocery") {
+      navigation.navigate("StoreProducts", { place });
+    } else {
+      navigation.navigate("PlaceDetail", { place });
+    }
   };
 
   const getDynamicGreeting = () => {
@@ -121,6 +135,57 @@ export default function DiscoverScreen() {
           contentContainerStyle={styles.categoriesList}
         />
       </View>
+
+      {/* Store Circle Tabs */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.storeCirclesList}
+        style={styles.storeCirclesRow}
+      >
+        {/* "All" circle — opens full Product Database */}
+        <Animated.View entering={FadeInDown.delay(0).duration(300)}>
+          <Pressable
+            style={styles.storeCircleItem}
+            onPress={() => navigation.navigate("ProductDatabase")}
+          >
+            <View style={[styles.storeCircle, styles.storeCircleAll]}>
+              <Feather name="grid" size={24} color={FlowstateColors.primary} />
+            </View>
+            <ThemedText type="caption" style={styles.storeCircleLabel} numberOfLines={2}>
+              All
+            </ThemedText>
+          </Pressable>
+        </Animated.View>
+
+        {groceryStores.map((store, index) => (
+          <Animated.View
+            key={store.id}
+            entering={FadeInDown.delay((index + 1) * 50).duration(300)}
+          >
+            <Pressable
+              style={styles.storeCircleItem}
+              onPress={() => navigation.navigate("StoreProducts", { place: store })}
+            >
+              <View style={styles.storeCircle}>
+                {store.logo ? (
+                  <Image
+                    source={store.logo}
+                    style={styles.storeCircleLogo}
+                    contentFit="contain"
+                  />
+                ) : (
+                  <Feather name="shopping-cart" size={24} color={FlowstateColors.primary} />
+                )}
+              </View>
+              <ThemedText type="caption" style={styles.storeCircleLabel} numberOfLines={2}>
+                {store.name}
+              </ThemedText>
+            </Pressable>
+          </Animated.View>
+        ))}
+      </ScrollView>
+
       {sortBy !== "default" && (
         <View style={styles.sortIndicator}>
           <Feather name="arrow-up" size={14} color={FlowstateColors.primary} />
@@ -249,6 +314,42 @@ const styles = StyleSheet.create({
   },
   categoriesList: {
     paddingRight: Spacing.lg,
+  },
+  storeCirclesRow: {
+    marginTop: Spacing.lg,
+  },
+  storeCirclesList: {
+    gap: Spacing.md,
+  },
+  storeCircleItem: {
+    alignItems: "center",
+    width: 64,
+  },
+  storeCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.5,
+    borderColor: FlowstateColors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  storeCircleAll: {
+    backgroundColor: FlowstateColors.primaryLighter,
+    borderColor: FlowstateColors.primaryLight,
+  },
+  storeCircleLogo: {
+    width: 36,
+    height: 36,
+  },
+  storeCircleLabel: {
+    color: FlowstateColors.textSecondary,
+    fontSize: 10,
+    fontWeight: "500",
+    marginTop: 4,
+    textAlign: "center",
   },
   sortIndicator: {
     flexDirection: "row",

@@ -2,12 +2,10 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import ProfileScreen from "@/screens/ProfileScreen";
-import ProductDatabaseScreen from "@/screens/ProductDatabaseScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type ProfileStackParamList = {
   Profile: undefined;
-  ProductDatabase: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -22,13 +20,6 @@ export default function ProfileStackNavigator() {
         component={ProfileScreen}
         options={{
           title: "Profile",
-        }}
-      />
-      <Stack.Screen
-        name="ProductDatabase"
-        component={ProductDatabaseScreen}
-        options={{
-          title: "Product Database",
         }}
       />
     </Stack.Navigator>
