@@ -437,7 +437,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.15)",
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
+    alignSelf: "stretch",
   },
   statItem: {
     flex: 1,
@@ -449,6 +450,8 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     color: "rgba(255,255,255,0.75)",
+    textAlign: "center",
+    fontSize: 12,
   },
   statDivider: {
     width: 1,
