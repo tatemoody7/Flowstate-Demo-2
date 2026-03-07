@@ -88,22 +88,16 @@ export function CompactPlaceCard({ place, onPress }: CompactPlaceCardProps) {
             {place.name}
           </ThemedText>
         </View>
-        <View style={styles.metaRow}>
-          <View style={styles.ratingRow}>
-            <Feather name="star" size={10} color={FlowstateColors.accent} />
-            <ThemedText type="caption" style={styles.rating}>
-              {place.rating}
-            </ThemedText>
-          </View>
-          {place.studentDiscount && (
+        {place.studentDiscount && (
+          <View style={styles.metaRow}>
             <View style={styles.dealTag}>
               <Feather name="tag" size={8} color="#FFFFFF" />
               <ThemedText type="caption" style={styles.dealText}>
                 Deal
               </ThemedText>
             </View>
-          )}
-        </View>
+          </View>
+        )}
       </View>
     </AnimatedPressable>
   );
@@ -142,19 +136,16 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.9)",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
     overflow: "hidden",
     marginRight: 6,
     marginTop: 1,
   },
   categoryBadge: {
     backgroundColor: "rgba(255,255,255,0.2)",
-    borderColor: "rgba(255,255,255,0.3)",
   },
   logoImage: {
-    width: 18,
-    height: 18,
+    width: 20,
+    height: 20,
   },
   name: {
     flex: 1,
@@ -168,16 +159,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing.sm,
     marginLeft: 26,
-  },
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-  },
-  rating: {
-    color: "rgba(255,255,255,0.75)",
-    fontWeight: "500",
-    fontSize: 11,
   },
   dealTag: {
     flexDirection: "row",

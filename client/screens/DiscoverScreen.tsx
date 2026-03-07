@@ -315,19 +315,16 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     backgroundColor: "rgba(255,255,255,0.95)",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.4)",
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
   },
   storeCircleAll: {
     backgroundColor: "rgba(255,255,255,0.2)",
-    borderColor: "rgba(255,255,255,0.4)",
   },
   storeCircleLogo: {
-    width: 52,
-    height: 52,
+    width: 56,
+    height: 56,
   },
   storeCircleLabel: {
     color: "rgba(255,255,255,0.85)",
