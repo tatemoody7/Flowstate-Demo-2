@@ -6,7 +6,7 @@ import { FlowstateColors } from "@/constants/theme";
 //   Green ("Solid Pick"):  Has good ingredients, NO bad ones (caution is fine)
 //   Yellow ("Not Bad"):    Has only caution ingredients (no good, no bad)
 //   Red ("Be Honest"):     Has ANY bad ingredients
-//   Default:               No flagged ingredients → yellow ("Not Bad")
+//   Default:               No flagged ingredients / all neutral → green ("Solid Pick")
 
 export type HealthTier = "green" | "yellow" | "red";
 
@@ -46,7 +46,7 @@ const TIER_CONFIG: Record<HealthTier, Omit<HealthTierResult, "tier">> = {
  *   - Has ANY bad → red
  *   - Has good (no bad) → green  (caution alongside good is still green)
  *   - Has only caution (no good, no bad) → yellow
- *   - No flagged ingredients at all → default yellow ("Not Bad")
+ *   - All neutral / no flagged ingredients → green ("Solid Pick")
  */
 export function getHealthTier(
   ingredients?: FlaggedIngredient[],
@@ -74,8 +74,8 @@ export function getHealthTier(
     // Only caution, no good, no bad = yellow
     tier = "yellow";
   } else {
-    // No flagged ingredients — default to yellow
-    tier = "yellow";
+    // All neutral / unrecognized ingredients — clean product, grade green
+    tier = "green";
   }
 
   return { tier, ...TIER_CONFIG[tier] };
