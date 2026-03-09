@@ -186,7 +186,7 @@ export default function StoreProductsScreen({
     item: ScannedFood;
     index: number;
   }) => (
-    <Animated.View entering={FadeInDown.delay(index * 80).duration(400)}>
+    <Animated.View entering={FadeInDown.delay(Math.min(index, 10) * 80).duration(400)}>
       <ProductCard product={item} onPress={() => handleProductPress(item)} />
     </Animated.View>
   );

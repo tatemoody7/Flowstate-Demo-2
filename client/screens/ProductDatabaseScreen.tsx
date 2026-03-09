@@ -117,7 +117,7 @@ export default function ProductDatabaseScreen() {
         {TIER_FILTERS.map((filter, index) => (
           <Animated.View
             key={filter.id}
-            entering={FadeInDown.delay(index * 50).duration(300)}
+            entering={FadeInDown.delay(Math.min(index, 10) * 50).duration(300)}
           >
             <CategoryChip
               label={filter.label}
@@ -139,7 +139,7 @@ export default function ProductDatabaseScreen() {
         {STORE_FILTERS.map((filter, index) => (
           <Animated.View
             key={filter.id}
-            entering={FadeInDown.delay(index * 40).duration(300)}
+            entering={FadeInDown.delay(Math.min(index, 10) * 40).duration(300)}
           >
             <CategoryChip
               label={filter.label}
@@ -214,7 +214,7 @@ export default function ProductDatabaseScreen() {
     item: ScannedFood;
     index: number;
   }) => (
-    <Animated.View entering={FadeInDown.delay(index * 80).duration(400)}>
+    <Animated.View entering={FadeInDown.delay(Math.min(index, 10) * 80).duration(400)}>
       <ProductCard product={item} onPress={() => handleProductPress(item)} />
     </Animated.View>
   );

@@ -34,11 +34,11 @@ export default function ProductDetailScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, "ProductDetail">>();
-  const { toggleSavedFood, savedFoods } = useApp();
+  const { toggleSavedFood, savedFoodIds } = useApp();
 
   const product: ScannedFood = route.params.product;
   const healthTier = getHealthTier(product.ingredients);
-  const isSaved = savedFoods.includes(product.id);
+  const isSaved = savedFoodIds.has(product.id);
   const gradientColors = getFullScreenGradient(healthTier.tier);
 
   const flowTip = useMemo(
@@ -83,7 +83,7 @@ export default function ProductDetailScreen() {
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            toggleSavedFood(product.id);
+            toggleSavedFood(product);
           }}
           style={[styles.saveButton, isSaved && styles.saveButtonActive]}
         >

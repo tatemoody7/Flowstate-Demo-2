@@ -43,7 +43,7 @@ function getFullScreenGradient(tier: string): string[] {
 export default function ScannerScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<ScannerScreenNavigationProp>();
-  const { toggleSavedFood, savedFoods } = useApp();
+  const { toggleSavedFood, savedFoodIds } = useApp();
   const [permission, requestPermission] = useCameraPermissions();
   const [isScanning, setIsScanning] = useState(true);
   const [scannedFood, setScannedFood] = useState<ScannedFood | null>(null);
@@ -173,7 +173,7 @@ export default function ScannerScreen() {
 
   // ─── Results Screen (Full-Screen Immersive) ─────────────────────────────────
   if (scannedFood && healthTier) {
-    const isSaved = savedFoods.includes(scannedFood.id);
+    const isSaved = savedFoodIds.has(scannedFood.id);
     const gradientColors = getFullScreenGradient(healthTier.tier);
 
     return (
@@ -199,7 +199,7 @@ export default function ScannerScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              toggleSavedFood(scannedFood.id);
+              toggleSavedFood(scannedFood);
             }}
             style={[styles.immersiveSaveButton, isSaved && styles.immersiveSaveButtonActive]}
           >

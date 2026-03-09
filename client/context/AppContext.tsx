@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SchoolColors } from "@/constants/theme";
+import type { ScannedFood } from "@/data/mockData";
+import { mockScannedFoods } from "@/data/mockData";
 
 interface User {
   email: string;
@@ -17,9 +19,10 @@ interface AppContextType {
   setIsOnboarded: (value: boolean) => void;
   logout: () => Promise<void>;
   savedPlaces: string[];
-  savedFoods: string[];
+  savedFoods: ScannedFood[];
+  savedFoodIds: Set<string>;
   toggleSavedPlace: (id: string) => void;
-  toggleSavedFood: (id: string) => void;
+  toggleSavedFood: (food: ScannedFood) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -31,12 +34,41 @@ const STORAGE_KEYS = {
   SAVED_FOODS: "@flowstate_saved_foods",
 };
 
+/**
+ * Migrate old string[] format to ScannedFood[] format.
+ * Old format stored just IDs like ["f1", "f2", "db-123"].
+ * New format stores full objects. We can only recover mock IDs (f1-f7).
+ */
+function migrateSavedFoods(stored: unknown): ScannedFood[] {
+  if (!Array.isArray(stored) || stored.length === 0) return [];
+
+  // Already new format — items are objects with an `id` field
+  if (typeof stored[0] === "object" && stored[0] !== null && "id" in stored[0]) {
+    return stored as ScannedFood[];
+  }
+
+  // Old format — array of string IDs. Recover what we can from mock data.
+  if (typeof stored[0] === "string") {
+    return (stored as string[])
+      .map((id) => mockScannedFoods.find((f) => f.id === id))
+      .filter((f): f is ScannedFood => f !== undefined);
+  }
+
+  return [];
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [isOnboarded, setIsOnboardedState] = useState(false);
   const [savedPlaces, setSavedPlaces] = useState<string[]>([]);
-  const [savedFoods, setSavedFoods] = useState<string[]>([]);
+  const [savedFoods, setSavedFoods] = useState<ScannedFood[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Derived set for O(1) lookups
+  const savedFoodIds = useMemo(
+    () => new Set(savedFoods.map((f) => f.id)),
+    [savedFoods],
+  );
 
   useEffect(() => {
     loadStoredData();
@@ -54,7 +86,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (storedUser) setUserState(JSON.parse(storedUser));
       if (storedOnboarded) setIsOnboardedState(JSON.parse(storedOnboarded));
       if (storedPlaces) setSavedPlaces(JSON.parse(storedPlaces));
-      if (storedFoods) setSavedFoods(JSON.parse(storedFoods));
+      if (storedFoods) {
+        const parsed = JSON.parse(storedFoods);
+        const migrated = migrateSavedFoods(parsed);
+        setSavedFoods(migrated);
+        // Persist migrated format back if it was the old string[] format
+        if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === "string") {
+          await AsyncStorage.setItem(STORAGE_KEYS.SAVED_FOODS, JSON.stringify(migrated));
+        }
+      }
     } catch (error) {
       console.error("Error loading stored data:", error);
     } finally {
@@ -89,20 +129,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSavedFoods([]);
   };
 
-  const toggleSavedPlace = async (id: string) => {
-    const newPlaces = savedPlaces.includes(id)
-      ? savedPlaces.filter((p) => p !== id)
-      : [...savedPlaces, id];
-    setSavedPlaces(newPlaces);
-    await AsyncStorage.setItem(STORAGE_KEYS.SAVED_PLACES, JSON.stringify(newPlaces));
+  const toggleSavedPlace = (id: string) => {
+    setSavedPlaces((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((p) => p !== id)
+        : [...prev, id];
+      AsyncStorage.setItem(STORAGE_KEYS.SAVED_PLACES, JSON.stringify(next));
+      return next;
+    });
   };
 
-  const toggleSavedFood = async (id: string) => {
-    const newFoods = savedFoods.includes(id)
-      ? savedFoods.filter((f) => f !== id)
-      : [...savedFoods, id];
-    setSavedFoods(newFoods);
-    await AsyncStorage.setItem(STORAGE_KEYS.SAVED_FOODS, JSON.stringify(newFoods));
+  const toggleSavedFood = (food: ScannedFood) => {
+    setSavedFoods((prev) => {
+      const exists = prev.some((f) => f.id === food.id);
+      const next = exists
+        ? prev.filter((f) => f.id !== food.id)
+        : [...prev, food];
+      AsyncStorage.setItem(STORAGE_KEYS.SAVED_FOODS, JSON.stringify(next));
+      return next;
+    });
   };
 
   const schoolColors = user?.school ? SchoolColors[user.school] : SchoolColors.fgcu;
@@ -123,6 +168,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         logout,
         savedPlaces,
         savedFoods,
+        savedFoodIds,
         toggleSavedPlace,
         toggleSavedFood,
       }}

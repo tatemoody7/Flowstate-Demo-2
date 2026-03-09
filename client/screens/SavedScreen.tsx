@@ -15,7 +15,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
-import { mockPlaces, mockScannedFoods, Place, ScannedFood } from "@/data/mockData";
+import { mockPlaces, Place, ScannedFood } from "@/data/mockData";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { MainTabParamList } from "@/navigation/MainTabNavigator";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -30,7 +30,7 @@ export default function SavedScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const { savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
+  const { savedPlaces, savedFoods, savedFoodIds, toggleSavedPlace, toggleSavedFood } = useApp();
   const navigation = useNavigation<SavedScreenNavigationProp>();
   const { coords: userCoords } = useUserLocation();
 
@@ -38,7 +38,7 @@ export default function SavedScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const savedPlacesList = mockPlaces.filter((place) => savedPlaces.includes(place.id));
-  const savedFoodsList = mockScannedFoods.filter((food) => savedFoods.includes(food.id));
+  const savedFoodsList = savedFoods;
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -51,8 +51,8 @@ export default function SavedScreen() {
     navigation.navigate("PlaceDetail", { place });
   };
 
-  const handleFoodPress = (_food: ScannedFood) => {
-    // FoodDetail screen removed — details now shown inline on scan results
+  const handleFoodPress = (food: ScannedFood) => {
+    navigation.navigate("ProductDetail", { product: food });
   };
 
   const renderHeader = () => (
@@ -117,7 +117,7 @@ export default function SavedScreen() {
   );
 
   const renderPlace = ({ item, index }: { item: Place; index: number }) => (
-    <Animated.View entering={FadeInDown.delay(index * 100).duration(400)}>
+    <Animated.View entering={FadeInDown.delay(Math.min(index, 10) * 100).duration(400)}>
       <PlaceCard
         place={item}
         isSaved={true}
@@ -129,12 +129,12 @@ export default function SavedScreen() {
   );
 
   const renderFood = ({ item, index }: { item: ScannedFood; index: number }) => (
-    <Animated.View entering={FadeInDown.delay(index * 100).duration(400)}>
+    <Animated.View entering={FadeInDown.delay(Math.min(index, 10) * 100).duration(400)}>
       <FoodCard
         food={item}
         isSaved={true}
         onPress={() => handleFoodPress(item)}
-        onSavePress={() => toggleSavedFood(item.id)}
+        onSavePress={() => toggleSavedFood(item)}
       />
     </Animated.View>
   );

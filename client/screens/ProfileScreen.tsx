@@ -18,7 +18,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useApp } from "@/context/AppContext";
 import { FlowstateColors, Spacing, BorderRadius, SchoolColors } from "@/constants/theme";
-import { mockPlaces, mockScannedFoods, Place, ScannedFood } from "@/data/mockData";
+import { mockPlaces, Place, ScannedFood } from "@/data/mockData";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { ProfileStackParamList } from "@/navigation/ProfileStackNavigator";
@@ -33,13 +33,13 @@ export default function ProfileScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
-  const { user, schoolColors, logout, savedPlaces, savedFoods, toggleSavedPlace, toggleSavedFood } = useApp();
+  const { user, schoolColors, logout, savedPlaces, savedFoods, savedFoodIds, toggleSavedPlace, toggleSavedFood } = useApp();
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const { coords: userCoords } = useUserLocation();
   const [savedTab, setSavedTab] = useState<"foods" | "places">("places");
 
   const savedPlacesList = mockPlaces.filter((place) => savedPlaces.includes(place.id));
-  const savedFoodsList = mockScannedFoods.filter((food) => savedFoods.includes(food.id));
+  const savedFoodsList = savedFoods;
 
   const handleLogout = () => {
     Alert.alert(
@@ -219,12 +219,12 @@ export default function ProfileScreen() {
         {savedTab === "foods" ? (
           savedFoodsList.length > 0 ? (
             savedFoodsList.map((food, index) => (
-              <Animated.View key={food.id} entering={FadeInDown.delay(index * 80).duration(300)}>
+              <Animated.View key={food.id} entering={FadeInDown.delay(Math.min(index, 10) * 80).duration(300)}>
                 <FoodCard
                   food={food}
                   isSaved={true}
-                  onPress={() => {}}
-                  onSavePress={() => toggleSavedFood(food.id)}
+                  onPress={() => navigation.navigate("ProductDetail", { product: food })}
+                  onSavePress={() => toggleSavedFood(food)}
                 />
               </Animated.View>
             ))
@@ -238,7 +238,7 @@ export default function ProfileScreen() {
           )
         ) : savedPlacesList.length > 0 ? (
           savedPlacesList.map((place, index) => (
-            <Animated.View key={place.id} entering={FadeInDown.delay(index * 80).duration(300)}>
+            <Animated.View key={place.id} entering={FadeInDown.delay(Math.min(index, 10) * 80).duration(300)}>
               <PlaceCard
                 place={place}
                 isSaved={true}
