@@ -11,9 +11,27 @@ import * as Haptics from "expo-haptics";
 
 import DiscoverStackNavigator from "@/navigation/DiscoverStackNavigator";
 import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
+import { ScreenErrorBoundary } from "@/components/ScreenErrorBoundary";
 import { useTheme } from "@/hooks/useTheme";
 import { FlowstateColors, Spacing, Shadows } from "@/constants/theme";
 import { RootStackParamList } from "@/navigation/RootStackNavigator";
+
+/** Wrapped stack navigators with per-screen error boundaries */
+function WrappedDiscoverStack() {
+  return (
+    <ScreenErrorBoundary>
+      <DiscoverStackNavigator />
+    </ScreenErrorBoundary>
+  );
+}
+
+function WrappedProfileStack() {
+  return (
+    <ScreenErrorBoundary>
+      <ProfileStackNavigator />
+    </ScreenErrorBoundary>
+  );
+}
 
 export type MainTabParamList = {
   DiscoverTab: undefined;
@@ -149,7 +167,7 @@ export default function MainTabNavigator() {
     >
       <Tab.Screen
         name="DiscoverTab"
-        component={DiscoverStackNavigator}
+        component={WrappedDiscoverStack}
         options={{
           title: "Discover",
           tabBarIcon: ({ color }) => (
@@ -178,7 +196,7 @@ export default function MainTabNavigator() {
       />
       <Tab.Screen
         name="ProfileTab"
-        component={ProfileStackNavigator}
+        component={WrappedProfileStack}
         options={{
           title: "Profile",
           tabBarIcon: ({ color }) => (

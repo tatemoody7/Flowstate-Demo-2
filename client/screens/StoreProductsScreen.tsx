@@ -50,11 +50,15 @@ export default function StoreProductsScreen({
   const [refreshing, setRefreshing] = useState(false);
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
 
-  const { products, isLoading, isError, refetch } = useProducts(
-    debouncedSearch,
-    "green",
-    storeName,
-  );
+  const {
+    products,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useProducts(debouncedSearch, "green", storeName);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -125,12 +129,21 @@ export default function StoreProductsScreen({
       {/* Results count */}
       {!isLoading && products.length > 0 && (
         <ThemedText type="caption" style={styles.resultCount}>
-          {products.length} product{products.length !== 1 ? "s" : ""} at{" "}
-          {place.name}
+          {products.length} product{products.length !== 1 ? "s" : ""} loaded
+          at {place.name}
         </ThemedText>
       )}
     </View>
   );
+
+  const renderFooter = () => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={FlowstateColors.primary} />
+      </View>
+    );
+  };
 
   const renderEmpty = () => {
     if (isLoading) {
@@ -225,7 +238,14 @@ export default function StoreProductsScreen({
         renderItem={renderProduct}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
+        ListFooterComponent={renderFooter}
         showsVerticalScrollIndicator={false}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        onEndReachedThreshold={0.5}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -355,5 +375,9 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     textAlign: "center",
     lineHeight: 20,
+  },
+  footerLoader: {
+    alignItems: "center",
+    paddingVertical: Spacing.xl,
   },
 });

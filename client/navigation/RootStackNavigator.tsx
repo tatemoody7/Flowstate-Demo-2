@@ -7,9 +7,43 @@ import ScannerScreen from "@/screens/ScannerScreen";
 import PlaceDetailScreen from "@/screens/PlaceDetailScreen";
 import ProductDetailScreen from "@/screens/ProductDetailScreen";
 import StoreProductsScreen from "@/screens/StoreProductsScreen";
+import { ScreenErrorBoundary } from "@/components/ScreenErrorBoundary";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 import { useApp } from "@/context/AppContext";
 import { Place, ScannedFood } from "@/data/mockData";
+
+/** Wrapped modal screens with per-screen error boundaries */
+function WrappedScannerScreen() {
+  return (
+    <ScreenErrorBoundary>
+      <ScannerScreen />
+    </ScreenErrorBoundary>
+  );
+}
+
+function WrappedPlaceDetailScreen(props: any) {
+  return (
+    <ScreenErrorBoundary>
+      <PlaceDetailScreen {...props} />
+    </ScreenErrorBoundary>
+  );
+}
+
+function WrappedProductDetailScreen(props: any) {
+  return (
+    <ScreenErrorBoundary>
+      <ProductDetailScreen {...props} />
+    </ScreenErrorBoundary>
+  );
+}
+
+function WrappedStoreProductsScreen(props: any) {
+  return (
+    <ScreenErrorBoundary>
+      <StoreProductsScreen {...props} />
+    </ScreenErrorBoundary>
+  );
+}
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -43,7 +77,7 @@ export default function RootStackNavigator() {
           />
           <Stack.Screen
             name="Scanner"
-            component={ScannerScreen}
+            component={WrappedScannerScreen}
             options={{
               headerShown: false,
               presentation: "fullScreenModal",
@@ -51,7 +85,7 @@ export default function RootStackNavigator() {
           />
           <Stack.Screen
             name="PlaceDetail"
-            component={PlaceDetailScreen}
+            component={WrappedPlaceDetailScreen}
             options={{
               headerShown: false,
               presentation: "card",
@@ -59,7 +93,7 @@ export default function RootStackNavigator() {
           />
           <Stack.Screen
             name="ProductDetail"
-            component={ProductDetailScreen}
+            component={WrappedProductDetailScreen}
             options={{
               headerShown: false,
               presentation: "modal",
@@ -67,7 +101,7 @@ export default function RootStackNavigator() {
           />
           <Stack.Screen
             name="StoreProducts"
-            component={StoreProductsScreen}
+            component={WrappedStoreProductsScreen}
             options={{
               headerShown: false,
               presentation: "card",

@@ -2,10 +2,10 @@ import { FlaggedIngredient } from "@/data/mockData";
 import { FlowstateColors } from "@/constants/theme";
 
 // ─── Health Tier System ──────────────────────────────────────────────────────
-// Banner color is determined by WHICH ingredient flags are present:
-//   Green ("Solid Pick"):  Has good ingredients, NO bad ones (caution is fine)
-//   Yellow ("Not Bad"):    Has only caution ingredients (no good, no bad)
-//   Red ("Be Honest"):     Has ANY bad ingredients
+// Banner color uses proportion-based grading when bad ingredients exist:
+//   Green ("Solid Pick"):  No bad ingredients. Has good, or all neutral.
+//   Yellow ("Not Bad"):    Only caution (no good/bad), OR has bad but ≤30% of flagged.
+//   Red ("Be Honest"):     Has bad ingredients making up >30% of all flagged ingredients.
 //   Default:               No flagged ingredients / all neutral → green ("Solid Pick")
 
 export type HealthTier = "green" | "yellow" | "red";
@@ -40,42 +40,53 @@ const TIER_CONFIG: Record<HealthTier, Omit<HealthTierResult, "tier">> = {
 };
 
 /**
- * Determine health tier based on ingredient flags only.
+ * Determine health tier using proportion-based grading.
  *
  * Logic:
- *   - Has ANY bad → red
- *   - Has good (no bad) → green  (caution alongside good is still green)
- *   - Has only caution (no good, no bad) → yellow
- *   - All neutral / no flagged ingredients → green ("Solid Pick")
+ *   - Zero bad ingredients:
+ *       • Has good → green  (caution alongside good is still green)
+ *       • Only caution (no good) → yellow
+ *       • All neutral / no flagged → green
+ *   - Has bad ingredients — use ratio of bad to total flagged:
+ *       • badRatio > 30% → red  ("Be Honest")
+ *       • badRatio ≤ 30% → yellow ("Not Bad")
  */
 export function getHealthTier(
   ingredients?: FlaggedIngredient[],
 ): HealthTierResult {
-  let hasBad = false;
-  let hasGood = false;
-  let hasCaution = false;
+  let badCount = 0;
+  let goodCount = 0;
+  let cautionCount = 0;
 
   if (ingredients && ingredients.length > 0) {
     for (const ing of ingredients) {
-      if (ing.flag === "bad") hasBad = true;
-      else if (ing.flag === "good") hasGood = true;
-      else if (ing.flag === "caution") hasCaution = true;
+      if (ing.flag === "bad") badCount++;
+      else if (ing.flag === "good") goodCount++;
+      else if (ing.flag === "caution") cautionCount++;
     }
   }
 
   let tier: HealthTier;
 
-  if (hasBad) {
-    tier = "red";
-  } else if (hasGood) {
-    // Good + caution (no bad) = still green
-    tier = "green";
-  } else if (hasCaution) {
-    // Only caution, no good, no bad = yellow
-    tier = "yellow";
+  if (badCount === 0) {
+    // No bad ingredients
+    if (goodCount > 0) {
+      tier = "green"; // Good + caution (no bad) = green
+    } else if (cautionCount > 0) {
+      tier = "yellow"; // Only caution, no good, no bad = yellow
+    } else {
+      tier = "green"; // All neutral / unrecognized = clean, grade green
+    }
   } else {
-    // All neutral / unrecognized ingredients — clean product, grade green
-    tier = "green";
+    // Has bad ingredients — use ratio-based logic
+    const totalFlagged = badCount + goodCount + cautionCount;
+    const badRatio = badCount / totalFlagged;
+
+    if (badRatio > 0.3) {
+      tier = "red"; // >30% bad = Be Honest
+    } else {
+      tier = "yellow"; // ≤30% bad = Not Bad (e.g. 1 bad among 14 good)
+    }
   }
 
   return { tier, ...TIER_CONFIG[tier] };

@@ -4,15 +4,20 @@ import { storage } from "./storage";
 import { fetchProduct, transformToProduct } from "./services/openFoodFacts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // GET /api/products — list all scanned products
+  // GET /api/products — list scanned products with cursor pagination
   app.get("/api/products", async (req, res) => {
     try {
       const search = req.query.search as string | undefined;
       const tier = req.query.tier as string | undefined;
       const store = req.query.store as string | undefined;
+      const limit = Math.min(
+        Math.max(parseInt(req.query.limit as string) || 30, 1),
+        100,
+      );
+      const cursor = req.query.cursor as string | undefined;
 
-      const products = await storage.getAllProducts(search, tier, store);
-      return res.json({ products });
+      const result = await storage.getAllProducts(search, tier, store, limit, cursor);
+      return res.json(result);
     } catch (error) {
       console.error("Failed to list products:", error);
       return res

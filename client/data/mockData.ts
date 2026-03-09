@@ -22,11 +22,7 @@ export interface Place {
   locations: PlaceLocation[];
 }
 
-export interface FlaggedIngredient {
-  name: string;
-  flag: "good" | "bad" | "neutral" | "caution";
-  reason?: string;
-}
+export type { FlaggedIngredient } from "@shared/ingredientKnowledge";
 
 export interface ScannedFood {
   id: string;

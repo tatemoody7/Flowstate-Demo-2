@@ -9,13 +9,25 @@ import {
 import { eq, desc, ilike, or, and, sql, SQL } from "drizzle-orm";
 import { db } from "./db";
 
+export interface PaginatedProducts {
+  products: ScannedProduct[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getProduct(barcode: string): Promise<ScannedProduct | undefined>;
   upsertProduct(product: InsertScannedProduct): Promise<ScannedProduct>;
-  getAllProducts(search?: string, tier?: string, store?: string): Promise<ScannedProduct[]>;
+  getAllProducts(
+    search?: string,
+    tier?: string,
+    store?: string,
+    limit?: number,
+    cursor?: string,
+  ): Promise<PaginatedProducts>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -92,7 +104,9 @@ export class DatabaseStorage implements IStorage {
     search?: string,
     tier?: string,
     store?: string,
-  ): Promise<ScannedProduct[]> {
+    limit: number = 30,
+    cursor?: string,
+  ): Promise<PaginatedProducts> {
     const conditions: SQL[] = [];
 
     // Search filter — match name or brand (case-insensitive)
@@ -106,10 +120,12 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Tier filter — ingredient-flags only (no score fallback)
-    // Green ("Solid Pick"):  Has good flags, NO bad flags (caution alongside good is fine)
-    // Yellow ("Not Bad"):    Has only caution flags (no good, no bad) OR no flagged ingredients at all
-    // Red ("Be Honest"):     Has ANY bad flags
+    // Tier filter — server acts as a rough pre-filter; client post-filter
+    // applies the precise ratio-based grading logic.
+    //
+    // Green ("Solid Pick"):  Has good flags, NO bad flags — exact match
+    // Yellow ("Not Bad"):    Superset — caution-only, no-flags, OR has bad (client narrows via ratio)
+    // Red ("Be Honest"):     Superset — has ANY bad flags (client narrows via ratio)
     if (tier === "green") {
       conditions.push(
         sql`(
@@ -119,6 +135,8 @@ export class DatabaseStorage implements IStorage {
         )`,
       );
     } else if (tier === "yellow") {
+      // Widened: includes products with bad ingredients (some may be yellow under ratio logic)
+      // Client post-filter recalculates tier and removes products that are actually red
       conditions.push(
         sql`(
           (
@@ -130,6 +148,10 @@ export class DatabaseStorage implements IStorage {
           OR (
             ${scannedProducts.ingredients} IS NULL
             OR NOT EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' IN ('good','bad','caution'))
+          )
+          OR (
+            ${scannedProducts.ingredients} IS NOT NULL
+            AND EXISTS (SELECT 1 FROM jsonb_array_elements(${scannedProducts.ingredients}) elem WHERE elem->>'flag' = 'bad')
           )
         )`,
       );
@@ -149,17 +171,48 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
+    // Cursor-based pagination (keyset on updatedAt DESC, barcode ASC)
+    if (cursor) {
+      const separatorIdx = cursor.indexOf("|");
+      if (separatorIdx > 0) {
+        const cursorTimestamp = cursor.slice(0, separatorIdx);
+        const cursorBarcode = cursor.slice(separatorIdx + 1);
+        const cursorDate = new Date(cursorTimestamp);
+        conditions.push(
+          sql`(
+            ${scannedProducts.updatedAt} < ${cursorDate}
+            OR (
+              ${scannedProducts.updatedAt} = ${cursorDate}
+              AND ${scannedProducts.barcode} > ${cursorBarcode}
+            )
+          )`,
+        );
+      }
+    }
+
+    // Fetch limit+1 to determine hasMore without a separate COUNT query
+    const fetchLimit = limit + 1;
+
     const query = db
       .select()
       .from(scannedProducts)
-      .orderBy(desc(scannedProducts.updatedAt))
-      .limit(1000);
+      .orderBy(desc(scannedProducts.updatedAt), scannedProducts.barcode)
+      .limit(fetchLimit);
 
-    if (conditions.length > 0) {
-      return query.where(and(...conditions));
+    const results = conditions.length > 0
+      ? await query.where(and(...conditions))
+      : await query;
+
+    const hasMore = results.length > limit;
+    const products = hasMore ? results.slice(0, limit) : results;
+
+    let nextCursor: string | null = null;
+    if (hasMore && products.length > 0) {
+      const last = products[products.length - 1];
+      nextCursor = `${last.updatedAt.toISOString()}|${last.barcode}`;
     }
 
-    return query;
+    return { products, nextCursor, hasMore };
   }
 }
 
