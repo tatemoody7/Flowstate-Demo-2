@@ -41,7 +41,7 @@ const TIER_CARD_COLORS: Record<
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function ProductCard({ product, onPress }: ProductCardProps) {
+export const ProductCard = React.memo(function ProductCard({ product, onPress }: ProductCardProps) {
   const scale = useSharedValue(1);
 
   const { tier, label: tierLabel } = getHealthTier(product.ingredients);
@@ -128,7 +128,7 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
       </View>
     </AnimatedPressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

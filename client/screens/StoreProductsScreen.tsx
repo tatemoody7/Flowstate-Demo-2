@@ -20,6 +20,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useProducts } from "@/hooks/useProducts";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import type { ScannedFood } from "@/data/mockData";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -47,9 +48,10 @@ export default function StoreProductsScreen({
 
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
 
   const { products, isLoading, isError, refetch } = useProducts(
-    searchQuery,
+    debouncedSearch,
     "green",
     storeName,
   );

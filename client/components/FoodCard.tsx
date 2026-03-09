@@ -23,7 +23,7 @@ interface FoodCardProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps) {
+export const FoodCard = React.memo(function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -113,7 +113,7 @@ export function FoodCard({ food, isSaved, onPress, onSavePress }: FoodCardProps)
       </View>
     </AnimatedPressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

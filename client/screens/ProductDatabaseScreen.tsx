@@ -22,6 +22,7 @@ import { CategoryChip } from "@/components/CategoryChip";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { useProducts } from "@/hooks/useProducts";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { FlowstateColors, Spacing, BorderRadius } from "@/constants/theme";
 import type { ScannedFood } from "@/data/mockData";
 import type { RootStackParamList } from "@/navigation/RootStackNavigator";
@@ -58,9 +59,10 @@ export default function ProductDatabaseScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTier, setSelectedTier] = useState("all");
   const [selectedStore, setSelectedStore] = useState("all");
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
 
   const { products, isLoading, isError, refetch } = useProducts(
-    searchQuery,
+    debouncedSearch,
     selectedTier,
     selectedStore,
   );
