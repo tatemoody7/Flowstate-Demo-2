@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getApiUrl } from "@/lib/query-client";
 import type { ScannedFood } from "@/data/mockData";
@@ -29,7 +29,9 @@ interface ProductResponse {
   message?: string;
 }
 
-const CLIENT_TIMEOUT_MS = 5000;
+const CLIENT_TIMEOUT_MS = 8000;
+const MAX_UNDER_REVIEW_POLLS = 3;
+const POLL_INTERVAL_MS = 2000;
 
 async function fetchProductFromServer(barcode: string): Promise<ProductResponse> {
   const baseUrl = getApiUrl();
@@ -80,17 +82,41 @@ function mapToScannedFood(barcode: string, product: ProductResponse["product"]):
 
 export function useProductLookup() {
   const [barcode, setBarcode] = useState<string | null>(null);
+  const pollCount = useRef(0);
+
+  // Reset poll count when barcode changes
+  useEffect(() => {
+    pollCount.current = 0;
+  }, [barcode]);
 
   const query = useQuery({
     queryKey: ["product", barcode],
     queryFn: () => fetchProductFromServer(barcode!),
     enabled: !!barcode,
-    staleTime: 1000 * 60 * 30, // 30 minutes
-    gcTime: 1000 * 60 * 60, // 1 hour
+    staleTime: 0,
+    gcTime: 1000 * 60 * 5,
     retry: 1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchInterval: (query) => {
+      if (
+        query.state.data?.status === "under_review" &&
+        pollCount.current < MAX_UNDER_REVIEW_POLLS
+      ) {
+        pollCount.current++;
+        return POLL_INTERVAL_MS;
+      }
+      return false;
+    },
   });
+
+  const isPolling =
+    query.data?.status === "under_review" &&
+    pollCount.current < MAX_UNDER_REVIEW_POLLS;
+
+  const isUnderReviewDone =
+    query.data?.status === "under_review" &&
+    pollCount.current >= MAX_UNDER_REVIEW_POLLS;
 
   const scannedFood: ScannedFood | null =
     query.data?.status === "found" && query.data.product
@@ -99,6 +125,7 @@ export function useProductLookup() {
 
   const lookupBarcode = (code: string) => setBarcode(code);
   const reset = () => {
+    pollCount.current = 0;
     setBarcode(null);
   };
 
@@ -106,10 +133,12 @@ export function useProductLookup() {
     lookupBarcode,
     reset,
     scannedFood,
-    isLoading: query.isFetching && !!barcode,
+    isLoading: query.isFetching && !!barcode && !isPolling,
     isError: query.isError,
     isNotFound: query.data?.status === "not_found",
     isUnderReview: query.data?.status === "under_review",
+    isPolling,
+    isUnderReviewDone,
     rawProduct: query.data?.product ?? null,
   };
 }

@@ -51,18 +51,23 @@ export default function ScannerScreen() {
   const [errorType, setErrorType] = useState<"none" | "not_found" | "network" | "timeout" | "under_review">("none");
   const hasHandledResult = useRef(false);
 
-  const { lookupBarcode, reset, scannedFood: apiFood, isLoading, isError, isNotFound, isUnderReview } = useProductLookup();
+  const { lookupBarcode, reset, scannedFood: apiFood, isLoading, isError, isNotFound, isUnderReview, isPolling, isUnderReviewDone } = useProductLookup();
 
   // Handle API results
   useEffect(() => {
-    if (hasHandledResult.current) return;
-
+    // Allow apiFood to override under_review (polling resolved)
     if (apiFood) {
       hasHandledResult.current = true;
       setScannedFood(apiFood);
       setShowError(false);
       setErrorType("none");
-    } else if (isUnderReview) {
+      return;
+    }
+
+    if (hasHandledResult.current) return;
+
+    if (isUnderReviewDone) {
+      // Polling exhausted — show final under_review message
       hasHandledResult.current = true;
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       setScannedFood(null);
@@ -81,7 +86,7 @@ export default function ScannerScreen() {
       setShowError(true);
       setErrorType("network");
     }
-  }, [apiFood, isError, isNotFound, isUnderReview]);
+  }, [apiFood, isError, isNotFound, isUnderReviewDone]);
 
   const handleBarcodeScanned = useCallback((result: { data: string; type: string }) => {
     if (!isScanning) return;
@@ -507,17 +512,17 @@ export default function ScannerScreen() {
           </Animated.View>
         ) : null}
 
-        {/* Loading state */}
-        {isLoading && !scannedFood ? (
+        {/* Loading state (including polling for under_review) */}
+        {(isLoading || isPolling) && !scannedFood ? (
           <Animated.View entering={FadeIn.duration(300)} style={styles.loadingContainer}>
             <View style={styles.loadingPulse}>
               <ActivityIndicator size="large" color={FlowstateColors.secondary} />
             </View>
             <ThemedText type="body" style={styles.loadingText}>
-              Looking up product...
+              {isPolling ? "Fetching product data..." : "Looking up product..."}
             </ThemedText>
             <ThemedText type="caption" style={styles.loadingSubtext}>
-              Checking Open Food Facts database
+              {isPolling ? "Almost ready" : "Checking Open Food Facts database"}
             </ThemedText>
           </Animated.View>
         ) : null}
@@ -563,7 +568,7 @@ export default function ScannerScreen() {
               </ThemedText>
               <ThemedText type="body" style={styles.errorDescription}>
                 {errorType === "under_review"
-                  ? "We're checking this product now. It'll be ready the next time you scan it."
+                  ? "This product is still being processed. Try scanning it again in a minute."
                   : errorType === "network"
                     ? "We couldn't reach the food database. Check your internet connection and try again."
                     : "This product isn't in the Open Food Facts database yet. Try scanning a different item."}

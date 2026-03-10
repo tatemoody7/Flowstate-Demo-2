@@ -30,7 +30,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products/:barcode", async (req, res) => {
     const { barcode } = req.params;
 
-    if (!barcode || barcode.length < 4) {
+    const BARCODE_REGEX = /^\d{4,14}$/;
+    if (!barcode || !BARCODE_REGEX.test(barcode)) {
       return res.status(400).json({ status: "error", message: "Invalid barcode" });
     }
 
